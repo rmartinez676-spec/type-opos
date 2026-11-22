@@ -1,0 +1,1257 @@
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>OpoSapiens - OpoArcade &amp; Street Opositor Fighter</title>
+<!-- Tailwind CSS v3 with forms and container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Newsreader (Serif), Inter (Sans), Press Start 2P (Retro Pixel) -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&amp;family=Press+Start+2P&amp;display=swap" rel="stylesheet">
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Newsreader', 'serif'],
+            pixel: ['"Press Start 2P"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              purple: '#6E48AA',
+              lilac: '#F0EEF9',
+              yellow: '#FDF7E7',
+              peach: '#FCEFE7',
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Base Layout Styles -->
+<style data-purpose="background-grid">
+    /* Subtle notebook millimeter grid background */
+    body {
+      background-color: #FAF8F5;
+      background-image: 
+        linear-gradient(to right, rgba(220, 215, 205, 0.35) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(220, 215, 205, 0.35) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+  </style>
+<!-- END: Base Layout Styles -->
+<!-- BEGIN: Pixel Art Canvas and Character Styles -->
+<style data-purpose="pixel-rendering">
+    .pixelated {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    
+    /* Pixel art shadow effect */
+    .pixel-box-shadow {
+      box-shadow: inset -2px -2px 0px rgba(0, 0, 0, 0.25), inset 2px 2px 0px rgba(255, 255, 255, 0.3);
+    }
+
+    /* Active game card highlight */
+    .game-card-active {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    }
+  </style>
+<!-- END: Pixel Art Canvas and Character Styles -->
+</head>
+<body class="text-slate-800 antialiased min-h-screen pb-20">
+<!-- BEGIN: TopNavigationBar -->
+<header class="bg-[#FAF8F5]/90 backdrop-blur-sm border-b border-[#EAE5DC] sticky top-0 z-50">
+<div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+<!-- Brand Logo -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2 cursor-pointer">
+<!-- Open Book Icon -->
+<svg class="w-7 h-7 text-[#4A3E3D]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="font-serif text-2xl font-bold tracking-tight text-[#2D2522]">OpoSapiens</span>
+</div>
+<span class="text-[11px] font-semibold tracking-wider text-purple-700 bg-purple-100/80 px-2 py-0.5 rounded border border-purple-200">
+          STUDIO
+        </span>
+</div>
+<!-- Main Navigation Menu -->
+<nav class="hidden md:flex items-center gap-1 text-[13.5px] font-medium text-slate-600">
+<!-- Escritorio -->
+<a class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:text-slate-900 transition" href="#hub">
+<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<rect height="7" rx="1" stroke-width="2" width="7" x="3" y="3"></rect>
+<rect height="7" rx="1" stroke-width="2" width="7" x="14" y="3"></rect>
+<rect height="7" rx="1" stroke-width="2" width="7" x="14" y="14"></rect>
+<rect height="7" rx="1" stroke-width="2" width="7" x="3" y="14"></rect>
+</svg>
+          Escritorio
+        </a>
+<!-- Mi temario -->
+<a class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:text-slate-900 transition" href="#hub">
+<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+          Mi temario
+        </a>
+<!-- Práctica -->
+<a class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-slate-900 transition" href="#hub">
+<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+          Práctica
+          <svg class="w-3.5 h-3.5 text-slate-400 ml-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<!-- OpoArcade (Active highlighted tab) -->
+<a class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#EBE7F7] text-[#553396] font-semibold transition border border-[#D9D1F0]" href="#arcade-section">
+<svg class="w-4 h-4 text-[#553396]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M15 6H9m-3 0a3 3 0 00-3 3v8a3 3 0 003 3h12a3 3 0 003-3V9a3 3 0 00-3-3H6zm0 0l2 2m10-2l-2 2m-5 4v2m-1-1h2m4-1a1 1 0 11-2 0 1 1 0 012 0zm2 2a1 1 0 11-2 0 1 1 0 012 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+          OpoArcade
+        </a>
+</nav>
+<!-- Right User Controls -->
+<div class="flex items-center gap-4">
+<!-- Streak counter -->
+<div class="flex items-center gap-1.5 text-amber-700 bg-amber-50/80 px-2.5 py-1 rounded-full text-xs font-semibold border border-amber-200/80">
+<span class="text-base leading-none">🔥</span>
+<span>3 días</span>
+</div>
+<!-- User initials avatar badge with dropdown -->
+<div class="flex items-center gap-1 cursor-pointer">
+<div class="w-8 h-8 rounded-full bg-[#E5D7EB] text-[#5A386D] text-xs font-bold flex items-center justify-center border border-[#D5C2DD]">
+            OP
+          </div>
+<svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+</header>
+<!-- END: TopNavigationBar -->
+<main class="max-w-6xl mx-auto px-4 pt-8">
+<!-- BEGIN: HubSection (Sala de Juegos) -->
+<section class="mb-12" data-purpose="arcade-hub" id="arcade-section">
+<!-- Section Title & Subtitle -->
+<div class="mb-6">
+<div class="flex items-center gap-2 text-xs font-bold tracking-widest text-slate-400 uppercase mb-2">
+<span class="w-6 h-[1.5px] bg-slate-400 inline-block"></span>
+<span>SALA DE JUEGOS</span>
+</div>
+<h1 class="text-4xl sm:text-5xl font-serif font-bold text-[#1F1715] tracking-tight mb-2">
+          OpoArcade
+        </h1>
+<p class="text-slate-600 text-sm sm:text-base font-normal">
+          Un descanso activo: juega con los conceptos que estás estudiando.
+        </p>
+</div>
+<!-- Controls Row: Game Picker + Topic Dropdown -->
+<div class="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-5 border border-[#EAE5DC] shadow-xs mb-8" id="scope-selector-container">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Alcance y fuente del contenido:</span>
+      <span class="text-xs bg-[#F0EEF9] text-[#553396] font-semibold px-2.5 py-0.5 rounded-full border border-[#D9D1F0]" id="scope-current-badge">Bloque IV · Derecho Administrativo General</span>
+    </div>
+    <div class="flex items-center gap-2 text-xs text-slate-500">
+      <span class="font-medium">Banco activo:</span>
+      <span class="font-semibold text-slate-800" id="scope-stats-count">1.420 preguntas y términos</span>
+    </div>
+  </div>
+  <div class="pt-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="inline-flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-[#FAF8F5] border border-[#E9E4DC] text-xs font-semibold select-none" id="scope-tabs">
+      <button type="button" id="scope-btn-todo" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition" onclick="setGameScope('todo')">🌐 Todo el temario</button>
+      <button type="button" id="scope-btn-bloque" class="px-3 py-1.5 rounded-lg bg-white text-[#8C3E14] shadow-xs border border-orange-200 transition" onclick="setGameScope('bloque')">📑 Por Bloques</button>
+      <button type="button" id="scope-btn-tema" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition" onclick="setGameScope('tema')">🎯 Por Tema específico</button>
+      <button type="button" id="scope-btn-apuntes" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition" onclick="setGameScope('apuntes')">📂 Mis Apuntes / PDF</button>
+    </div>
+    <div class="flex-1 max-w-md">
+      <div id="scope-panel-todo" class="hidden text-xs text-slate-600 bg-white px-3 py-2 rounded-xl border border-slate-200 flex items-center justify-between">
+        <span>Incluye convocatoria completa (Bloques I a VI · 58 Temas)</span>
+        <span class="text-[11px] font-bold text-emerald-600">Aleatorio global</span>
+      </div>
+      <div id="scope-panel-bloque" class="flex items-center gap-2">
+        <div class="relative w-full">
+          <select id="select-bloque" class="w-full appearance-none bg-white text-xs font-semibold text-slate-700 pl-3 pr-8 py-2 rounded-xl border border-slate-300 shadow-xs focus:ring-2 focus:ring-purple-400 focus:outline-none cursor-pointer" onchange="updateScopeSelection()">
+            <option value="B1">Bloque I · Estado, CE y Organización Administrativa (12 temas)</option>
+            <option value="B2">Bloque II · Unión Europea e Instituciones Comunitarias (8 temas)</option>
+            <option value="B3">Bloque III · Políticas Públicas e Igualdad (6 temas)</option>
+            <option value="B4" selected="">Bloque IV · Derecho Administrativo General y Procedimiento (14 temas)</option>
+            <option value="B5">Bloque V · Gestión Financiera y Presupuestos (10 temas)</option>
+            <option value="B6">Bloque VI · Función Pública y TREBEP (8 temas)</option>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+        </div>
+      </div>
+      <div id="scope-panel-tema" class="hidden flex items-center gap-2">
+        <div class="relative w-full">
+          <select id="select-tema" class="w-full appearance-none bg-white text-xs font-semibold text-slate-700 pl-3 pr-8 py-2 rounded-xl border border-slate-300 shadow-xs focus:ring-2 focus:ring-purple-400 focus:outline-none cursor-pointer" onchange="updateScopeSelection()">
+            <option value="T1">Tema 1 · La Constitución Española de 1978: Principios</option>
+            <option value="T14">Tema 14 · Las Instituciones de la Unión Europea</option>
+            <option value="T29" selected="">Tema 29 · El Acto Administrativo, Eficacia y Nulidad</option>
+            <option value="T30">Tema 30 · Silencio Administrativo y Plazos (LPACAP)</option>
+            <option value="T31">Tema 31 · Recursos Administrativos ordinarios y extraordinario</option>
+            <option value="T34">Tema 34 · Contratos del Sector Público (LCSP Ley 9/2017)</option>
+            <option value="T42">Tema 42 · El Presupuesto General del Estado y Deuda</option>
+            <option value="T51">Tema 51 · El TREBEP: Derechos y Deberes del Funcionario</option>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+        </div>
+      </div>
+      <div id="scope-panel-apuntes" class="hidden flex items-center gap-2">
+        <div class="relative flex-1">
+          <select id="select-apuntes" class="w-full appearance-none bg-white text-xs font-semibold text-slate-700 pl-3 pr-8 py-2 rounded-xl border border-slate-300 shadow-xs focus:ring-2 focus:ring-purple-400 focus:outline-none cursor-pointer" onchange="updateScopeSelection()">
+            <option value="doc1">📑 Esquemas_LPAC_Silencio_Resumen_2024.pdf (42 págs)</option>
+            <option value="doc2">📑 Mis_Apuntes_Contratos_LCSP_Subsanaciones.docx (18 págs)</option>
+            <option value="doc3">📑 Flashcards_Plazos_Procesales_y_Recursos.pdf (12 págs)</option>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+        </div>
+        <button type="button" class="px-2.5 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition flex items-center gap-1 shrink-0" onclick="alert('Función de subida de PDF preparada para sincronizar con tu base de apuntes.')">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          <span>Subir PDF</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 3 Arcade Game Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1: El Rosco de la Opo -->
+<article class="cursor-pointer bg-[#F0EEF9] rounded-2xl p-6 border-2 border-transparent transition-all duration-200 flex flex-col justify-between hover:shadow-md group relative" data-purpose="game-card" id="card-rosco" onclick="switchGameMode('rosco')">
+<div class="hidden absolute top-4 right-4 bg-purple-700 text-white text-[10px] font-bold tracking-wider px-2.5 py-0.5 rounded-full uppercase shadow-xs" id="badge-rosco">
+  JUGANDO AHORA
+</div>
+<div>
+<!-- Letter Wheel Graphic -->
+<div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
+<div class="relative w-12 h-12 rounded-full border border-purple-400/70 flex items-center justify-center bg-purple-50">
+<span class="font-bold text-xs text-purple-900">A</span>
+<!-- Satellite mini circular badges mimicking 'El Rosco' -->
+<span class="absolute -top-1 left-1.5 w-3 h-3 rounded-full bg-purple-200 border border-purple-400 text-[8px] flex items-center justify-center font-bold text-purple-800">L</span>
+<span class="absolute -top-1 right-1.5 w-3 h-3 rounded-full bg-purple-200 border border-purple-400 text-[8px] flex items-center justify-center font-bold text-purple-800">M</span>
+<span class="absolute top-2 -right-1.5 w-3 h-3 rounded-full bg-purple-200 border border-purple-400 text-[8px] flex items-center justify-center font-bold text-purple-800">B</span>
+<span class="absolute top-6 -right-1.5 w-3 h-3 rounded-full bg-purple-200 border border-purple-400 text-[8px] flex items-center justify-center font-bold text-purple-800">C</span>
+<span class="absolute -bottom-1 right-2 w-3 h-3 rounded-full bg-purple-200 border border-purple-400 text-[8px] flex items-center justify-center font-bold text-purple-800">D</span>
+<span class="absolute -bottom-1 left-2 w-3 h-3 rounded-full bg-purple-200 border border-purple-400 text-[8px] flex items-center justify-center font-bold text-purple-800">G</span>
+<span class="absolute top-6 -left-1.5 w-3 h-3 rounded-full bg-purple-200 border border-purple-400 text-[8px] flex items-center justify-center font-bold text-purple-800">K</span>
+<span class="absolute top-2 -left-1.5 w-3 h-3 rounded-full bg-purple-200 border border-purple-400 text-[8px] flex items-center justify-center font-bold text-purple-800">J</span>
+</div>
+</div>
+<h2 class="font-serif text-2xl font-bold text-[#1E1724] mb-3">El Rosco de la Opo</h2>
+<p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-8">
+              Una vuelta al abecedario para poner a prueba tu vocabulario jurídico.
+            </p>
+</div>
+<span class="inline-flex items-center text-xs font-semibold text-slate-700 group-hover:text-purple-700 transition">
+            Entrar al juego 
+            <svg class="w-3.5 h-3.5 ml-1.5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</span>
+</article>
+<!-- Card 2: Sopa de letras -->
+<article class="cursor-pointer bg-[#FDF7E7] rounded-2xl p-6 border-2 border-transparent transition-all duration-200 flex flex-col justify-between hover:shadow-md group relative" data-purpose="game-card" id="card-sopa" onclick="switchGameMode('sopa')">
+<div class="hidden absolute top-4 right-4 bg-amber-700 text-white text-[10px] font-bold tracking-wider px-2.5 py-0.5 rounded-full uppercase shadow-xs" id="badge-sopa">
+  JUGANDO AHORA
+</div>
+<div>
+<!-- Word Search Grid Graphic -->
+<div class="w-16 h-16 flex items-center justify-center mb-6">
+<div class="border border-amber-700/50 rounded-lg p-1.5 bg-amber-50/60 font-mono text-[9px] font-bold text-amber-900 leading-tight tracking-widest text-center shadow-xs">
+<div>P L A Z O</div>
+<div>R O L E Y</div>
+<div>M I B O A</div>
+<div>S E D E R</div>
+</div>
+</div>
+<h2 class="font-serif text-2xl font-bold text-[#2A2312] mb-3">Sopa de letras</h2>
+<p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-8">
+              Encuentra los conceptos de tu temario entre las letras del tablero.
+            </p>
+</div>
+<span class="inline-flex items-center text-xs font-semibold text-slate-700 group-hover:text-amber-800 transition">
+            Entrar al juego 
+            <svg class="w-3.5 h-3.5 ml-1.5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</span>
+</article>
+<!-- Card 3: Street Opositor Fighter (Featured Game) -->
+<article class="cursor-pointer bg-[#FCEFE7] rounded-2xl p-6 border-2 border-orange-400 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-200 group relative overflow-hidden game-card-active" data-purpose="game-card" id="card-fighter" onclick="switchGameMode('fighter')">
+<div class="absolute top-4 right-4 bg-orange-700 text-white text-[10px] font-bold tracking-wider px-2.5 py-0.5 rounded-full uppercase shadow-xs" id="badge-fighter">
+  JUGANDO AHORA
+</div>
+<div>
+<!-- Retro Gamepad Icon -->
+<div class="w-16 h-16 flex items-center justify-center mb-6">
+<div class="relative w-12 h-10 bg-[#816599] rounded-xl flex items-center justify-center border-2 border-[#543A6E] shadow-sm">
+<!-- D-pad -->
+<div class="absolute left-2 w-3.5 h-3.5 flex items-center justify-center">
+<div class="w-3.5 h-1.5 bg-indigo-950 rounded-[1px] absolute"></div>
+<div class="w-1.5 h-3.5 bg-indigo-950 rounded-[1px] absolute"></div>
+</div>
+<!-- Action Buttons -->
+<div class="absolute right-2 flex gap-1">
+<div class="w-1.5 h-1.5 rounded-full bg-amber-300"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-rose-400"></div>
+</div>
+<!-- Cable loop -->
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-3 border-t-2 border-l-2 border-[#543A6E] rounded-tl-full"></div>
+</div>
+</div>
+<h2 class="font-serif text-2xl font-bold text-[#2E1E14] mb-3 leading-snug">Street Opositor Fighter</h2>
+<p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-8">
+              El Opositor contra el Tribunal. Cada respuesta decide el combate.
+            </p>
+</div>
+<span class="inline-flex items-center text-xs font-semibold text-[#8C3E14] group-hover:text-orange-950 transition">
+            Entrar al juego 
+            <svg class="w-3.5 h-3.5 ml-1.5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</span>
+</article>
+</div>
+<!-- High Scores Summary Banner -->
+<div class="mt-8 bg-white/70 backdrop-blur-xs rounded-2xl p-6 border border-[#E9E4DC]">
+<h3 class="font-serif text-xl font-bold text-slate-900 mb-4">Mis mejores partidas</h3>
+<div class="divide-y divide-slate-100 text-xs">
+<div class="py-2.5 flex justify-between items-center text-slate-600 font-medium">
+<span>El Rosco de la Opo</span>
+<span class="text-slate-400" id="score-rosco-stat">Aún sin partidas</span>
+</div>
+<div class="py-2.5 flex justify-between items-center text-slate-600 font-medium">
+<span>Sopa de letras</span>
+<span class="text-slate-400" id="score-sopa-stat">Aún sin partidas</span>
+</div>
+<div class="py-2.5 flex justify-between items-center text-slate-600 font-medium">
+<span>Street Opositor Fighter</span>
+<span class="text-emerald-600 font-semibold" id="score-fighter-stat">Récord: 4 rondas superadas</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: HubSection -->
+<!-- Quick Switch Bar -->
+<div class="flex items-center justify-between mb-3 px-1">
+<div class="flex items-center gap-2 flex-wrap text-xs text-slate-600 font-medium">
+  <span class="font-bold text-slate-800" id="breadcrumb-game-title">Street Fighter: El Opositor vs. Tribunal</span>
+  <span>·</span>
+  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#FAF8F5] border border-[#EAE5DC] text-[11px] text-purple-800 font-semibold" id="breadcrumb-scope-pill">
+    <span class="w-1.5 h-1.5 rounded-full bg-purple-700"></span>
+    <span id="active-scope-label">Modo: Bloque IV · Derecho Administrativo</span>
+  </span>
+</div>
+<div class="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200 text-xs">
+<button class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition" id="tab-btn-rosco" onclick="switchGameMode('rosco')">
+      El Rosco
+    </button>
+<button class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition" id="tab-btn-sopa" onclick="switchGameMode('sopa')">
+      Sopa de letras
+    </button>
+<button class="px-2.5 py-1 rounded-lg bg-[#FCEFE7] text-[#8C3E14] font-semibold transition border border-orange-200" id="tab-btn-fighter" onclick="switchGameMode('fighter')">
+      Street Fighter
+    </button>
+</div>
+</div>
+<!-- ============================================== -->
+<!-- GAME VIEW 1: Street Opositor Fighter (Combat)  -->
+<!-- ============================================== -->
+<section class="block" data-purpose="gameplay-view" id="view-fighter">
+<!-- Game Interactive Container -->
+<div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-[#EAE5DC]">
+<!-- Status Bar: Round indicator + Timer & Progress -->
+<div class="flex flex-wrap items-center justify-between gap-3 mb-4"><div class="flex items-center gap-2"><span class="text-xs font-semibold bg-[#F0EEF9] text-[#5A386D] px-3 py-1 rounded-md border border-[#E3DEF5]" id="round-indicator-badge">Ronda 1</span><span class="text-xs font-medium text-slate-500 bg-[#FAF8F5] px-2.5 py-1 rounded-md border border-[#E9E4DC] flex items-center gap-1" id="game-badge-fighter"><span class="text-[10px]">🎯 Fuente:</span><strong class="text-slate-700" id="fighter-source-text">Bloque IV · LPAC y LCSP</strong></span></div><div class="text-xs font-medium text-slate-500 flex items-center gap-1.5"><span id="rounds-cleared-text">0 rondas superadas</span><span>·</span><span class="tabular-nums font-mono font-semibold text-slate-700" id="combat-timer">15 s</span></div></div>
+<!-- 16-Bit Pixel Combat Stage Arena Container -->
+<div class="relative w-full rounded-2xl overflow-hidden bg-[#241F31] border-2 border-[#1E1929] shadow-inner select-none" data-purpose="fighting-arena">
+<!-- Top Health Bars Layer (Heads-Up Display) -->
+<div class="relative z-20 pt-4 px-4 sm:px-6">
+<div class="grid grid-cols-2 gap-4 sm:gap-8 items-start">
+<!-- Player HP: EL OPOSITOR -->
+<div>
+<div class="flex justify-between items-baseline mb-1 text-[10px] sm:text-xs font-pixel tracking-wide text-amber-100">
+<span>EL OPOSITOR</span>
+<span class="text-[9px] sm:text-[10px] text-emerald-400" id="player-hp-label">100 HP</span>
+</div>
+<div class="h-4 sm:h-5 bg-[#3D324C] border border-[#5A4B72] p-0.5 rounded-sm">
+<div class="h-full bg-[#B8E994] transition-all duration-300 w-full" id="player-hp-bar" style="box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2);"></div>
+</div>
+</div>
+<!-- Boss HP: EL TRIBUNAL -->
+<div>
+<div class="flex justify-between items-baseline mb-1 text-[10px] sm:text-xs font-pixel tracking-wide text-amber-100">
+<span>EL TRIBUNAL</span>
+<span class="text-[9px] sm:text-[10px] text-pink-300" id="boss-hp-label">100 HP</span>
+</div>
+<div class="h-4 sm:h-5 bg-[#3D324C] border border-[#5A4B72] p-0.5 rounded-sm">
+<div class="h-full bg-[#E5B5D3] transition-all duration-300 w-full" id="boss-hp-bar" style="box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2);"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Pixel Art Scenery Canvas Background -->
+<div class="relative w-full h-[250px] sm:h-[300px] flex items-end justify-between overflow-hidden">
+<!-- SVG Pixel Stage Backdrop (Night Sky, Stars, Court House / Tribunal, Skyline) -->
+<svg class="absolute inset-0 w-full h-full pixelated" fill="none" preserveAspectRatio="none" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+<!-- Dark Night Sky -->
+<rect fill="#48425F" height="200" width="400"></rect>
+<!-- Stars in Pixel Clusters -->
+<rect fill="#FFFFFF" fill-opacity="0.8" height="2" width="2" x="35" y="24"></rect>
+<rect fill="#FFFFFF" fill-opacity="0.6" height="2" width="2" x="85" y="45"></rect>
+<rect fill="#FFFFFF" fill-opacity="0.9" height="2" width="2" x="150" y="30"></rect>
+<rect fill="#FFFFFF" fill-opacity="0.7" height="2" width="2" x="230" y="20"></rect>
+<rect fill="#FFFFFF" fill-opacity="0.6" height="2" width="2" x="320" y="42"></rect>
+<rect fill="#FFFFFF" fill-opacity="0.85" height="2" width="2" x="365" y="32"></rect>
+<!-- Retro Pixel Moon -->
+<path d="M310 32h8v16h-8v-3h-2v-10h2v-3z" fill="#F8E5A7" fill-opacity="0.9"></path>
+<!-- Distant City Skyline Silhouettes -->
+<rect fill="#5E5676" height="60" width="28" x="10" y="80"></rect>
+<rect fill="#574F6F" height="75" width="24" x="34" y="65"></rect>
+<rect fill="#4E4765" height="52" width="22" x="56" y="88"></rect>
+<rect fill="#574F6F" height="70" width="30" x="320" y="70"></rect>
+<rect fill="#504866" height="55" width="25" x="348" y="85"></rect>
+<rect fill="#48405E" height="80" width="26" x="368" y="60"></rect>
+<!-- Classical Courthouse / Ministry Pixel Building (Tribunal Calificador) -->
+<!-- Pediment Roof (Triangle) -->
+<polygon fill="#B9B5C8" points="100,50 300,50 200,20"></polygon>
+<polygon fill="#C9C5D8" points="110,48 290,48 200,24"></polygon>
+<rect fill="#88819A" height="6" width="212" x="94" y="50"></rect>
+<!-- Frieze & Architrave -->
+<rect fill="#C9C5D8" height="8" width="200" x="100" y="56"></rect>
+<!-- Doric Columns (8 Columns) -->
+<rect fill="#D7D4E3" height="56" width="8" x="110" y="64"></rect>
+<rect fill="#D7D4E3" height="56" width="8" x="134" y="64"></rect>
+<rect fill="#D7D4E3" height="56" width="8" x="158" y="64"></rect>
+<rect fill="#D7D4E3" height="56" width="8" x="182" y="64"></rect>
+<rect fill="#D7D4E3" height="56" width="8" x="210" y="64"></rect>
+<rect fill="#D7D4E3" height="56" width="8" x="234" y="64"></rect>
+<rect fill="#D7D4E3" height="56" width="8" x="258" y="64"></rect>
+<rect fill="#D7D4E3" height="56" width="8" x="282" y="64"></rect>
+<!-- Shadows between columns (Court interior) -->
+<rect fill="#756D89" fill-opacity="0.45" height="56" width="200" x="100" y="64"></rect>
+<!-- Courthouse Steps (Plinth) -->
+<rect fill="#A49FB5" height="5" width="220" x="90" y="120"></rect>
+<rect fill="#918B9F" height="5" width="250" x="75" y="125"></rect>
+<rect fill="#7D778B" height="6" width="280" x="60" y="130"></rect>
+<!-- Street Ground Level -->
+<rect fill="#696277" height="64" width="400" x="0" y="136"></rect>
+<rect fill="#585165" height="4" width="400" x="0" y="136"></rect>
+<!-- Dashed road lines in pixel style -->
+<rect fill="#8C849C" height="3" width="28" x="20" y="162"></rect>
+<rect fill="#8C849C" height="3" width="28" x="75" y="162"></rect>
+<rect fill="#8C849C" height="3" width="28" x="130" y="162"></rect>
+<rect fill="#8C849C" height="3" width="28" x="185" y="162"></rect>
+<rect fill="#8C849C" height="3" width="28" x="240" y="162"></rect>
+<rect fill="#8C849C" height="3" width="28" x="295" y="162"></rect>
+<rect fill="#8C849C" height="3" width="28" x="350" y="162"></rect>
+</svg>
+<!-- Character Left: EL OPOSITOR (Pixel Art Sprite) -->
+<div class="relative z-10 ml-12 sm:ml-20 mb-3 transition-transform duration-150" id="player-sprite">
+<!-- Pixel Grid Representation (40x70 approx) -->
+<svg class="pixelated" fill="none" height="110" viewBox="0 0 20 32" width="68">
+<!-- Hair (Brown) -->
+<rect fill="#4B3327" height="4" width="8" x="6" y="2"></rect>
+<rect fill="#4B3327" height="4" width="3" x="5" y="4"></rect>
+<rect fill="#4B3327" height="3" width="2" x="14" y="3"></rect>
+<rect fill="#4B3327" height="2" width="4" x="12" y="6"></rect>
+<!-- Face & Neck (Skin tone) -->
+<rect fill="#E8C39E" height="5" width="6" x="7" y="5"></rect>
+<!-- Eye -->
+<rect fill="#1C1820" height="1" width="1" x="11" y="6"></rect>
+<!-- Purple Jacket -->
+<rect fill="#7866B5" height="11" width="10" x="5" y="10"></rect>
+<!-- White Shirt Inside -->
+<rect fill="#FFFFFF" height="9" width="4" x="8" y="10"></rect>
+<!-- Arms / Fists in Ready Stance -->
+<rect fill="#7866B5" height="5" width="2" x="4" y="12"></rect>
+<rect fill="#E8C39E" height="3" width="2" x="3" y="14"></rect>
+<rect fill="#7866B5" height="5" width="2" x="14" y="12"></rect>
+<rect fill="#E8C39E" height="3" width="2" x="15" y="14"></rect>
+<!-- Blue Jeans -->
+<rect fill="#4B4F73" height="3" width="8" x="6" y="21"></rect>
+<rect fill="#4B4F73" height="5" width="3.5" x="6" y="24"></rect>
+<rect fill="#4B4F73" height="5" width="3.5" x="10.5" y="24"></rect>
+<!-- Dark Boots -->
+<rect fill="#2E2835" height="2" width="4.5" x="5" y="29"></rect>
+<rect fill="#2E2835" height="2" width="4.5" x="10.5" y="29"></rect>
+</svg>
+</div>
+<!-- Character Right: EL TRIBUNAL (Pixel Art Sprite) -->
+<div class="relative z-10 mr-12 sm:mr-20 mb-3 transition-transform duration-150" id="boss-sprite">
+<!-- Pixel Grid Representation of Stern Examiner in Grey Suit -->
+<svg class="pixelated" fill="none" height="110" viewBox="0 0 20 32" width="68">
+<!-- Hair (Silver / Grey) -->
+<rect fill="#D3D3D8" height="4" width="8" x="6" y="2"></rect>
+<rect fill="#D3D3D8" height="4" width="3" x="5" y="4"></rect>
+<rect fill="#D3D3D8" height="4" width="3" x="13" y="4"></rect>
+<!-- Face (Stern skin tone) -->
+<rect fill="#E3BEA0" height="5" width="6" x="7" y="5"></rect>
+<!-- Eye & Eyebrow -->
+<rect fill="#2E2835" height="1" width="1.5" x="8" y="6"></rect>
+<!-- Glasses horn rim hint -->
+<rect fill="#3D3A45" height="1.5" width="3" x="6" y="5"></rect>
+<!-- Dark Grey Suit Jacket -->
+<rect fill="#4A525A" height="11" width="10" x="5" y="10"></rect>
+<!-- White Formal Shirt & Tie -->
+<rect fill="#FFFFFF" height="9" width="4" x="8" y="10"></rect>
+<rect fill="#8A2E2E" height="7" width="1" x="9.5" y="11"></rect> <!-- Red exam tie -->
+<!-- Arms in Stern Stance with clipboard hint -->
+<rect fill="#4A525A" height="6" width="2" x="4" y="12"></rect>
+<rect fill="#E3BEA0" height="2" width="2" x="3" y="16"></rect>
+<rect fill="#4A525A" height="6" width="2" x="14" y="12"></rect>
+<rect fill="#D89A60" height="3" width="2" x="15" y="15"></rect> <!-- Folder/Pen -->
+<!-- Grey Suit Trousers -->
+<rect fill="#3A4048" height="3" width="8" x="6" y="21"></rect>
+<rect fill="#3A4048" height="5" width="3.5" x="6" y="24"></rect>
+<rect fill="#3A4048" height="5" width="3.5" x="10.5" y="24"></rect>
+<!-- Polished Black Shoes -->
+<rect fill="#1C1820" height="2" width="4.5" x="5" y="29"></rect>
+<rect fill="#1C1820" height="2" width="4.5" x="10.5" y="29"></rect>
+</svg>
+</div>
+</div>
+<!-- Battle Banner Overlay at Bottom of Arena: 'ROUND 1 / TU TURNO' -->
+<div class="relative z-20 bg-[#16121E]/90 border-t border-[#3B324D] py-2 text-center">
+<span class="font-pixel text-[11px] sm:text-xs text-amber-300 tracking-wider" id="combat-banner-text">
+              ROUND 1 / TU TURNO
+            </span>
+</div>
+</div>
+<!-- Question Area Directly Below Arena Screen -->
+<div class="mt-6">
+<h2 class="font-serif text-xl sm:text-2xl font-bold text-[#1F1715] mb-6 leading-snug" id="question-text">
+            ¿Se incluye el IVA al calcular el valor estimado de un contrato de servicios en la LCSP?
+          </h2>
+<!-- Interactive Multiple Choice Options -->
+<div class="space-y-3" data-purpose="combat-options" id="options-container">
+<!-- Will be populated dynamically by loadFighterQuestion() -->
+</div>
+<!-- Feedback message -->
+<div class="hidden mt-4 p-3 rounded-xl text-xs font-semibold flex items-center justify-between" id="combat-feedback">
+<span id="feedback-text"></span>
+<button class="px-3 py-1 bg-white text-slate-800 rounded-lg shadow-xs border border-slate-200 hover:bg-slate-100 transition" onclick="nextCombatQuestion()">
+              Siguiente turno →
+            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- ============================================== -->
+<!-- GAME VIEW 2: El Rosco de la Opo                -->
+<!-- ============================================== -->
+<section class="hidden" data-purpose="gameplay-view" id="view-rosco">
+<div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-[#EAE5DC]">
+<!-- Top Bar: Scores & Timer -->
+<div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+<div class="flex flex-wrap items-center gap-3"><span class="text-xs font-semibold bg-[#F0EEF9] text-[#5A386D] px-3 py-1 rounded-md border border-[#E3DEF5]">El Rosco Jurídico</span><span class="text-xs font-medium text-slate-500 bg-[#FAF8F5] px-2.5 py-1 rounded-md border border-[#E9E4DC] flex items-center gap-1"><span class="text-[10px]">🎯 Fuente:</span><strong class="text-slate-700" id="rosco-source-text">Bloque IV · LPAC y LCSP</strong></span><div class="flex items-center gap-3 text-xs font-medium"><span class="flex items-center gap-1 text-emerald-600 font-semibold"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span><span id="rosco-hits">0</span> aciertos</span><span class="flex items-center gap-1 text-rose-600 font-semibold"><span class="w-2 h-2 rounded-full bg-rose-500 inline-block"></span><span id="rosco-misses">0</span> fallos</span></div></div>
+<div class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"></circle><path d="M12 6v6l4 2" stroke-linecap="round" stroke-width="2"></path></svg>
+<span class="font-mono text-sm font-semibold text-slate-800 tabular-nums" id="rosco-timer">120 s</span>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<!-- Rosco Letter Circle Graphic -->
+<div class="lg:col-span-6 flex flex-col items-center justify-center p-4">
+<div class="relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center" id="rosco-wheel-container">
+<!-- SVG Ring Path decoration -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 320 320">
+<circle cx="160" cy="160" fill="none" r="126" stroke="#EAE5DC" stroke-dasharray="3 3" stroke-width="1.5"></circle>
+</svg>
+<!-- Dynamic Circular Letter Badges generated by JS -->
+<div class="absolute inset-0 w-full h-full" id="rosco-letters-circle"></div>
+<!-- Center definition highlight card -->
+<div class="w-36 h-36 rounded-full bg-gradient-to-br from-[#F5F2FC] to-[#FAF8F5] border-2 border-purple-200 flex flex-col items-center justify-center p-2 text-center shadow-xs">
+<span class="text-xs font-bold text-purple-700 tracking-wider">LETRA</span>
+<span class="text-4xl font-serif font-bold text-[#2A1E3E] my-0.5" id="rosco-center-letter">A</span>
+<span class="text-[10px] text-slate-500 font-medium" id="rosco-center-status">1 de 21 letras</span>
+</div>
+</div>
+</div>
+<!-- Rosco Input & Question definition side -->
+<div class="lg:col-span-6 bg-[#FAF8F5] p-6 rounded-2xl border border-[#EAE5DC] flex flex-col justify-between min-h-[300px]">
+<div>
+<div class="flex items-center gap-2 mb-3">
+<span class="w-6 h-6 rounded-md bg-[#6E48AA] text-white font-bold text-xs flex items-center justify-center" id="rosco-pill-letter">A</span>
+<span class="text-xs font-semibold tracking-wide text-purple-900 uppercase" id="rosco-rule-text">Empieza por la letra A</span>
+</div>
+<p class="font-serif text-lg sm:text-xl font-medium text-slate-800 leading-snug mb-4" id="rosco-definition-text">Declaración unilateral de voluntad de un órgano administrativo dictada en el ejercicio de una potestad administrativa y que produce efectos jurídicos.</p>
+</div>
+<!-- Rosco Response form -->
+<div>
+<form class="space-y-3" onsubmit="event.preventDefault(); submitRoscoAnswer();">
+<div class="relative">
+<input autocomplete="off" class="w-full text-sm font-medium bg-white px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent placeholder:text-slate-400 pr-10" id="rosco-input" placeholder="Escribe tu respuesta..." type="text">
+<button class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-purple-700 hover:bg-purple-50 transition" onclick="submitRoscoAnswer()" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2.5 bg-[#6E48AA] hover:bg-[#59388c] text-white text-xs font-semibold rounded-xl shadow-xs transition" type="submit">
+              Responder
+            </button>
+<button class="py-2.5 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-semibold rounded-xl border border-amber-300 transition" onclick="passRoscoWord()" type="button">
+              Pasapalabra ↷
+            </button>
+</div>
+</form>
+<div class="hidden" id="rosco-feedback-box">
+<span id="rosco-feedback-msg"></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ============================================== -->
+<!-- GAME VIEW 3: Sopa de Letras                    -->
+<!-- ============================================== -->
+<section class="hidden" data-purpose="gameplay-view" id="view-sopa">
+<div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-[#EAE5DC]">
+<!-- Top Bar: Scores & Timer -->
+<div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+<div class="flex flex-wrap items-center gap-3"><span class="text-xs font-semibold bg-[#FDF7E7] text-amber-900 px-3 py-1 rounded-md border border-[#F3E7C9]">Sopa Jurídica</span><span class="text-xs font-medium text-slate-500 bg-[#FAF8F5] px-2.5 py-1 rounded-md border border-[#E9E4DC] flex items-center gap-1"><span class="text-[10px]">🎯 Fuente:</span><strong class="text-slate-700" id="sopa-source-text">Bloque IV · LPAC y LCSP</strong></span><span class="text-xs font-medium text-slate-600"><strong class="text-amber-800 font-bold" id="sopa-found-count">0</strong> de 6 conceptos encontrados</span></div>
+<div class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"></circle><path d="M12 6v6l4 2" stroke-linecap="round" stroke-width="2"></path></svg>
+<span class="font-mono text-sm font-semibold text-slate-800 tabular-nums" id="sopa-timer">02:45</span>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Interactive Word Grid -->
+<div class="lg:col-span-8 flex flex-col items-center">
+<div class="inline-block p-4 sm:p-5 bg-[#FDFBF7] border border-[#EBE4D5] rounded-2xl shadow-inner select-none overflow-x-auto max-w-full">
+<div class="grid grid-cols-10 gap-1.5 sm:gap-2" id="wordsearch-grid"></div>
+</div>
+<p class="text-[11px] text-slate-400 mt-3 text-center">
+        💡 Haz clic en las letras consecutivas para marcar una palabra oculta en horizontal o vertical.
+      </p>
+</div>
+<!-- Word list checklist side -->
+<div class="lg:col-span-4 bg-[#FAF8F5] p-5 rounded-2xl border border-[#EAE5DC]">
+<h4 class="font-serif text-base font-bold text-slate-900 mb-1">Palabras a buscar</h4>
+<p class="text-xs text-slate-500 mb-4">Haz clic en una palabra para recibir una pista sobre su ubicación.</p>
+<div class="space-y-2 text-xs" id="sopa-word-list"></div>
+<div class="mt-6 pt-4 border-t border-slate-200 flex justify-between items-center">
+<button class="text-xs text-slate-600 hover:text-slate-900 font-medium underline" onclick="resetSopaGrid()">
+          Reiniciar tablero
+        </button>
+<button class="text-xs text-amber-700 hover:text-amber-900 font-semibold" onclick="autoSolveSopa()">
+          Revelar una palabra
+        </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BEGIN: Game Interactivity Script -->
+<script data-purpose="game-interaction">
+    let currentGame = 'fighter';
+    let currentScope = 'bloque';
+
+    // Scope switcher logic
+    function setGameScope(scope) {
+      currentScope = scope;
+      const tabs = ['todo', 'bloque', 'tema', 'apuntes'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`scope-btn-${t}`);
+        const panel = document.getElementById(`scope-panel-${t}`);
+        if (t === scope) {
+          if (btn) btn.className = 'px-3 py-1.5 rounded-lg bg-white text-[#8C3E14] shadow-xs border border-orange-200 transition font-semibold';
+          if (panel) panel.classList.remove('hidden');
+        } else {
+          if (btn) btn.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition font-semibold';
+          if (panel) panel.classList.add('hidden');
+        }
+      });
+      updateScopeSelection();
+    }
+
+    function updateScopeSelection() {
+      let label = 'Bloque IV · Derecho Administrativo General';
+      let stats = '1.420 preguntas y términos';
+
+      if (currentScope === 'todo') {
+        label = 'Convocatoria completa · Todos los Bloques';
+        stats = '5.850 preguntas y términos';
+      } else if (currentScope === 'bloque') {
+        const sel = document.getElementById('select-bloque');
+        label = sel.options[sel.selectedIndex].text.split('(')[0].trim();
+        stats = '1.420 preguntas y términos';
+      } else if (currentScope === 'tema') {
+        const sel = document.getElementById('select-tema');
+        label = sel.options[sel.selectedIndex].text.split('·')[1]?.trim() || sel.options[sel.selectedIndex].text;
+        stats = '120 preguntas y términos clave';
+      } else if (currentScope === 'apuntes') {
+        const sel = document.getElementById('select-apuntes');
+        label = sel.options[sel.selectedIndex].text.split('(')[0].replace('📑', '').trim();
+        stats = '65 conceptos extraídos de tu apunte';
+      }
+
+      document.getElementById('scope-current-badge').textContent = label;
+      document.getElementById('scope-stats-count').textContent = stats;
+      document.getElementById('active-scope-label').textContent = 'Modo: ' + label;
+      
+      const fighterSource = document.getElementById('fighter-source-text');
+      if (fighterSource) fighterSource.textContent = label;
+      const roscoSource = document.getElementById('rosco-source-text');
+      if (roscoSource) roscoSource.textContent = label;
+      const sopaSource = document.getElementById('sopa-source-text');
+      if (sopaSource) sopaSource.textContent = label;
+    }
+
+    // Game Switcher Logic
+    function switchGameMode(gameMode) {
+      currentGame = gameMode;
+
+      // Views
+      const viewFighter = document.getElementById('view-fighter');
+      const viewRosco = document.getElementById('view-rosco');
+      const viewSopa = document.getElementById('view-sopa');
+
+      // Cards
+      const cardFighter = document.getElementById('card-fighter');
+      const cardRosco = document.getElementById('card-rosco');
+      const cardSopa = document.getElementById('card-sopa');
+
+      // Badges
+      const badgeFighter = document.getElementById('badge-fighter');
+      const badgeRosco = document.getElementById('badge-rosco');
+      const badgeSopa = document.getElementById('badge-sopa');
+
+      // Tabs
+      const tabFighter = document.getElementById('tab-btn-fighter');
+      const tabRosco = document.getElementById('tab-btn-rosco');
+      const tabSopa = document.getElementById('tab-btn-sopa');
+
+      const titleBreadcrumb = document.getElementById('breadcrumb-game-title');
+
+      // Reset cards styling
+      [cardFighter, cardRosco, cardSopa].forEach(c => {
+        c.classList.remove('game-card-active', 'border-orange-400', 'border-purple-500', 'border-amber-500', 'ring-2', 'ring-purple-200', 'ring-amber-200', 'ring-orange-200');
+        c.classList.add('border-transparent');
+      });
+      badgeFighter.classList.add('hidden');
+      badgeRosco.classList.add('hidden');
+      badgeSopa.classList.add('hidden');
+
+      // Reset tabs
+      [tabFighter, tabRosco, tabSopa].forEach(t => {
+        t.className = 'px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition';
+      });
+
+      // Hide all views
+      viewFighter.classList.add('hidden');
+      viewRosco.classList.add('hidden');
+      viewSopa.classList.add('hidden');
+
+      if (gameMode === 'fighter') {
+        viewFighter.classList.remove('hidden');
+        cardFighter.classList.remove('border-transparent');
+        cardFighter.classList.add('game-card-active', 'border-orange-400');
+        badgeFighter.classList.remove('hidden');
+        tabFighter.className = 'px-2.5 py-1 rounded-lg bg-[#FCEFE7] text-[#8C3E14] font-semibold transition border border-orange-200';
+        if (titleBreadcrumb) titleBreadcrumb.textContent = 'Street Fighter: El Opositor vs. Tribunal';
+      } else if (gameMode === 'rosco') {
+        viewRosco.classList.remove('hidden');
+        cardRosco.classList.remove('border-transparent');
+        cardRosco.classList.add('game-card-active', 'border-purple-500', 'ring-2', 'ring-purple-200');
+        badgeRosco.classList.remove('hidden');
+        tabRosco.className = 'px-2.5 py-1 rounded-lg bg-[#F0EEF9] text-[#553396] font-semibold transition border border-[#D9D1F0]';
+        if (titleBreadcrumb) titleBreadcrumb.textContent = 'El Rosco Jurídico · 21 Letras Clave';
+        setTimeout(() => {
+          const input = document.getElementById('rosco-input');
+          if (input) input.focus();
+        }, 150);
+      } else if (gameMode === 'sopa') {
+        viewSopa.classList.remove('hidden');
+        cardSopa.classList.remove('border-transparent');
+        cardSopa.classList.add('game-card-active', 'border-amber-500', 'ring-2', 'ring-amber-200');
+        badgeSopa.classList.remove('hidden');
+        tabSopa.className = 'px-2.5 py-1 rounded-lg bg-[#FDF7E7] text-amber-900 font-semibold transition border border-[#F3E7C9]';
+        if (titleBreadcrumb) titleBreadcrumb.textContent = 'Sopa de Letras · Procedimiento Administrativo';
+      }
+
+      // Smooth scroll to arena
+      const anchor = document.getElementById('breadcrumb-game-title');
+      if (anchor) {
+        const topOffset = anchor.getBoundingClientRect().top + window.pageYOffset - 80;
+        window.scrollTo({ top: topOffset, behavior: 'smooth' });
+      }
+    }
+
+    /* ----------------------------------------------------
+       GAME 1: Street Opositor Fighter Logic & Questions Pool
+    ---------------------------------------------------- */
+    const fighterQuestions = [
+      {
+        question: "¿Se incluye el IVA al calcular el valor estimado de un contrato en la LCSP (Ley 9/2017)?",
+        options: [
+          { letter: "A", text: "Se incluye siempre como coste directo", correct: false },
+          { letter: "B", text: "No se incluye en ningún caso (art. 101 LCSP)", correct: true },
+          { letter: "C", text: "Solo en los contratos menores de suministros", correct: false }
+        ],
+        explanation: "¡Golpe crítico! Según el art. 101 LCSP, el cálculo del valor estimado de un contrato excluye taxativamente el IVA."
+      },
+      {
+        question: "¿Cuál es el plazo general para interponer un Recurso de Alzada contra un acto expreso?",
+        options: [
+          { letter: "A", text: "1 mes a contar desde el día siguiente a la notificación", correct: true },
+          { letter: "B", text: "2 meses ante la jurisdicción contenciosa", correct: false },
+          { letter: "C", text: "15 días hábiles según la LPACAP", correct: false }
+        ],
+        explanation: "¡Impacto directo! El art. 122 LPAC establece que el plazo para la interposición del recurso de alzada es de un mes si el acto fuera expreso."
+      },
+      {
+        question: "¿Qué carácter tiene el silencio administrativo con carácter general en los procedimientos iniciados a solicitud del interesado?",
+        options: [
+          { letter: "A", text: "Desestimatorio (negativo) por defecto en todo caso", correct: false },
+          { letter: "B", text: "Estimatorio (positivo), salvo ley o derecho de la UE en contrario", correct: true },
+          { letter: "C", text: "Caducidad automática del expediente en 3 meses", correct: false }
+        ],
+        explanation: "¡Combo perfecto! Según el art. 24 LPAC 39/2015, la regla general en solicitudes del interesado es el silencio estimatorio (positivo)."
+      },
+      {
+        question: "¿Cuál es el órgano superior colegiado del Gobierno según la Ley 50/1997?",
+        options: [
+          { letter: "A", text: "La Comisión General de Secretarios de Estado y Subsecretarios", correct: false },
+          { letter: "B", text: "El Consejo de Ministros", correct: true },
+          { letter: "C", text: "El Consejo de Estado", correct: false }
+        ],
+        explanation: "¡K.O. al Tribunal! El Consejo de Ministros es el órgano colegiado supremo que dirige la política nacional y la Administración."
+      }
+    ];
+
+    let bossHp = 100;
+    let playerHp = 100;
+    let roundCount = 0;
+    let currentFighterQIndex = 0;
+
+    function loadFighterQuestion(index) {
+      const q = fighterQuestions[index % fighterQuestions.length];
+      document.getElementById('question-text').textContent = q.question;
+      const container = document.getElementById('options-container');
+      container.innerHTML = '';
+
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'option-btn w-full text-left flex items-center gap-3.5 p-3 sm:p-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-purple-300 transition duration-150 shadow-2xs group focus:outline-none';
+        btn.onclick = () => handleAnswer(btn, opt.correct, q.explanation);
+        btn.innerHTML = `
+          <span class="w-7 h-7 shrink-0 rounded-md bg-[#F2EFF8] group-hover:bg-[#E6E1F4] text-[#553396] font-semibold text-xs flex items-center justify-center border border-[#E0DAEE]">
+            ${opt.letter}
+          </span>
+          <span class="text-sm font-medium text-slate-700 group-hover:text-slate-900">
+            ${opt.text}
+          </span>
+        `;
+        container.appendChild(btn);
+      });
+
+      document.getElementById('round-indicator-badge').textContent = `Ronda ${roundCount + 1}`;
+      document.getElementById('combat-banner-text').textContent = `ROUND ${roundCount + 1} / TU TURNO`;
+    }
+
+    function handleAnswer(buttonElement, isCorrect, explanation) {
+      const allButtons = document.querySelectorAll('.option-btn');
+      allButtons.forEach(btn => btn.disabled = true);
+
+      const feedback = document.getElementById('combat-feedback');
+      const feedbackText = document.getElementById('feedback-text');
+      const playerSprite = document.getElementById('player-sprite');
+      const bossSprite = document.getElementById('boss-sprite');
+      const bossBar = document.getElementById('boss-hp-bar');
+      const bossLabel = document.getElementById('boss-hp-label');
+      const playerBar = document.getElementById('player-hp-bar');
+      const playerLabel = document.getElementById('player-hp-label');
+
+      if (isCorrect) {
+        // Player attack animation
+        playerSprite.classList.add('translate-x-8');
+        setTimeout(() => playerSprite.classList.remove('translate-x-8'), 200);
+
+        // Boss damage animation & HP decrement
+        setTimeout(() => {
+          bossSprite.classList.add('opacity-40', 'translate-x-2');
+          bossHp = Math.max(0, bossHp - 35);
+          bossBar.style.width = bossHp + '%';
+          bossLabel.textContent = bossHp + ' HP';
+        }, 150);
+
+        setTimeout(() => bossSprite.classList.remove('opacity-40', 'translate-x-2'), 400);
+
+        buttonElement.classList.add('border-emerald-500', 'bg-emerald-50');
+        feedback.className = 'mt-4 p-3 rounded-xl text-xs font-semibold flex items-center justify-between bg-emerald-100 text-emerald-800 border border-emerald-300';
+        feedbackText.textContent = explanation || '¡Acierto! Has superado el criterio del Tribunal.';
+        feedback.classList.remove('hidden');
+
+        roundCount++;
+        document.getElementById('rounds-cleared-text').textContent = roundCount + ' rondas superadas';
+        document.getElementById('score-fighter-stat').textContent = `Récord: ${roundCount} rondas superadas`;
+      } else {
+        // Boss attack & Player takes damage
+        bossSprite.classList.add('-translate-x-8');
+        setTimeout(() => bossSprite.classList.remove('-translate-x-8'), 200);
+
+        setTimeout(() => {
+          playerSprite.classList.add('opacity-40', '-translate-x-2');
+          playerHp = Math.max(0, playerHp - 25);
+          playerBar.style.width = playerHp + '%';
+          playerLabel.textContent = playerHp + ' HP';
+        }, 150);
+
+        setTimeout(() => playerSprite.classList.remove('opacity-40', '-translate-x-2'), 400);
+
+        buttonElement.classList.add('border-rose-400', 'bg-rose-50');
+        feedback.className = 'mt-4 p-3 rounded-xl text-xs font-semibold flex items-center justify-between bg-rose-100 text-rose-800 border border-rose-300';
+        feedbackText.textContent = '¡Ataque fallido! El Tribunal Calificador te ha penalizado con un recorte de vida.';
+        feedback.classList.remove('hidden');
+      }
+
+      // Check Boss Defeat
+      if (bossHp <= 0) {
+        setTimeout(() => {
+          alert('🏆 ¡HAS SUPERADO LA OPOSICIÓN! Has derrotado al Tribunal Calificador en este bloque.');
+          bossHp = 100;
+          playerHp = 100;
+          bossBar.style.width = '100%';
+          playerBar.style.width = '100%';
+          bossLabel.textContent = '100 HP';
+          playerLabel.textContent = '100 HP';
+        }, 600);
+      }
+    }
+
+    function nextCombatQuestion() {
+      currentFighterQIndex++;
+      loadFighterQuestion(currentFighterQIndex);
+      document.getElementById('combat-feedback').classList.add('hidden');
+    }
+
+    /* ----------------------------------------------------
+       GAME 2: El Rosco de la Opo Data & Mechanics
+    ---------------------------------------------------- */
+    const roscoData = [
+      { letter: 'A', question: 'Declaración unilateral de voluntad de un órgano administrativo dictada en el ejercicio de una potestad administrativa y que produce efectos jurídicos.', answer: 'ACTO ADMINISTRATIVO', rule: 'Empieza por la letra A' },
+      { letter: 'B', question: 'Periódico oficial del Estado español mediante el cual se publican leyes, disposiciones y actos de inserción obligatoria.', answer: 'BOLETIN OFICIAL DEL ESTADO', rule: 'Empieza por la letra B' },
+      { letter: 'C', question: 'Extinción de una instancia o procedimiento por la inactividad de las partes durante el tiempo prefijado por la ley.', answer: 'CADUCIDAD', rule: 'Empieza por la letra C' },
+      { letter: 'D', question: 'Norma jurídica con rango de ley emanada por el Gobierno en virtud de delegación expresa de las Cortes Generales.', answer: 'DECRETO LEGISLATIVO', rule: 'Empieza por la letra D' },
+      { letter: 'E', question: 'Privilegio de la Administración que le permite llevar a efecto sus propios actos sin auxilio judicial inmediato.', answer: 'EJECUTIVIDAD', rule: 'Empieza por la letra E' },
+      { letter: 'F', question: 'Principio tributario constitucional que exige que la carga fiscal sea soportada de acuerdo con la capacidad económica.', answer: 'FISCALIDAD', rule: 'Contiene o empieza por F' },
+      { letter: 'G', question: 'Conjunto de medidas e instituciones que protegen y aseguran el cumplimiento de los derechos de los ciudadanos.', answer: 'GARANTIAS', rule: 'Empieza por la letra G' },
+      { letter: 'H', question: 'Reunión deliberativa o sesión formal del Parlamento para debatir proyectos legislativos.', answer: 'HEMICICLO', rule: 'Empieza por la letra H' },
+      { letter: 'I', question: 'Situación legal de una persona o cargo que le impide ejercer funciones públicas por parentesco o interés personal.', answer: 'INCOMPATIBILIDAD', rule: 'Empieza por la letra I' },
+      { letter: 'J', question: 'Poder del Estado encargado de administrar justicia y hacer cumplir las leyes.', answer: 'JUDICIAL', rule: 'Empieza por la letra J' },
+      { letter: 'L', question: 'Norma aprobada por las Cortes con rango superior a los reglamentos y subordinada solo a la Constitución.', answer: 'LEY', rule: 'Empieza por la letra L' },
+      { letter: 'M', question: 'Departamento ministerial o sede central de una rama del poder ejecutivo estatal.', answer: 'MINISTERIO', rule: 'Empieza por la letra M' },
+      { letter: 'N', question: 'Vicio del acto administrativo que carece de los requisitos formales indispensables para alcanzar su fin.', answer: 'NULIDAD', rule: 'Empieza por la letra N' },
+      { letter: 'O', question: 'Convocatoria y serie de exámenes para seleccionar al personal funcionario o estatutario.', answer: 'OPOSICION', rule: 'Empieza por la letra O' },
+      { letter: 'P', question: 'Período o término fijado para realizar una determinada actuación procesal o administrativa.', answer: 'PLAZO', rule: 'Empieza por la letra P' },
+      { letter: 'R', question: 'Medio de impugnación frente a un acto o resolución administrativa (ej. de alzada o reposición).', answer: 'RECURSO', rule: 'Empieza por la letra R' },
+      { letter: 'S', question: 'Ficción jurídica por la que el silencio de la Administración tiene efecto desestimatorio o estimatorio.', answer: 'SILENCIO ADMINISTRATIVO', rule: 'Empieza por la letra S' },
+      { letter: 'T', question: 'Colegio u órgano encargado de examinar y calificar a los aspirantes a una plaza pública.', answer: 'TRIBUNAL', rule: 'Empieza por la letra T' },
+      { letter: 'U', question: 'Principio constitucional de cohesión y unidad de la Nación española consagrado en el art. 2 CE.', answer: 'UNIDAD', rule: 'Empieza por la letra U' },
+      { letter: 'V', question: 'Trámite preceptivo que expresa la conformidad o el visto bueno de la intervención económica.', answer: 'VALIDACION', rule: 'Contiene la letra V' },
+      { letter: 'Z', question: 'Espacio físico o territorial delimitado bajo una ordenanza municipal especial.', answer: 'ZONA', rule: 'Empieza por la letra Z' },
+    ];
+
+    let roscoState = roscoData.map(d => ({ ...d, status: 'pending' })); // 'pending', 'hit', 'miss', 'passed'
+    let roscoCurrentIndex = 0;
+    let roscoHits = 0;
+    let roscoMisses = 0;
+
+    function initRoscoWheel() {
+      const circleContainer = document.getElementById('rosco-letters-circle');
+      circleContainer.innerHTML = '';
+      const total = roscoState.length;
+      const radius = 126; // px radius
+      const centerOffset = 160; // px center in 320x320 box
+
+      roscoState.forEach((item, index) => {
+        // angle in radians, starting from -pi/2 (top)
+        const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
+        const x = centerOffset + radius * Math.cos(angle) - 15;
+        const y = centerOffset + radius * Math.sin(angle) - 15;
+
+        const badge = document.createElement('button');
+        badge.type = 'button';
+        badge.id = `rosco-badge-${index}`;
+        badge.className = `absolute w-7 h-7 sm:w-8 sm:h-8 rounded-full text-xs font-bold flex items-center justify-center transition-all duration-200 border shadow-xs ${getRoscoBadgeClass(item.status, index === roscoCurrentIndex)}`;
+        badge.style.left = `${x}px`;
+        badge.style.top = `${y}px`;
+        badge.textContent = item.letter;
+        badge.onclick = () => {
+          roscoCurrentIndex = index;
+          renderRoscoCurrent();
+        };
+        circleContainer.appendChild(badge);
+      });
+
+      renderRoscoCurrent();
+    }
+
+    function getRoscoBadgeClass(status, isCurrent) {
+      let bg = 'bg-[#E5DFF4] text-[#4F307E] border-purple-300';
+      if (status === 'hit') bg = 'bg-emerald-500 text-white border-emerald-600';
+      else if (status === 'miss') bg = 'bg-rose-500 text-white border-rose-600';
+      else if (status === 'passed') bg = 'bg-amber-400 text-amber-950 border-amber-500';
+
+      if (isCurrent) {
+        bg += ' ring-4 ring-purple-300 scale-110 z-10';
+      }
+      return bg;
+    }
+
+    function renderRoscoCurrent() {
+      const current = roscoState[roscoCurrentIndex];
+      document.getElementById('rosco-center-letter').textContent = current.letter;
+      document.getElementById('rosco-pill-letter').textContent = current.letter;
+      document.getElementById('rosco-center-status').textContent = `${roscoCurrentIndex + 1} de ${roscoState.length} letras`;
+      document.getElementById('rosco-rule-text').textContent = current.rule;
+      document.getElementById('rosco-definition-text').textContent = current.question;
+      document.getElementById('rosco-input').value = '';
+      document.getElementById('rosco-feedback-box').className = 'hidden';
+
+      // update badge classes
+      roscoState.forEach((item, idx) => {
+        const badge = document.getElementById(`rosco-badge-${idx}`);
+        if (badge) {
+          badge.className = `absolute w-7 h-7 sm:w-8 sm:h-8 rounded-full text-xs font-bold flex items-center justify-center transition-all duration-200 border shadow-xs ${getRoscoBadgeClass(item.status, idx === roscoCurrentIndex)}`;
+        }
+      });
+    }
+
+    function submitRoscoAnswer() {
+      const input = document.getElementById('rosco-input');
+      const val = input.value.trim().toUpperCase();
+      if (!val) return;
+
+      const current = roscoState[roscoCurrentIndex];
+      const feedback = document.getElementById('rosco-feedback-box');
+      const feedbackMsg = document.getElementById('rosco-feedback-msg');
+
+      const isExact = val === current.answer || (current.answer.includes(val) && val.length > 3);
+
+      if (isExact) {
+        current.status = 'hit';
+        roscoHits++;
+        document.getElementById('rosco-hits').textContent = roscoHits;
+        feedback.className = 'mt-3 p-2.5 rounded-xl text-xs font-semibold flex items-center justify-between bg-emerald-100 text-emerald-800 border border-emerald-300';
+        feedbackMsg.textContent = `¡Correcto! Respuesta: ${current.answer}`;
+      } else {
+        current.status = 'miss';
+        roscoMisses++;
+        document.getElementById('rosco-misses').textContent = roscoMisses;
+        feedback.className = 'mt-3 p-2.5 rounded-xl text-xs font-semibold flex items-center justify-between bg-rose-100 text-rose-800 border border-rose-300';
+        feedbackMsg.textContent = `Incorrecto. La respuesta era: ${current.answer}`;
+      }
+
+      document.getElementById('score-rosco-stat').textContent = `${roscoHits} aciertos / ${roscoMisses} fallos`;
+
+      setTimeout(() => {
+        moveToNextRoscoLetter();
+      }, 1000);
+    }
+
+    function passRoscoWord() {
+      const current = roscoState[roscoCurrentIndex];
+      if (current.status === 'pending') {
+        current.status = 'passed';
+      }
+      moveToNextRoscoLetter();
+    }
+
+    function moveToNextRoscoLetter() {
+      let nextIdx = (roscoCurrentIndex + 1) % roscoState.length;
+      let searched = 0;
+      while ((roscoState[nextIdx].status === 'hit' || roscoState[nextIdx].status === 'miss') && searched < roscoState.length) {
+        nextIdx = (nextIdx + 1) % roscoState.length;
+        searched++;
+      }
+      roscoCurrentIndex = nextIdx;
+      renderRoscoCurrent();
+    }
+
+    /* ----------------------------------------------------
+       GAME 3: Sopa de Letras Data & Mechanics
+    ---------------------------------------------------- */
+    const sopaGridLetters = [
+      ['S','I','L','E','N','C','I','O','X','T'],
+      ['P','A','R','E','C','U','R','S','O','A'],
+      ['L','E','Y','B','O','E','A','Z','C','B'],
+      ['A','C','A','D','U','C','I','D','A','D'],
+      ['Z','P','A','C','T','O','F','O','P','O'],
+      ['O','L','A','L','Z','A','D','A','M','N'],
+      ['X','A','U','D','I','E','N','C','I','A'],
+      ['T','Z','J','U','R','I','D','I','C','O'],
+      ['E','O','R','G','A','N','O','P','Q','R'],
+      ['M','P','L','I','E','G','O','S','T','U']
+    ];
+
+    const sopaWords = [
+      { id: 'silencio', word: 'SILENCIO', start: [0,0], end: [0,7], found: false, desc: 'Ficción jurídica ante la inactividad' },
+      { id: 'recurso', word: 'RECURSO', start: [1,2], end: [1,8], found: false, desc: 'Medio impugnativo administrativo' },
+      { id: 'caducidad', word: 'CADUCIDAD', start: [3,1], end: [3,9], found: false, desc: 'Extinción de procedimiento por inactividad' },
+      { id: 'plazo', word: 'PLAZO', start: [1,0], end: [5,0], found: false, desc: 'Término temporal vinculante' },
+      { id: 'alzada', word: 'ALZADA', start: [5,2], end: [5,7], found: false, desc: 'Recurso jerárquico preceptivo' },
+      { id: 'boe', word: 'BOE', start: [2,3], end: [2,5], found: false, desc: 'Boletín Oficial del Estado' }
+    ];
+
+    let selectedCells = [];
+    let sopaFoundCount = 0;
+
+    function initSopa() {
+      const grid = document.getElementById('wordsearch-grid');
+      grid.innerHTML = '';
+
+      for (let r = 0; r < 10; r++) {
+        for (let c = 0; c < 10; c++) {
+          const letter = sopaGridLetters[r][c];
+          const tile = document.createElement('button');
+          tile.type = 'button';
+          tile.id = `tile-${r}-${c}`;
+          tile.dataset.r = r;
+          tile.dataset.c = c;
+          tile.textContent = letter;
+          tile.className = 'w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center font-mono font-bold text-xs sm:text-sm rounded-lg bg-white text-slate-800 border border-slate-200 hover:bg-amber-100/70 transition shadow-2xs select-none';
+          tile.onclick = () => onTileClick(r, c);
+          grid.appendChild(tile);
+        }
+      }
+
+      renderSopaWordList();
+    }
+
+    function renderSopaWordList() {
+      const container = document.getElementById('sopa-word-list');
+      container.innerHTML = '';
+      sopaWords.forEach(w => {
+        const item = document.createElement('div');
+        item.className = `p-2.5 rounded-xl border flex items-center justify-between transition cursor-pointer ${
+          w.found 
+            ? 'bg-emerald-50 border-emerald-200 text-emerald-900 line-through' 
+            : 'bg-white border-slate-200 text-slate-700 hover:border-amber-300'
+        }`;
+        item.onclick = () => hintSopaWord(w.id);
+        item.innerHTML = `
+          <div>
+            <span class="font-mono font-bold tracking-wider">${w.word}</span>
+            <span class="block text-[10px] text-slate-400 no-underline">${w.desc}</span>
+          </div>
+          <span class="w-5 h-5 rounded-full flex items-center justify-center text-xs ${
+            w.found ? 'bg-emerald-500 text-white font-bold' : 'bg-slate-100 text-slate-400'
+          }">
+            ${w.found ? '✓' : '•'}
+          </span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function onTileClick(r, c) {
+      const tile = document.getElementById(`tile-${r}-${c}`);
+      const alreadyIdx = selectedCells.findIndex(cell => cell.r === r && cell.c === c);
+
+      if (alreadyIdx > -1) {
+        selectedCells.splice(alreadyIdx, 1);
+        tile.classList.remove('bg-amber-300', 'text-amber-950', 'ring-2', 'ring-amber-400');
+      } else {
+        selectedCells.push({ r, c, letter: sopaGridLetters[r][c] });
+        tile.classList.add('bg-amber-300', 'text-amber-950', 'ring-2', 'ring-amber-400');
+      }
+
+      checkSopaSelected();
+    }
+
+    function checkSopaSelected() {
+      const currentSelectedWord = selectedCells.map(c => c.letter).join('');
+      const reverseWord = selectedCells.map(c => c.letter).reverse().join('');
+
+      const matched = sopaWords.find(w => !w.found && (w.word === currentSelectedWord || w.word === reverseWord));
+
+      if (matched) {
+        matched.found = true;
+        sopaFoundCount++;
+        document.getElementById('sopa-found-count').textContent = sopaFoundCount;
+        document.getElementById('score-sopa-stat').textContent = `${sopaFoundCount} de ${sopaWords.length} encontrados`;
+
+        // Mark permanently
+        selectedCells.forEach(cell => {
+          const t = document.getElementById(`tile-${cell.r}-${cell.c}`);
+          t.className = 'w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center font-mono font-bold text-xs sm:text-sm rounded-lg bg-emerald-200 text-emerald-950 border border-emerald-400 shadow-2xs select-none';
+        });
+
+        selectedCells = [];
+        renderSopaWordList();
+      }
+    }
+
+    function hintSopaWord(wordId) {
+      const target = sopaWords.find(w => w.id === wordId);
+      if (!target || target.found) return;
+
+      const [r1, c1] = target.start;
+      const tile = document.getElementById(`tile-${r1}-${c1}`);
+      tile.classList.add('animate-bounce', 'bg-amber-200');
+      setTimeout(() => {
+        tile.classList.remove('animate-bounce', 'bg-amber-200');
+      }, 1500);
+    }
+
+    function autoSolveSopa() {
+      const remaining = sopaWords.find(w => !w.found);
+      if (!remaining) return;
+
+      const [r1, c1] = remaining.start;
+      const [r2, c2] = remaining.end;
+
+      const rStep = Math.sign(r2 - r1);
+      const cStep = Math.sign(c2 - c1);
+      const len = Math.max(Math.abs(r2 - r1), Math.abs(c2 - c1));
+
+      for (let i = 0; i <= len; i++) {
+        const r = r1 + i * rStep;
+        const c = c1 + i * cStep;
+        const tile = document.getElementById(`tile-${r}-${c}`);
+        tile.className = 'w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center font-mono font-bold text-xs sm:text-sm rounded-lg bg-emerald-200 text-emerald-950 border border-emerald-400 shadow-2xs select-none';
+      }
+
+      remaining.found = true;
+      sopaFoundCount++;
+      document.getElementById('sopa-found-count').textContent = sopaFoundCount;
+      document.getElementById('score-sopa-stat').textContent = `${sopaFoundCount} de ${sopaWords.length} encontrados`;
+      renderSopaWordList();
+    }
+
+    function resetSopaGrid() {
+      sopaWords.forEach(w => w.found = false);
+      selectedCells = [];
+      sopaFoundCount = 0;
+      document.getElementById('sopa-found-count').textContent = '0';
+      initSopa();
+    }
+
+    // Initialize auxiliary games on DOM ready
+    window.addEventListener('DOMContentLoaded', () => {
+      loadFighterQuestion(0);
+      initRoscoWheel();
+      initSopa();
+    });
+  </script>
+<!-- END: Game Interactivity Script -->
+
+
+</body></html>
