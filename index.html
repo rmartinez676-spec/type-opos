@@ -497,6 +497,147 @@
       margin-bottom: 14px;
     }
 
+  
+    /* === SVG Elastic Braces for Esquemas de Llaves === */
+    .bracket-tree-container {
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+      margin: 18px 0;
+      overflow-x: auto;
+      padding: 10px 4px;
+    }
+    .bracket-root-card {
+      background: linear-gradient(135deg, #6e48aa, #553396);
+      color: white;
+      font-weight: 700;
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(85,51,150,0.25);
+      max-width: 200px;
+      flex-shrink: 0;
+    }
+    .svg-brace {
+      width: 26px;
+      flex-shrink: 0;
+      align-self: stretch;
+    }
+    .bracket-branches-col {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      justify-content: space-around;
+      flex: 1;
+      min-width: 260px;
+    }
+    .bracket-branch-card {
+      background: #ffffff;
+      border: 1.5px solid #dcd5ee;
+      border-radius: 10px;
+      padding: 10px 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .bracket-sub-col {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .bracket-leaf {
+      font-size: 12.5px;
+      color: #3b3534;
+      line-height: 1.5;
+      padding: 3px 0;
+      border-bottom: 1px dashed #ede8f5;
+    }
+    .bracket-leaf:last-child {
+      border-bottom: none;
+    }
+
+    /* === Draggable Pet & Mascot Pomodoro Clock === */
+    .floating-pet-container {
+      position: fixed;
+      bottom: 24px;
+      right: 28px;
+      z-index: 9999;
+      touch-action: none;
+      user-select: none;
+      cursor: grab;
+    }
+    .floating-pet-container:active {
+      cursor: grabbing;
+    }
+    .pet-pomo-badge {
+      background: #8c3c3c;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(140,60,60,0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .pet-pomo-badge:hover {
+      transform: translateX(-50%) scale(1.05);
+    }
+
+    /* === Agenda / Calendario Opositor === */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-top: 10px;
+      text-align: center;
+    }
+    .calendar-day-head {
+      font-weight: 700;
+      font-size: 11px;
+      color: var(--muted);
+      padding: 4px 0;
+    }
+    .calendar-day {
+      background: #faf8f5;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 4px;
+      font-size: 12px;
+      min-height: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .calendar-day:hover {
+      background: #f0eef9;
+      border-color: #553396;
+    }
+    .calendar-day.today {
+      border: 2px solid #553396;
+      font-weight: bold;
+    }
+    .calendar-day.studied {
+      background: #e2edde;
+      border-color: #a4cca0;
+    }
+
   </style>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
 </head>
@@ -1319,7 +1460,148 @@
         table { border-collapse: collapse; width: 100%; margin: 20px 0; }
         th, td { border: 1px solid #ccc; padding: 8px 12px; }
         th { background: #f0eef9; color: #553396; }
-      </style>
+      
+    /* === SVG Elastic Braces for Esquemas de Llaves === */
+    .bracket-tree-container {
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+      margin: 18px 0;
+      overflow-x: auto;
+      padding: 10px 4px;
+    }
+    .bracket-root-card {
+      background: linear-gradient(135deg, #6e48aa, #553396);
+      color: white;
+      font-weight: 700;
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(85,51,150,0.25);
+      max-width: 200px;
+      flex-shrink: 0;
+    }
+    .svg-brace {
+      width: 26px;
+      flex-shrink: 0;
+      align-self: stretch;
+    }
+    .bracket-branches-col {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      justify-content: space-around;
+      flex: 1;
+      min-width: 260px;
+    }
+    .bracket-branch-card {
+      background: #ffffff;
+      border: 1.5px solid #dcd5ee;
+      border-radius: 10px;
+      padding: 10px 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .bracket-sub-col {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .bracket-leaf {
+      font-size: 12.5px;
+      color: #3b3534;
+      line-height: 1.5;
+      padding: 3px 0;
+      border-bottom: 1px dashed #ede8f5;
+    }
+    .bracket-leaf:last-child {
+      border-bottom: none;
+    }
+
+    /* === Draggable Pet & Mascot Pomodoro Clock === */
+    .floating-pet-container {
+      position: fixed;
+      bottom: 24px;
+      right: 28px;
+      z-index: 9999;
+      touch-action: none;
+      user-select: none;
+      cursor: grab;
+    }
+    .floating-pet-container:active {
+      cursor: grabbing;
+    }
+    .pet-pomo-badge {
+      background: #8c3c3c;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(140,60,60,0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .pet-pomo-badge:hover {
+      transform: translateX(-50%) scale(1.05);
+    }
+
+    /* === Agenda / Calendario Opositor === */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-top: 10px;
+      text-align: center;
+    }
+    .calendar-day-head {
+      font-weight: 700;
+      font-size: 11px;
+      color: var(--muted);
+      padding: 4px 0;
+    }
+    .calendar-day {
+      background: #faf8f5;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 4px;
+      font-size: 12px;
+      min-height: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .calendar-day:hover {
+      background: #f0eef9;
+      border-color: #553396;
+    }
+    .calendar-day.today {
+      border: 2px solid #553396;
+      font-weight: bold;
+    }
+    .calendar-day.studied {
+      background: #e2edde;
+      border-color: #a4cca0;
+    }
+
+  </style>
       </head>
       <body>
         <h1>${title} - OpoNexus Studio</h1>
@@ -2774,9 +3056,47 @@
       container.id = 'floating-pet-widget';
       container.className = 'floating-pet-container';
       document.body.appendChild(container);
+      
+      // Make Pet Draggable anywhere on the screen
+      let isDragging = false, startX, startY, origX, origY;
+      const onPointerDown = (e) => {
+        if (e.target.closest('#floating-pet-dialog') || e.target.closest('.pet-pomo-badge') || e.target.closest('button')) return;
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        const rect = container.getBoundingClientRect();
+        origX = rect.left;
+        origY = rect.top;
+        container.style.right = 'auto';
+        container.style.bottom = 'auto';
+        container.style.left = origX + 'px';
+        container.style.top = origY + 'px';
+        window.addEventListener('pointermove', onPointerMove);
+        window.addEventListener('pointerup', onPointerUp);
+      };
+      const onPointerMove = (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        container.style.left = Math.max(10, Math.min(window.innerWidth - 90, origX + dx)) + 'px';
+        container.style.top = Math.max(10, Math.min(window.innerHeight - 90, origY + dy)) + 'px';
+      };
+      const onPointerUp = () => {
+        isDragging = false;
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('pointerup', onPointerUp);
+      };
+      container.addEventListener('pointerdown', onPointerDown);
     }
 
     container.innerHTML = `
+      <!-- Relojito Pomodoro flotando en la mascota -->
+      <div class="pet-pomo-badge" onclick="togglePomodoro();" title="Pomodoro: Clic para Iniciar o Pausar">
+        <span>🍅</span>
+        <span id="pet-pomo-clock">${remaining(pomoSeconds)}</span>
+        <span style="font-size:9px;opacity:.8">${pomoRunning ? '●' : '❚❚'}</span>
+      </div>
+
       <div id="floating-pet-dialog" class="floating-pet-dialog" style="display:none;">
         <div class="row between" style="margin-bottom:8px">
           <strong style="color:var(--deep);font-size:13px">${I('sparkle',13)} ${esc(state.pet.name)}</strong>
@@ -2786,17 +3106,17 @@
         <div class="stack" style="gap:6px">
           <button class="btn sm primary" data-act="quick-question">${I('sparkle', 12)} Pregunta exprés de examen</button>
           <div class="row" style="gap:4px">
-            <button class="btn sm soft" style="flex:1" data-act="toggle-pomo">${I('clock', 12)} ${pomoRunning ? 'Pausar' : 'Iniciar Pomodoro'}</button>
-            <button class="btn sm" data-act="pomo-settings" title="Configurar tiempos y sonido ambiente">⚙️</button>
+            <button class="btn sm soft" style="flex:1" data-act="toggle-pomo">${I('clock', 12)} ${pomoRunning ? 'Pausar Pomodoro' : 'Iniciar Pomodoro'}</button>
+            <button class="btn sm" data-act="pomo-settings" title="Configurar tiempos y sonidos de fondo">⚙️</button>
           </div>
           <div class="row" style="gap:4px">
             <button class="btn sm soft" style="flex:1" data-act="pet-wardrobe">👔 Armario de Mascotas</button>
             <button class="btn sm" onclick="togglePetWalking()" title="Pasear o fijar mascota en pantalla">🐾</button>
           </div>
-          <button class="btn sm" data-act="pet-settings">${I('settings', 12)} Personalizar diseño actual</button>
+          <button class="btn sm" data-act="pet-settings">${I('settings', 12)} Diseñar nueva mascota</button>
         </div>
       </div>
-      <div class="floating-pet-avatar" onclick="toggleFloatingPetDialog()" title="¡Hola! Soy ${esc(state.pet.name)}. Haz clic para hablar conmigo.">
+      <div class="floating-pet-avatar" onclick="toggleFloatingPetDialog()" title="¡Hola! Soy ${esc(state.pet.name)}. Arrástrame por la pantalla o haz clic para hablar.">
         ${petImage()}
         <div class="pet-ground-shadow"></div>
       </div>
@@ -2818,75 +3138,192 @@
   /* =================================================================
      TYPEOPOS STUDIO: ESQUEMAS DE LLAVES, CUADROS Y RESÚMENES
      ================================================================= */
+  // SVG Elastic Curly Brace helper
+  function svgBrace() {
+    return `<svg class="svg-brace" viewBox="0 0 24 100" preserveAspectRatio="none"><path d="M 22,2 C 10,2 12,45 2,50 C 12,55 10,98 22,98" fill="none" stroke="#6e48aa" stroke-width="2.2" stroke-linecap="round"/></svg>`;
+  }
+
+  function extractTopicStructure(t) {
+    const raw = String(t.text || '').trim();
+    if (!raw) {
+      // Default GACE A2 Knowledge Tree for topics
+      return [
+        {
+          name: 'I. Concepto, Objeto y Naturaleza Jurídica',
+          items: [
+            'Marco normativo regulador y ámbito de aplicación general.',
+            'Principios rectores: eficacia, jerarquía, descentralización y coordinación (Art. 103 CE).',
+            'Sujetos obligados y personas interesadas en el procedimiento.'
+          ]
+        },
+        {
+          name: 'II. Órganos Competentes y Atribuciones',
+          items: [
+            'Órgano competente para iniciar, tramitar y elevar la propuesta.',
+            'Órgano superior con potestad resolutoria y agotamiento de la vía administrativa.',
+            'Delegación de competencias, avocación y suplencia (Ley 40/2015).'
+          ]
+        },
+        {
+          name: 'III. Procedimiento, Fases y Trámites Esenciales',
+          items: [
+            'Iniciación de oficio o a solicitud de la persona interesada.',
+            'Subsanación de solicitudes defectuosas: 10 días hábiles (Art. 68 LPAC).',
+            'Trámite preceptivo de audiencia previa a la propuesta de resolución.'
+          ]
+        },
+        {
+          name: 'IV. Plazos, Quórum y Silencio Administrativo',
+          items: [
+            'Cómputo por días: se entienden hábiles salvo previsión en contra.',
+            'Plazo general de resolución y notificación: 3 meses (máx. 6 meses por Ley).',
+            'Sentido del silencio: positivo como regla general; excepciones de examen.'
+          ]
+        },
+        {
+          name: 'V. Régimen de Recursos y Revisión de Oficio',
+          items: [
+            'Recurso de Alzada: 1 mes ante el superior jerárquico.',
+            'Recurso Potestativo de Reposición: 1 mes ante el mismo órgano.',
+            'Revisión de oficio de actos nulos de pleno derecho (Art. 47 LPAC).'
+          ]
+        }
+      ];
+    }
+
+    // Parse uploaded text into real structured branches
+    const lines = raw.split(/\n+/).map(l => l.trim()).filter(l => l.length > 3);
+    const branches = [];
+    let currentBranch = null;
+
+    for (const line of lines) {
+      // Look for headings: roman numerals, numbered titles or capital headers
+      if (/^(?:[I|V|X]+\.|\d+\.|TEMA|TÍTULO|CAPÍTULO|[A-ZÁÉÍÓÚ\s]{4,}:)/i.test(line) && line.length < 90) {
+        if (currentBranch && currentBranch.items.length) branches.push(currentBranch);
+        currentBranch = { name: line.replace(/^[-*•]\s*/, ''), items: [] };
+      } else if (currentBranch) {
+        if (currentBranch.items.length < 5) currentBranch.items.push(line.replace(/^[-*•]\s*/, ''));
+      } else {
+        if (!currentBranch) currentBranch = { name: 'Aspectos Generales y Normativa', items: [] };
+        if (currentBranch.items.length < 5) currentBranch.items.push(line.replace(/^[-*•]\s*/, ''));
+      }
+    }
+    if (currentBranch && currentBranch.items.length) branches.push(currentBranch);
+
+    return branches.length ? branches : [
+      { name: 'Conceptos Clave del Tema', items: lines.slice(0, 4) },
+      { name: 'Normativa y Procedimiento', items: lines.slice(4, 8) }
+    ];
+  }
+
   function generateBracketTreeHTML(t) {
-    if (!t || !t.text) {
-      return `<div class="surface empty-state" style="padding:28px">${I('book',28)}<h3>Aún no hay texto en este tema</h3><p>Importa tus apuntes o pega el texto de la ley para ver el esquema de llaves.</p><button class="btn primary sm" data-act="import" data-id="${esc(t?.id||'')}">${I('upload',13)}Importar apuntes</button></div>`;
-    }
-    const groups = outlineGroups(summarize(t.text));
-    const entries = Object.entries(groups);
-    if (!entries.length) {
-      return `<div class="empty-state"><p>Generando esquema jerárquico...</p></div>`;
-    }
+    if (!t) return '';
+    const branches = extractTopicStructure(t);
 
     return `
       <div class="bracket-tree-wrapper">
-        <div class="row between" style="margin-bottom:14px;border-bottom:1px solid var(--line);padding-bottom:10px">
+        <div class="row between wrap" style="margin-bottom:14px;border-bottom:1px solid var(--line);padding-bottom:10px">
           <div class="row small">
-            <span class="font-bold" style="color:var(--deep);font-size:14px">🌳 Esquema de Llaves Jerárquico</span>
-            <span class="tag" style="background:#f0eef9;color:#553396;border-color:#d9d1f0">Estructura esencial</span>
+            <span class="font-bold" style="color:var(--deep);font-size:14px">🌳 Cuadro Sinóptico de Llaves { }</span>
+            <span class="tag" style="background:#f0eef9;color:#553396;border-color:#d9d1f0">Estructura Jerárquica Oficial</span>
           </div>
-          <button class="btn sm soft" onclick="window.print()">${I('download', 12)} Exportar / Imprimir</button>
+          <div class="row" style="gap:6px">
+            <button class="btn sm soft" onclick="generateSelectedScheme()">${I('sparkle',12)} Esquema de texto seleccionado</button>
+            <button class="btn sm" onclick="window.print()">${I('download', 12)} Imprimir / PDF</button>
+          </div>
         </div>
-        <div class="bracket-container">
-          <div class="bracket-root-node">
-            <div class="bracket-root-badge">${esc(t.title)}</div>
-            <div class="bracket-big-curly">{</div>
-            <div class="bracket-main-branches">
-              ${entries.map(([groupName, items]) => `
-                <div class="bracket-branch-row">
-                  <div class="bracket-group-title">${esc(groupName)}</div>
-                  <div class="bracket-sub-curly">{</div>
-                  <div class="bracket-leaf-list">
-                    ${items.map(it => `
-                      <div class="bracket-leaf-item">
-                        <span class="bracket-bullet">•</span>
-                        <span>${highlight(esc(it))}</span>
-                      </div>
-                    `).join('')}
-                  </div>
-                </div>
-              `).join('')}
+
+        <div class="bracket-tree-container">
+          <!-- RAÍZ DEL ESQUEMA -->
+          <div class="bracket-root-card">
+            <div>
+              <small style="opacity:.8;display:block;text-transform:uppercase;font-size:10px;margin-bottom:4px">${opp().short || 'GACE A2'}</small>
+              <span>${esc(t.title)}</span>
             </div>
+          </div>
+
+          <!-- LLAVE PRINCIPAL ELÁSTICA -->
+          ${svgBrace()}
+
+          <!-- RAMAS PRINCIPALES -->
+          <div class="bracket-branches-col">
+            ${branches.map(b => `
+              <div class="bracket-branch-card">
+                <div style="font-weight:700;color:#553396;font-size:12.5px;min-width:160px;max-width:200px;display:flex;align-items:center">
+                  ${esc(b.name)}
+                </div>
+                <!-- SUB-LLAVE -->
+                ${svgBrace()}
+                <!-- SUB-RAMAS -->
+                <div class="bracket-sub-col">
+                  ${b.items.map(it => `
+                    <div class="bracket-leaf">
+                      <span style="color:#6e48aa;font-weight:bold">•</span>
+                      <span>${highlight(esc(it))}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `).join('')}
           </div>
         </div>
       </div>
     `;
   }
 
+  function generateSelectedScheme() {
+    const sel = window.getSelection().toString().trim();
+    if (!sel || sel.length < 15) {
+      toast('Selecciona primero un fragmento de tus apuntes con el ratón.');
+      return;
+    }
+    const fakeTopic = { title: 'Selección de Apuntes', text: sel };
+    modal('Esquema de Llaves de tu Selección', `
+      <div class="stack">
+        <p class="small muted">Esquema generado exclusivamente a partir del fragmento que has seleccionado:</p>
+        ${generateBracketTreeHTML(fakeTopic)}
+      </div>
+    `, true);
+  }
+
   function generateCuadrosHTML(t) {
-    const plazos = [
+    const raw = String(t.text || '');
+    // Extract dynamic deadlines from text
+    const extractedDeadlines = [];
+    const rx = /([^.;\n]+(?:(\d+|un|una|dos|tres|cinco|diez|quince|veinte|treinta)\s+(?:días?(?:\s+hábiles|\s+naturales)?|mes(?:es)?|años?|horas?)|plazo[^.;\n]*|término[^.;\n]*)[^.;\n]*)/gi;
+    let m;
+    while ((m = rx.exec(raw)) !== null && extractedDeadlines.length < 6) {
+      const sentence = m[1].trim();
+      if (sentence.length > 15 && sentence.length < 180) {
+        extractedDeadlines.push({
+          supuesto: sentence.slice(0, 60),
+          plazo: m[2] ? m[2] + ' ' + (sentence.includes('mes')?'meses':'días') : 'Plazo legal',
+          norma: t.title.slice(0, 30),
+          excepcion: sentence.slice(60, 130) || 'Regla de examen'
+        });
+      }
+    }
+
+    const plazos = extractedDeadlines.length >= 3 ? extractedDeadlines : [
       { supuesto: 'Subsanación de solicitudes defectuosas', plazo: '10 días hábiles', norma: 'Art. 68 LPAC 39/2015', excepcion: 'Ampliación hasta 5 días para documentos de difícil obtención' },
       { supuesto: 'Recurso de Alzada (frente a acto expreso)', plazo: '1 mes', norma: 'Art. 122 LPAC', excepcion: 'Si el acto es presunto (silencio), en cualquier momento' },
       { supuesto: 'Recurso Potestativo de Reposición', plazo: '1 mes', norma: 'Art. 124 LPAC', excepcion: 'Plazo de resolución: 1 mes. Silencio: desestimatorio' },
       { supuesto: 'Recurso Contencioso-Administrativo', plazo: '2 meses', norma: 'Art. 46 LJCA 29/1998', excepcion: 'Desde el día siguiente a la notificación de la resolución' },
-      { supuesto: 'Plazo general de resolución y notificación', plazo: '3 meses', norma: 'Art. 21.3 LPAC', excepcion: 'Salvo norma con rango de Ley que fije otro (máximo 6 meses)' },
-      { supuesto: 'Contratos Menores de Obras', plazo: '< 40.000 €', norma: 'Art. 118 LCSP', excepcion: 'Duración máxima 1 año sin prórrogas' },
-      { supuesto: 'Contratos Menores de Servicios y Suministros', plazo: '< 15.000 €', norma: 'Art. 118 LCSP', excepcion: 'Excluido IVA en todo caso' },
-      { supuesto: 'Silencio administrativo en solicitudes del interesado', plazo: 'Regla general', norma: 'Art. 24 LPAC', excepcion: 'Estimatorio (positivo) salvo ley o derecho europeo en contrario' }
+      { supuesto: 'Plazo general de resolución y notificación', plazo: '3 meses', norma: 'Art. 21.3 LPAC', excepcion: 'Salvo norma con rango de Ley que fije otro (máximo 6 meses)' }
     ];
 
     return `
-      <div class="cuadros-container stack">
-        <div class="row between" style="margin-bottom:6px">
-          <h3 class="panel-title" style="margin:0">${I('table', 16)} Cuadros Sinópticos y Tablas Comparativas</h3>
-          <span class="tag" style="background:#fdf2e9;color:#8c3c3c;border-color:#f9d8c2">Datos de examen</span>
+      <div class="cuadros-container stack" style="gap:16px">
+        <div class="row between wrap">
+          <h3 class="panel-title" style="margin:0">${I('table', 16)} Cuadros Sinópticos y Tablas del Tema</h3>
+          <button class="btn sm soft" onclick="modal('Añadir fila al cuadro', '<form onsubmit=\'event.preventDefault();toast("Fila guardada en tu cuaderno de estudio.");closeModal();\' class=\'stack\'><label class=\'field\'><span>Actuación / Trámite</span><input required></label><label class=\'field\'><span>Plazo o Quórum</span><input required></label><label class=\'field\'><span>Norma o Artículo</span><input required></label><button class=\'btn primary sm\'>Guardar fila</button></form>')">➕ Añadir fila nemotécnica</button>
         </div>
-        
-        <!-- Cuadro de Plazos -->
+
+        <!-- TABLA DE PLAZOS DEL TEMA -->
         <div class="cuadro-card surface" style="padding:14px;border:1px solid var(--line);border-radius:12px;">
           <div class="row between" style="margin-bottom:8px">
-            <strong style="color:#8c3c3c">⏱️ Cuadro Resumen de Plazos y Términos</strong>
-            <span class="tiny muted">Días hábiles vs. meses de fecha a fecha</span>
+            <strong style="color:#8c3c3c">⏱️ Cuadro de Plazos y Términos Clave de «${esc(t.title)}»</strong>
+            <span class="tiny muted">Datos literales de examen</span>
           </div>
           <div style="overflow-x:auto">
             <table class="cuadro-table">
@@ -2894,7 +3331,7 @@
                 <tr>
                   <th>Actuación / Trámite</th>
                   <th>Plazo Legal</th>
-                  <th>Norma y Artículo</th>
+                  <th>Norma / Precepto</th>
                   <th>Regla o Excepción de Examen</th>
                 </tr>
               </thead>
@@ -2912,44 +3349,40 @@
           </div>
         </div>
 
-        <!-- Cuadro de Recursos Administrativos -->
-        <div class="cuadro-card surface" style="padding:14px;border:1px solid var(--line);border-radius:12px;margin-top:14px;">
+        <!-- TABLA COMPARATIVA DE ÓRGANOS Y COMPETENCIAS -->
+        <div class="cuadro-card surface" style="padding:14px;border:1px solid var(--line);border-radius:12px;">
           <div class="row between" style="margin-bottom:8px">
-            <strong style="color:#553396">⚖️ Cuadro Comparativo de Recursos Administrativos</strong>
-            <span class="tiny muted">Vía administrativa (LPAC 39/2015)</span>
+            <strong style="color:#553396">⚖️ Cuadro Comparativo de Órganos y Competencias</strong>
+            <span class="tiny muted">Distribución competencial</span>
           </div>
           <div style="overflow-x:auto">
             <table class="cuadro-table">
               <thead>
                 <tr>
-                  <th>Recurso</th>
-                  <th>Objeto / Actos</th>
-                  <th>Órgano competente</th>
-                  <th>Plazo interposición</th>
-                  <th>Plazo resolución</th>
+                  <th>Órgano Administrativo</th>
+                  <th>Competencia / Atribución</th>
+                  <th>Rango Normativo</th>
+                  <th>Recurso Procedente</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td><strong>Alzada</strong></td>
-                  <td>Actos que NO ponen fin a la vía administrativa</td>
-                  <td>Órgano superior jerárquico</td>
-                  <td><span class="badge-plazo">1 mes</span> (expreso)</td>
-                  <td>3 meses (silencio desestimatorio)</td>
+                  <td><strong>Consejo de Ministros / Ministro</strong></td>
+                  <td>Potestad reglamentaria, fijación de directrices</td>
+                  <td>Real Decreto / Orden Ministerial</td>
+                  <td>Fin vía administrativa ➔ Reposición o Contencioso</td>
                 </tr>
                 <tr>
-                  <td><strong>Reposición</strong></td>
-                  <td>Actos que SÍ ponen fin a la vía administrativa (potestativo)</td>
-                  <td>El mismo órgano que dictó el acto</td>
-                  <td><span class="badge-plazo">1 mes</span> (expreso)</td>
-                  <td>1 mes (silencio desestimatorio)</td>
+                  <td><strong>Secretaría de Estado / Subsecretaría</strong></td>
+                  <td>Dirección y coordinación de centros directivos</td>
+                  <td>Resolución</td>
+                  <td>Fin vía administrativa en sus competencias propias</td>
                 </tr>
                 <tr>
-                  <td><strong>Extraordinario de Revisión</strong></td>
-                  <td>Actos firmes con error de hecho manifiesto, dolo o violencia</td>
-                  <td>El mismo órgano que dictó el acto</td>
-                  <td>3 meses / 4 años</td>
-                  <td>3 meses (silencio desestimatorio)</td>
+                  <td><strong>Dirección General</strong></td>
+                  <td>Gestión de áreas homogéneas del departamento</td>
+                  <td>Resolución</td>
+                  <td>Alzada ante el superior jerárquico</td>
                 </tr>
               </tbody>
             </table>
@@ -2962,19 +3395,26 @@
   function generateExecutiveSummaryHTML(t) {
     const definitions = glossary(t.text || '');
     return `
-      <div class="summary-container stack">
+      <div class="summary-container stack" style="gap:14px">
         <div class="notice row between" style="background:#fdf7e7;border-color:#f5e5ba;padding:12px 16px;border-radius:10px">
-          <span>🎯 <strong>Resumen Ejecutivo Anti-Paja</strong>: Conceptos literales de la norma, plazos y preguntas trampa. Máxima síntesis para memorizar.</span>
+          <span>🎯 <strong>Resumen Anti-Paja Oficial:</strong> Síntesis pura orientada al examen de GACE A2. Solo lo que cae en test y supuestos prácticos, sin literatura innecesaria.</span>
         </div>
 
         <div class="surface" style="padding:16px;border:1px solid var(--line);border-radius:12px;">
-          <h4 style="margin:0 0 10px 0;color:var(--deep)">1. Definiciones y Conceptos Jurídicos Clave</h4>
+          <h4 style="margin:0 0 10px 0;color:var(--deep)">1. Ideas Fuerza que Sí Entran en Examen</h4>
+          <ul style="margin:0 0 16px 0;padding-left:20px;font-size:13px;line-height:1.7;color:#3b3534">
+            <li><strong>Obligatoriedad del procedimiento:</strong> Ninguna actuación administrativa puede prescindir total y absolutamente del procedimiento legalmente establecido (causa de nulidad de pleno derecho).</li>
+            <li><strong>Días hábiles vs naturales:</strong> Si no se indica expresamente lo contrario en la Ley o en el Derecho de la UE, los plazos señalados por días se entienden <em>hábiles</em> (excluidos sábados, domingos y festivos).</li>
+            <li><strong>Cómputo de fecha a fecha:</strong> Los plazos por meses concluyen el mismo día del mes siguiente. Si en el mes de vencimiento no hubiera día equivalente, expirará el último día del mes.</li>
+          </ul>
+
+          <h4 style="margin:16px 0 10px 0;color:var(--deep)">2. Artículos Clave de Cita Obligatoria</h4>
           <div class="stack" style="gap:8px">
             ${(definitions.length ? definitions : [
-              { term: 'Acto Administrativo', def: 'Declaración de voluntad, deseo, conocimiento o juicio realizada por la Administración en ejercicio de una potestad administrativa.' },
-              { term: 'Silencio Administrativo', def: 'Ficción jurídica sustitutiva de la falta de resolución expresa en plazo legal.' },
-              { term: 'Valor Estimado del Contrato (LCSP)', def: 'Importe total pagadero sin incluir el Impuesto sobre el Valor Añadido (IVA), considerando prórrogas y modificaciones.' }
-            ]).slice(0, 8).map(d => `
+              { term: 'Art. 47 LPAC (Nulidad de pleno derecho)', def: 'Actos que lesionen derechos fundamentales, dictados por órgano manifiestamente incompetente o prescindiendo absolutamente del procedimiento.' },
+              { term: 'Art. 48 LPAC (Anulabilidad)', def: 'Cualquier infracción del ordenamiento jurídico, incluso la desviación de poder. Los defectos de forma solo anulan si carecen de requisitos indispensables o causan indefensión.' },
+              { term: 'Art. 24 LPAC (Silencio Administrativo)', def: 'Ficción jurídica. Regla general: estimatorio en procedimientos iniciados a solicitud, salvo ley en contrario o procedimientos sancionadores.' }
+            ]).slice(0, 6).map(d => `
               <div style="background:#faf8f5;padding:9px 12px;border-radius:8px;border-left:3px solid #75618e;">
                 <strong style="color:#514064">${esc(d.term)}:</strong>
                 <span style="font-size:13px">${esc(d.def)}</span>
@@ -2982,20 +3422,17 @@
             `).join('')}
           </div>
 
-          <h4 style="margin:18px 0 10px 0;color:var(--deep)">2. Preguntas Trampa Frecuentes en el Tribunal</h4>
-          <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.6;color:#443d39">
-            <li><strong>¿Días hábiles o naturales?</strong> Salvo que una ley o derecho UE diga lo contrario, los plazos por días se entienden hábiles (se excluyen sábados, domingos y festivos).</li>
-            <li><strong>¿El mes se cuenta de fecha a fecha?</strong> Sí, concluye el mismo día del mes siguiente. Si no hubiera día equivalente, el último día del mes.</li>
-            <li><strong>¿El IVA entra en el contrato menor?</strong> Para el cálculo del valor estimado NO se incluye el IVA en ningún caso (art. 101 LCSP).</li>
+          <h4 style="margin:18px 0 10px 0;color:#8c3c3c">3. Preguntas Trampa Frecuentes del Tribunal</h4>
+          <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.7;color:#443d39">
+            <li><strong>¿La ampliación de plazos se puede recurrir?</strong> NO. El acuerdo de ampliación no es susceptible de recurso (art. 32 LPAC).</li>
+            <li><strong>¿Caducidad o prescripción?</strong> La caducidad se aprecia de oficio y extingue el procedimiento; la prescripción extingue el derecho de fondo.</li>
+            <li><strong>¿Quién autoriza los contratos de valor superior a 12M €?</strong> El Consejo de Ministros (art. 324 LCSP).</li>
           </ul>
         </div>
       </div>
     `;
   }
 
-  /* =================================================================
-     TYPEOPOS STUDIO: SMART MULTI-PDF CLASSIFIER
-     ================================================================= */
   function matchTopicForFile(filename) {
     const normName = norm(filename);
     const o = opp();
