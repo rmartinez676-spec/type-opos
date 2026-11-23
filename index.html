@@ -284,6 +284,127 @@
       image-rendering: crisp-edges;
     }
 
+
+    /* === Walking & Interactive Pet === */
+    .floating-pet-avatar {
+      width: 100px;
+      height: 80px;
+      cursor: pointer;
+      pointer-events: auto;
+      position: relative;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      animation: petWalkAround 9s ease-in-out infinite alternate !important;
+      filter: drop-shadow(0 6px 8px rgba(0,0,0,0.18));
+      transition: filter 0.2s ease, transform 0.2s ease;
+    }
+    .floating-pet-avatar:hover {
+      animation-play-state: paused !important;
+      transform: scale(1.18) !important;
+      filter: drop-shadow(0 8px 14px rgba(110,72,170,0.3));
+    }
+    @keyframes petWalkAround {
+      0% { transform: translateX(0) translateY(0) scaleX(1); }
+      40% { transform: translateX(-55px) translateY(-4px) scaleX(1); }
+      48% { transform: translateX(-55px) translateY(0) scaleX(1); }
+      50% { transform: translateX(-55px) translateY(0) scaleX(-1); }
+      90% { transform: translateX(15px) translateY(-4px) scaleX(-1); }
+      98% { transform: translateX(15px) translateY(0) scaleX(-1); }
+      100% { transform: translateX(0) translateY(0) scaleX(1); }
+    }
+    .pet-ground-shadow {
+      position: absolute;
+      bottom: 2px;
+      left: 15px;
+      width: 70px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.15);
+      filter: blur(2px);
+      z-index: -1;
+    }
+
+    /* === Rosco Multiple-Choice Grid === */
+    .rosco-options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 14px 0 10px 0;
+    }
+    @media (max-width: 640px) {
+      .rosco-options-grid { grid-template-columns: 1fr; }
+    }
+    .rosco-opt-btn {
+      background: white;
+      border: 1.5px solid #dfdcd7;
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #302d39;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .rosco-opt-btn:hover {
+      border-color: #75618e;
+      background: #fdfbf7;
+      transform: translateY(-1px);
+    }
+    .rosco-opt-letter {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      background: #f0eef9;
+      color: #6e48aa;
+      font-weight: 700;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 1px solid #d9d1f0;
+    }
+
+    /* === Law Filters in Library === */
+    .law-filter-pill {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--ink);
+      transition: all 0.15s;
+    }
+    .law-filter-pill.active {
+      background: #6e48aa;
+      color: white;
+      border-color: #6e48aa;
+    }
+
+    /* === Onboarding / Opposition Selector Banner === */
+    .opp-hero-banner {
+      background: linear-gradient(135deg, #fdfbf7 0%, #f4eef9 100%);
+      border: 1.5px solid #e3def5;
+      border-radius: 16px;
+      padding: 18px 22px;
+      margin-bottom: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 4px 15px rgba(110,72,170,0.06);
+    }
+
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
 </head>
@@ -449,7 +570,50 @@
   function planModal(){const ds=daysOfWeek(),sum=ds.reduce((v,d)=>v+(dateKey(d)===dateKey()?elapsedToday():state.days[dateKey(d)]||0),0);modal('Mi planificador',`<p>Un objetivo sostenible para los siete días de la semana.</p><div class="between"><b>Esta semana</b><span class="tag">${humanMins(sum/60)} de ${humanMins(state.goal*7)}</span></div><div class="stack" style="gap:0;margin:10px 0 19px">${ds.map(d=>{const s=dateKey(d)===dateKey()?elapsedToday():(state.days[dateKey(d)]||0);return `<div class="history-row"><span>${esc(d.toLocaleDateString('es-ES',{weekday:'long',day:'numeric'}))}</span><span>${humanMins(s/60)} / ${humanMins(state.goal)}</span></div>`}).join('')}</div><form id="goal-form" class="stack"><label class="field"><span>Objetivo diario en minutos</span><input required name="goal" type="number" min="5" max="720" value="${state.goal}"></label><button class="btn primary">Guardar planificación</button></form>`)}
   function toggleSession(){if(state.session){let start=state.session;const now=Date.now();while(start<now){const end=new Date(start);end.setHours(24,0,0,0);const until=Math.min(now,+end),k=dateKey(new Date(start));state.days[k]=(state.days[k]||0)+Math.floor((until-start)/1000);start=until}state.session=0;toast('Sesión guardada en tu jornada.')}else{state.session=Date.now();toast('Sesión iniciada. Puedes seguir usando tu escritorio.')}save();renderRoute(false)}
   function settings(){modal('Mi espacio personal',`<p>TypeOpos Studio · Ultimate Edition</p><form id="settings-form" class="stack"><label class="field"><span>Nombre de tu perfil</span><input name="name" required maxlength="35" value="${esc(state.name)}"></label><label class="field"><span>Objetivo diario (minutos)</span><input name="goal" type="number" min="5" max="720" required value="${state.goal}"></label><button class="btn primary">Guardar preferencias</button></form><div class="divider"></div><div class="stack">${btn('Gestionar oposiciones','switch-opp','layers')}${btn('Configurar inteligencia artificial','ai-settings','sparkle')}${btn('Descargar copia de mis datos','backup','download')}${btn('Restaurar una copia','restore','upload')}</div><div class="notice" style="margin-top:16px">${state.demo?'El cuaderno de muestra incluye progreso y apuntes de ejemplo. ':''}Tus datos se guardan en este navegador. Una copia incluye los documentos y el progreso, nunca la clave de IA.</div>${state.demo?`<div class="modal-actions">${btn('Empezar con el progreso a cero','clear-demo','refresh','sm')}</div>`:''}`)}
-  function library(){const o=opp();return `<div class="page">${heading('Mi temario','Tu biblioteca personal, organizada por bloques.',`<div class="row">${btn('Añadir tema','add-topic','plus')}${btn('Importar apuntes','import','upload','primary')}</div>`,o.short)}<section class="surface workspace"><div class="filter-bar"><label class="search-line">${I('search',17)}<input id="library-search" aria-label="Buscar tema" placeholder="Buscar un tema en mi temario..." value="${esc(libraryQuery)}"></label><select class="select" id="library-filter" aria-label="Filtrar por estado"><option value="">Todos los estados</option>${[['good','Dominados'],['review','En repaso'],['bad','Críticos'],['new','Sin empezar']].map(([v,l])=>`<option value="${v}" ${libraryFilter===v?'selected':''}>${l}</option>`).join('')}</select></div><div id="topic-list">${topicList()}</div></section></div>`}
+  
+  function setLibraryLawFilter(lawQuery) {
+    libraryQuery = lawQuery;
+    renderRoute(false);
+  }
+
+  function pasteSyllabusModal() {
+    modal('Pegar Convocatoria o Temario Oficial', `
+      <p class="small muted">Pega aquí el índice de temas copiado del BOE, del INAP o del boletín de tu comunidad autónoma. Creará automáticamente todos los bloques y temas exactos de tu oposición:</p>
+      <form id="paste-syllabus-form" class="stack">
+        <label class="field"><span>Nombre de la convocatoria</span>
+          <input name="name" required placeholder="Ej. Administrativo Estado C1 - OEP 2024" value="${esc(opp().name)}">
+        </label>
+        <label class="field"><span>Pega aquí la lista de temas:</span>
+          <textarea name="syllabusText" rows="9" required placeholder="Bloque I. Organización del Estado\nTema 1. La Constitución Española de 1978...\nTema 2. La Corona...\nBloque II. Unión Europea\nTema 1. Las instituciones comunitarias..."></textarea>
+        </label>
+        <div class="modal-actions">
+          <button class="btn" type="button" onclick="closeModal()">Cancelar</button>
+          <button class="btn primary" type="submit">${I('check',12)} Generar temario oficial</button>
+        </div>
+      </form>
+    `);
+  }
+
+  function library(){const o=opp();return `<div class="page">${heading('Mi temario','Tu biblioteca personal, organizada por bloques.',`<div class="row">${btn('Añadir tema','add-topic','plus')}${btn('Importar apuntes','import','upload','primary')}</div>`,o.short)}<section class="surface workspace">
+  <div class="filter-bar">
+    <label class="search-line">${I('search',17)}<input id="library-search" aria-label="Buscar tema" placeholder="Buscar un tema en mi temario..." value="${esc(libraryQuery)}"></label>
+    <select class="select" id="library-filter" aria-label="Filtrar por estado">
+      <option value="">Todos los estados</option>
+      ${[['good','Dominados'],['review','En repaso'],['bad','Críticos'],['new','Sin empezar']].map(([v,l])=>`<option value="${v}" ${libraryFilter===v?'selected':''}>${l}</option>`).join('')}
+    </select>
+  </div>
+  <!-- Quick Filter by Major Laws -->
+  <div class="row wrap" style="gap:6px;margin:10px 0 16px 0;padding:10px 14px;background:#fdfbf7;border-radius:12px;border:1px solid var(--line);">
+    <span class="small font-bold" style="color:var(--deep)">⚖️ Ver por Ley:</span>
+    <button type="button" class="law-filter-pill ${libraryQuery===''?'active':''}" onclick="setLibraryLawFilter('')">Todos los temas</button>
+    <button type="button" class="law-filter-pill ${libraryQuery==='Constitución'?'active':''}" onclick="setLibraryLawFilter('Constitución')">Constitución 1978</button>
+    <button type="button" class="law-filter-pill ${libraryQuery==='LPAC'?'active':''}" onclick="setLibraryLawFilter('LPAC')">Ley 39/2015 (LPAC)</button>
+    <button type="button" class="law-filter-pill ${libraryQuery==='Contrato'?'active':''}" onclick="setLibraryLawFilter('Contrato')">Ley 9/2017 (LCSP)</button>
+    <button type="button" class="law-filter-pill ${libraryQuery==='TREBEP'?'active':''}" onclick="setLibraryLawFilter('TREBEP')">TREBEP (Funcionarios)</button>
+    <button type="button" class="law-filter-pill ${libraryQuery==='Presupuest'?'active':''}" onclick="setLibraryLawFilter('Presupuest')">Ley Presupuestaria</button>
+    <button type="button" class="law-filter-pill ${libraryQuery==='Unión Europea'?'active':''}" onclick="setLibraryLawFilter('Unión Europea')">Unión Europea</button>
+  </div>
+<div id="topic-list">${topicList()}</div></section></div>`}
   function topicList(){const o=opp();let count=0;const html=o.blocks.map((b,bi)=>{const ts=o.topics.filter(t=>t.b===bi&&norm(t.title+' '+b).includes(norm(libraryQuery))&&(!libraryFilter||(topicState(t)[0]||'review')===libraryFilter));count+=ts.length;if(!ts.length)return '';return `<details class="block-group" ${libraryQuery||libraryFilter||bi===0?'open':''}><summary><span class="block-index">${String(bi+1).padStart(2,'0')}</span><span>${esc(b)}</span><span class="block-count">${ts.length} temas</span>${I('down',15)}</summary>${ts.map(t=>`<button class="topic-row" data-act="read" data-id="${esc(t.id)}"><span class="topic-no">${String(o.topics.indexOf(t)+1).padStart(2,'0')}</span><span class="topic-title">${esc(t.title)}</span>${t.assets?.length?I('file',12):''}${stateLabel(t)}${I('right',13)}</button>`).join('')}</details>`}).join('');return count?html:`<div class="empty-state">${I('book',30)}<h3>${o.topics.length?'No hay coincidencias':'Tu cuaderno está listo'}</h3><p>${o.topics.length?'Prueba con otro término o cambia el filtro.':'Añade un tema o importa tus primeros apuntes para comenzar.'}</p>${o.topics.length?btn('Quitar filtros','reset-filter'):btn('Añadir mi primer tema','add-topic','plus')}</div>`}
   function addTopic(){modal('Añadir un tema',`<form id="topic-form" class="stack"><label class="field"><span>Título del tema</span><input name="title" required maxlength="200" placeholder="Ej. Los recursos administrativos"></label><label class="field"><span>Bloque</span><input list="block-options" name="block" required value="${esc(opp().blocks[0]||'Temario general')}"><datalist id="block-options">${opp().blocks.map(b=>`<option value="${esc(b)}">`).join('')}</datalist><small>Elige un bloque existente o escribe el nombre de uno nuevo.</small></label><label class="field"><span>Apuntes iniciales <small>(opcional)</small></span><textarea name="text" placeholder="Pega aquí tus apuntes..."></textarea></label><button class="btn primary">Crear tema</button></form>`)}
   let pendingFiles=[],pdfEngine=null;
@@ -720,12 +884,52 @@
   function roscoData(){const custom=gameGlossary(),used=new Set();return [...alphabet].map((letter,i)=>{const v=custom.find(x=>!used.has(x.term)&&wordKey(x.term).startsWith(letter))||custom.find(x=>!used.has(x.term)&&wordKey(x.term).includes(letter));if(v)used.add(v.term);return {letter,term:v?.term||legalWords[i][0],def:v?.def||legalWords[i][1],source:v?topic(gameSource).title:'Glosario jurídico',status:'pending'}})}
   function makeWordGrid(){const t=topic(gameSource),terms=gameGlossary().map(x=>wordKey(x.term)),source=[...new Set([...terms,...(t?words(t.text).filter(x=>/^[\p{L}]{6,12}$/u.test(x)).map(wordKey):[]),'SILENCIO','ALZADA','TREBEP','PRESUPUESTO','INVESTIDURA','QUORUM'])].filter(x=>x.length>=4&&x.length<=12).slice(0,6).sort((a,b)=>b.length-a.length),dirs=[[1,0],[0,1],[1,1],[-1,1],[-1,0],[0,-1],[1,-1]],size=12;let grid,placements;for(let attempt=0;attempt<15;attempt++){grid=Array(144).fill('');placements=[];for(const w of source){let placed=false;for(let j=0;j<220&&!placed;j++){const [dx,dy]=dirs[Math.floor(Math.random()*dirs.length)],x=Math.floor(Math.random()*size),y=Math.floor(Math.random()*size),endX=x+(w.length-1)*dx,endY=y+(w.length-1)*dy;if(endX<0||endX>=size||endY<0||endY>=size)continue;const cells=[...w].map((_,k)=>(y+k*dy)*size+x+k*dx);if(cells.every((c,k)=>!grid[c]||grid[c]===w[k])){cells.forEach((c,k)=>grid[c]=w[k]);placements.push({word:w,cells,found:false});placed=true}}}if(placements.length===source.length)break}if(placements.length!==source.length){grid=Array(144).fill('');placements=source.map((word,i)=>{const cells=[...word].map((_,k)=>i*12+k);cells.forEach((v,j)=>grid[v]=word[j]);return {word,cells,found:false}})}return {grid:grid.map(c=>c||alphabet[Math.floor(Math.random()*alphabet.length)]),placements,anchor:null}}
   function gameRecord(type,score){const k=opp().id+':'+type,old=state.records[k];state.records[k]={best:old?(type==='sopa'?Math.min(old.best,score):Math.max(old.best,score)):score,plays:(old?.plays||0)+1};save()}
-  function launchGame(type){const now=Date.now();if(type==='rosco')activeGame={type,started:now,deadline:now+180000,items:roscoData(),index:0,message:'',done:false};else if(type==='sopa')activeGame={type,started:now,...makeWordGrid(),done:false,message:'Selecciona la primera letra y después la última.'};else{const pool=questionPool({scope:gameSource?'topic':'all',tid:gameSource,count:15});if(!pool.length){toast('Importa apuntes para preparar las preguntas del combate.');return}activeGame={type:'fighter',started:now,pool:shuffle(pool),qi:0,player:100,enemy:100,round:1,wins:0,done:false,feedback:'',answered:null,deadline:now+20000};activeGame.q=balancedQuestions([activeGame.pool[0]])[0]}renderRoute(false)}
+  function launchGame(type){const now=Date.now();if(type==='rosco')activeGame={type,started:now,deadline:now+180000,items:roscoData(),index:0,message:'',done:false};else if(type==='sopa')activeGame={type,started:now,...makeWordGrid(),done:false,message:'Selecciona la primera letra y después la última.'};else{const pool=questionPool({scope:gameSource?'topic':'all',tid:gameSource,count:15});if(!pool.length){toast('Importa apuntes para preparar las preguntas del combate.');return}activeGame={type:'fighter',started:now,pool:shuffle(pool),qi:0,player:100,enemy:100,round:1,wins:0,done:false,feedback:'',answered:null,deadline:now+20000,currentBlockIndex:0};activeGame.q=balancedQuestions([activeGame.pool[0]])[0]}renderRoute(false)}
   function gameView(type){const info=games.find(x=>x[0]===type);if(!info)return arcadeView();const g=activeGame?.type===type?activeGame:null;const back=`<button class="bread" data-go="arcade">${I('back',13)}Sala de juegos</button>`;if(!g){const rules={rosco:'Tienes 3 minutos y 27 letras. Escribe la palabra que corresponde a cada definición. Puedes pasar y volver a esa letra en la siguiente vuelta.',sopa:'Encuentra seis palabras en una cuadrícula de 12 × 12. Selecciona sus extremos o arrastra en línea recta. Las palabras pueden ir en horizontal, vertical o diagonal, también al revés.',fighter:'Responde en 20 segundos para golpear al Tribunal. Cada acierto resta 25 HP al rival; cada fallo o turno agotado te resta 25 HP. Supera rondas hasta el K.O.'};return `<div class="page">${back}${heading(info[1],info[2],null,'OpoArcade / Cómo jugar')}<section class="surface workspace game-board ${info[3]}">${gameArt(type)}<h2 class="panel-title" style="margin-top:15px">Reglas de la partida</h2><p style="font-size:14px;line-height:1.8">${rules[type]}</p><p class="small muted" style="margin:12px 0 18px">Fuente: ${esc(topic(gameSource)?.title||(type==='fighter'?opp().short:'glosario jurídico'))}${type==='rosco'&&gameSource?' · Las letras que falten se completan con el glosario base.':''}</p><button class="btn primary" data-act="launch-game" data-id="${type}">${I('play',12)}Empezar partida</button></section></div>`}return `<div class="page">${back}${heading(info[1],g.done?'Partida finalizada. Cada intento cuenta.':type==='rosco'?'Una definición, una letra. ¿Te la sabes?':type==='sopa'?'Las palabras que buscas están en línea recta.':'El Opositor vs. El Tribunal Calificador',null,'OpoArcade / En juego')}<section class="surface workspace game-board">${type==='rosco'?roscoView(g):type==='sopa'?sopaView(g):fighterView(g)}</section></div>`}
   function remaining(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
   function gameEndButtons(){return `<div class="row wrap" style="margin-top:16px">${btn('Volver a jugar','replay','refresh','primary')}<button class="btn" data-go="arcade">Sala de juegos</button></div>`}
-  function roscoView(g){const q=g.items[g.index],ok=g.items.filter(x=>x.status==='ok').length,ko=g.items.filter(x=>x.status==='ko').length;return `<div class="between wrap small"><span class="tag">${I('clock',13)}<span class="game-time">${remaining(Math.max(0,Math.ceil((g.deadline-Date.now())/1000)))}</span></span><span>${ok} aciertos · ${ko} fallos · ${27-ok-ko} pendientes</span></div><div class="game-stage" style="margin-top:20px"><div class="rosco">${g.items.map((q,i)=>{const a=i*2*Math.PI/g.items.length;return `<span class="rosco-letter ${q.status} ${!g.done&&i===g.index?'on':''}" style="left:${50+44*Math.sin(a)}%;top:${50-44*Math.cos(a)}%">${q.letter}</span>`}).join('')}<div class="rosco-center">${g.done?ok:q.letter}</div></div><div>${g.done?`<h2 class="panel-title">${ok===27?'¡Rosco completo!':'Fin de la vuelta'}</h2><p>Has acertado ${ok} de 27 palabras.</p>${gameEndButtons()}`:`<span class="eyebrow ink-purple">${wordKey(q.term).startsWith(q.letter)?'Empieza por':'Contiene la'} ${q.letter}</span><h3 style="font-size:19px;margin:9px 0 15px">${esc(q.def)}</h3><form id="rosco-form" class="stack"><label class="field"><span class="screen-reader">Tu respuesta</span><input id="rosco-answer" name="answer" autocomplete="off" required placeholder="Escribe tu respuesta..."></label><div class="row wrap"><button class="btn primary">Responder</button>${btn('Pasapalabra','pass-word')}</div></form><p class="tiny muted" style="margin-top:12px">Fuente: ${esc(q.source)}</p>`}${g.message?`<div class="feedback">${esc(g.message)}</div>`:''}</div></div>${g.done?`<details style="margin-top:18px"><summary class="text-btn">Revisar las 27 soluciones ${I('down',12)}</summary>${g.items.map(x=>`<div class="choice-explain"><b>${x.letter} · ${esc(x.term)}</b><br>${esc(x.def)}</div>`).join('')}</details>`:''}`}
+  function roscoView(g){const q=g.items[g.index],ok=g.items.filter(x=>x.status==='ok').length,ko=g.items.filter(x=>x.status==='ko').length;return `<div class="between wrap small"><span class="tag">${I('clock',13)}<span class="game-time">${remaining(Math.max(0,Math.ceil((g.deadline-Date.now())/1000)))}</span></span><span>${ok} aciertos · ${ko} fallos · ${27-ok-ko} pendientes</span></div><div class="game-stage" style="margin-top:20px"><div class="rosco">${g.items.map((q,i)=>{const a=i*2*Math.PI/g.items.length;return `<span class="rosco-letter ${q.status} ${!g.done&&i===g.index?'on':''}" style="left:${50+44*Math.sin(a)}%;top:${50-44*Math.cos(a)}%">${q.letter}</span>`}).join('')}<div class="rosco-center">${g.done?ok:q.letter}</div></div><div>${g.done?`<h2 class="panel-title">${ok===27?'¡Rosco completo!':'Fin de la vuelta'}</h2><p>Has acertado ${ok} de 27 palabras.</p>${gameEndButtons()}`:`<span class="eyebrow ink-purple">${wordKey(q.term).startsWith(q.letter)?'Empieza por':'Contiene la'} ${q.letter}</span><h3 style="font-size:19px;margin:9px 0 15px">${esc(q.def)}</h3>
+  <!-- Rosco Multiple Choice (Zero typing fatigue) -->
+  <div class="stack" style="margin-top:12px">
+    <div class="small muted font-semibold" style="margin-bottom:4px">Selecciona la respuesta correcta:</div>
+    <div class="rosco-options-grid">
+      ${(() => {
+        // Generate 4 plausible options for the current letter
+        const correct = q.term;
+        const otherGlossary = glossary(opp().topics.map(t=>t.text).join(' '));
+        const allTerms = [...new Set([...bank.map(x=>x.why.split(':')[0].trim()), ...otherGlossary.map(x=>x.term), 'Acto Administrativo', 'Recurso de Alzada', 'Silencio Administrativo', 'Caducidad', 'Subsanación', 'Licitación', 'TREBEP', 'Presupuesto', 'Jurisdicción', 'Competencia', 'Nulidad de pleno derecho'])];
+        const dists = shuffle(allTerms.filter(x => norm(x) !== norm(correct))).slice(0, 3);
+        const choices = shuffle([correct, ...dists]);
+        return choices.map((c, idx) => `
+          <button type="button" class="rosco-opt-btn" onclick="submitRoscoChoice('${esc(c.replace(/'/g, "\\'"))}')">
+            <span class="rosco-opt-letter">${'ABCD'[idx]}</span>
+            <span>${esc(c)}</span>
+          </button>
+        `).join('');
+      })()}
+    </div>
+    <div class="row between" style="margin-top:10px">
+      <button class="btn soft sm" data-act="pass-word">↷ Pasapalabra</button>
+      <button class="btn sm" onclick="toggleRoscoManualInput()">⌨️ Escribir manualmente</button>
+    </div>
+    <form id="rosco-form" class="stack" style="display:none;margin-top:8px">
+      <div class="row" style="gap:6px">
+        <input id="rosco-answer" name="answer" autocomplete="off" placeholder="Escribe tu respuesta..." style="flex:1">
+        <button class="btn primary sm">Enviar</button>
+      </div>
+    </form>
+  </div>
+<p class="tiny muted" style="margin-top:12px">Fuente: ${esc(q.source)}</p>`}${g.message?`<div class="feedback">${esc(g.message)}</div>`:''}</div></div>${g.done?`<details style="margin-top:18px"><summary class="text-btn">Revisar las 27 soluciones ${I('down',12)}</summary>${g.items.map(x=>`<div class="choice-explain"><b>${x.letter} · ${esc(x.term)}</b><br>${esc(x.def)}</div>`).join('')}</details>`:''}`}
   function endRosco(){const g=activeGame;if(!g||g.done)return;g.done=true;const n=g.items.filter(x=>x.status==='ok').length;gameRecord('rosco',n);petReact(n>=10);renderRoute(false)}
+  
+  function submitRoscoChoice(term) {
+    roscoAnswer(term);
+  }
+  function toggleRoscoManualInput() {
+    const f = document.getElementById('rosco-form');
+    if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none';
+  }
+
   function roscoAnswer(answer,pass=false){const g=activeGame;if(!g||g.type!=='rosco'||g.done)return;if(Date.now()>=g.deadline)return endRosco();const q=g.items[g.index];if(!pass){const answerKey=s=>norm(s).replace(/^(el|la|los|las|un|una)\s+/i,'').replace(/[^a-z0-9]/g,'');const correct=answerKey(answer)===answerKey(q.term);q.status=correct?'ok':'ko';g.message=(correct?'¡Correcto! ':'La respuesta era: ')+q.term+'.'}else{q.status='pass';g.message='Letra '+q.letter+' pendiente para la siguiente vuelta.'}let next=null;for(let n=1;n<=g.items.length;n++){const i=(g.index+n)%g.items.length;if(['pending','pass'].includes(g.items[i].status)){next=i;break}}if(next===null)return endRosco();g.index=next;renderRoute(false);$('#rosco-answer')?.focus()}
   function sopaView(g){const found=g.placements.filter(p=>p.found),cells=new Set(found.flatMap(x=>x.cells));return `<div class="between wrap small"><span class="tag">${I('clock',13)}<span class="game-time">${remaining(Math.floor(((g.finished||Date.now())-g.started)/1000))}</span></span><span>${found.length} de ${g.placements.length} palabras</span></div><div class="word-list">${g.placements.map(p=>`<span class="${p.found?'found':''}">${esc(p.word)}</span>`).join('')}</div><div class="word-grid" role="group" aria-label="Sopa de letras de doce por doce">${g.grid.map((v,i)=>`<button class="word-cell ${cells.has(i)?'found':''} ${g.anchor===i?'selected':''}" data-act="word-cell" data-id="${i}" aria-label="${v}, fila ${Math.floor(i/12)+1}, columna ${i%12+1}" ${g.done?'disabled':''}>${v}</button>`).join('')}</div><p class="feedback" id="sopa-message">${esc(g.message)}</p>${g.done?gameEndButtons():''}`}
   function wordLine(a,b){const ax=a%12,ay=Math.floor(a/12),dx=b%12-ax,dy=Math.floor(b/12)-ay;if(dx&&dy&&Math.abs(dx)!==Math.abs(dy))return [];return Array.from({length:Math.max(Math.abs(dx),Math.abs(dy))+1},(_,i)=>(ay+i*Math.sign(dy))*12+ax+i*Math.sign(dx))}
@@ -763,10 +967,14 @@
   /* =================================================================
      TYPEOPOS STUDIO: POMODORO CONCENTRATION ENGINE
      ================================================================= */
-  let pomoSeconds = 25 * 60;
+  
+  let pomoWorkMins = 25;
+  let pomoBreakMins = 5;
+  let pomoSeconds = pomoWorkMins * 60;
   let pomoRunning = false;
   let pomoInterval = null;
   let pomoMode = 'work'; // 'work' | 'break'
+  let pomoSoundEnabled = true;
 
   function togglePomodoro() {
     if (pomoRunning) {
@@ -776,7 +984,7 @@
     } else {
       pomoRunning = true;
       pomoInterval = setInterval(pomoTick, 1000);
-      toast(pomoMode === 'work' ? '¡Sesión Pomodoro iniciada! 25 min de máxima concentración.' : 'Tiempo de descanso iniciado (5 min).');
+      toast(pomoMode === 'work' ? `¡Sesión Pomodoro iniciada! ${pomoWorkMins} min de máxima concentración.` : `Descanso iniciado (${pomoBreakMins} min).`);
     }
     updatePomoUI();
   }
@@ -784,12 +992,59 @@
   function resetPomodoro() {
     pomoRunning = false;
     clearInterval(pomoInterval);
-    pomoSeconds = pomoMode === 'work' ? 25 * 60 : 5 * 60;
+    pomoSeconds = (pomoMode === 'work' ? pomoWorkMins : pomoBreakMins) * 60;
     updatePomoUI();
-    toast('Pomodoro reiniciado a ' + Math.ceil(pomoSeconds / 60) + ' min.');
+    toast(`Pomodoro reiniciado a ${Math.ceil(pomoSeconds / 60)} min.`);
+  }
+
+  function setPomodoroConfig(work, brk) {
+    pomoWorkMins = work;
+    pomoBreakMins = brk;
+    pomoSeconds = (pomoMode === 'work' ? pomoWorkMins : pomoBreakMins) * 60;
+    pomoRunning = false;
+    clearInterval(pomoInterval);
+    updatePomoUI();
+    closeModal();
+    toast(`Pomodoro configurado: ${work} min estudio / ${brk} min descanso.`);
+  }
+
+  function pomodoroSettingsModal() {
+    modal('Configuración del Pomodoro', `
+      <div class="stack" style="gap:14px">
+        <p class="small muted">Elige el ritmo que mejor se adapte a tu nivel de energía de hoy:</p>
+        <div class="choice-grid" style="grid-template-columns:repeat(3,1fr);gap:10px">
+          <button type="button" class="btn ${pomoWorkMins===25?'primary':'soft'}" onclick="setPomodoroConfig(25, 5)">
+            <strong>🍅 Clásico</strong><br><small>25m / 5m</small>
+          </button>
+          <button type="button" class="btn ${pomoWorkMins===50?'primary':'soft'}" onclick="setPomodoroConfig(50, 10)">
+            <strong>🚀 Intensivo</strong><br><small>50m / 10m</small>
+          </button>
+          <button type="button" class="btn ${pomoWorkMins===15?'primary':'soft'}" onclick="setPomodoroConfig(15, 3)">
+            <strong>⚡ Rápido</strong><br><small>15m / 3m</small>
+          </button>
+        </div>
+        <div class="form-grid" style="margin-top:8px">
+          <label class="field"><span>Minutos de estudio</span>
+            <input type="number" id="custom-pomo-work" min="5" max="120" value="${pomoWorkMins}">
+          </label>
+          <label class="field"><span>Minutos de descanso</span>
+            <input type="number" id="custom-pomo-break" min="1" max="30" value="${pomoBreakMins}">
+          </label>
+        </div>
+        <label class="checkline" style="margin-top:4px">
+          <input type="checkbox" id="pomo-sound-toggle" ${pomoSoundEnabled?'checked':''} onchange="pomoSoundEnabled = this.checked">
+          <span>Activar sonido de campana armónica al finalizar sesión</span>
+        </label>
+        <div class="modal-actions">
+          <button class="btn" onclick="closeModal()">Cerrar</button>
+          <button class="btn primary" onclick="setPomodoroConfig(+document.getElementById('custom-pomo-work').value, +document.getElementById('custom-pomo-break').value)">Aplicar</button>
+        </div>
+      </div>
+    `);
   }
 
   function playPomoChime() {
+    if (!pomoSoundEnabled) return;
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) return;
@@ -802,47 +1057,11 @@
       osc.frequency.setValueAtTime(523.25, ctx.currentTime);
       osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.15);
       osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.30);
-      gain.gain.setValueAtTime(0.18, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.85);
+      gain.gain.setValueAtTime(0.20, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.90);
       osc.start();
-      osc.stop(ctx.currentTime + 0.90);
+      osc.stop(ctx.currentTime + 0.95);
     } catch(e) {}
-  }
-
-  function pomoTick() {
-    if (!pomoRunning) return;
-    pomoSeconds--;
-    if (pomoMode === 'work') {
-      const today = dateKey();
-      state.days[today] = (state.days[today] || 0) + 1;
-    }
-    if (pomoSeconds <= 0) {
-      playPomoChime();
-      if (pomoMode === 'work') {
-        pomoMode = 'break';
-        pomoSeconds = 5 * 60;
-        toast('🔔 ¡Sesión completada! Tómate 5 minutos de descanso.');
-        petReact(true);
-      } else {
-        pomoMode = 'work';
-        pomoSeconds = 25 * 60;
-        toast('⏰ ¡Fin del descanso! Listo para la siguiente sesión de estudio.');
-      }
-      save();
-    }
-    updatePomoUI();
-  }
-
-  function updatePomoUI() {
-    const clock = document.getElementById('pomo-clock-text');
-    const tag = document.getElementById('pomo-status-tag');
-    const dot = document.querySelector('.pomodoro-dot');
-    if (clock) clock.textContent = remaining(pomoSeconds);
-    if (tag) tag.textContent = pomoMode === 'work' ? 'Estudio' : 'Pausa';
-    if (dot) {
-      if (pomoRunning) dot.classList.add('running');
-      else dot.classList.remove('running');
-    }
   }
 
   /* =================================================================
@@ -866,12 +1085,13 @@
         <p id="floating-pet-quote" style="margin:0 0 12px 0;font-size:12px;line-height:1.45;color:#4a3e3d;font-style:italic">“${esc(petLine('tip'))}”</p>
         <div class="stack" style="gap:6px">
           <button class="btn sm primary" data-act="quick-question">${I('sparkle', 12)} Pregunta exprés de examen</button>
-          <button class="btn sm soft" data-act="toggle-pomo">${I('clock', 12)} ${pomoRunning ? 'Pausar Pomodoro' : 'Iniciar Pomodoro (25m)'}</button>
+          <div class="row" style="gap:4px"><button class="btn sm soft" style="flex:1" data-act="toggle-pomo">${I('clock', 12)} ${pomoRunning ? 'Pausar' : 'Iniciar Pomodoro'}</button><button class="btn sm" data-act="pomo-settings" title="Configurar tiempos Pomodoro">⚙️</button></div>
           <button class="btn sm" data-act="pet-settings">${I('settings', 12)} Cambiar o vestir mascota</button>
         </div>
       </div>
-      <div class="floating-pet-avatar" onclick="toggleFloatingPetDialog()" title="Haz clic para interactuar con ${esc(state.pet.name)}">
+      <div class="floating-pet-avatar" onclick="toggleFloatingPetDialog()" title="¡Hola! Soy ${esc(state.pet.name)}. Haz clic para hablar conmigo.">
         ${petImage()}
+        <div class="pet-ground-shadow"></div>
       </div>
     `;
   }
@@ -1176,6 +1396,8 @@
       case 'topic-flash':flashTopic=currentTopic()?.id||'';flashCurrent=null;flashFlipped=false;go('flash');break;
       case 'open-flash':go('flash');break;
       case 'topic-game':gameSource=currentTopic()?.id||'';go('arcade');break;
+      case 'pomo-settings':pomodoroSettingsModal();break;
+      case 'paste-syllabus':pasteSyllabusModal();break;
       case 'toggle-pomo':togglePomodoro();break;
       case 'reset-pomo':resetPomodoro();break;
       case 'quick-question':{
@@ -1263,7 +1485,36 @@
         case 'topic-form':{
           const b=String(fd.get('block')).trim(),name=String(fd.get('title')).trim();if(!b||!name)throw Error('Completa el título y el bloque.');const o=opp();if(!o.blocks.includes(b))o.blocks.push(b);const t={id:uid(),title:name,b:o.blocks.indexOf(b),text:String(fd.get('text')||'').trim(),source:'',rounds:0,errors:0,assets:[],updated:Date.now()};o.topics.push(t);remember(t);go('reader',t.id);toast('Tema añadido a tu cuaderno.');break
         }
-        case 'import-form':await doImport(form);break;
+        case 'paste-syllabus-form': {
+        const text = String(fd.get('syllabusText') || '').trim();
+        const oppName = String(fd.get('name') || 'Mi Oposición').trim();
+        if (!text) throw Error('Pega el texto del temario antes de guardar.');
+        const parsed = parseSyllabus(text);
+        if (!parsed.ts.length) throw Error('No se detectaron temas en el texto. Asegúrate de incluir líneas tipo «Tema 1...».');
+        const newOppObj = {
+          id: uid(),
+          name: oppName,
+          short: oppName.slice(0, 15),
+          group: 'C1',
+          blocks: parsed.bs.length ? parsed.bs : ['Temario General'],
+          topics: parsed.ts,
+          baseURL: '',
+          basePdf: '',
+          template: false,
+          questions: [],
+          cards: [],
+          lastTopic: parsed.ts[0]?.id || ''
+        };
+        state.opps.push(newOppObj);
+        state.active = newOppObj.id;
+        save();
+        closeModal();
+        renderRoute(false);
+        toast(`¡Oposición «${oppName}» creada con ${parsed.ts.length} temas!`);
+        petReact(true);
+        break;
+      }
+      case 'import-form':await doImport(form);break;
         case 'edit-topic-form':{const t=topic(form.dataset.id);if(!t)throw Error('No se encuentra el tema.');const title=String(fd.get('title')).trim();if(!title)throw Error('El título no puede estar vacío.');t.title=title;t.text=String(fd.get('text')||'').trim();t.b=Number(fd.get('block'));t.source=safeURL(fd.get('source'));t.updated=Date.now();remember(t);closeModal();renderRoute(false);toast('Cambios guardados.');break}
         case 'goal-form':state.goal=Number(fd.get('goal'));save();closeModal();renderRoute(false);toast('Objetivo actualizado: '+humanMins(state.goal*7)+' semanales.');break;
         case 'settings-form':state.name=String(fd.get('name')).trim()||'Opositor';state.goal=Number(fd.get('goal'));save();closeModal();renderRoute(false);toast('Preferencias guardadas.');break;
