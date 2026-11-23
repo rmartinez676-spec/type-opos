@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#faf7f2">
   <meta name="description" content="Tu escritorio personal de oposiciones: temario, esquemas, tests, flashcards y juegos, en un solo cuaderno.">
-  <title>TypeOpos Studio — Preparación Integral de Oposiciones</title>
+  <title>OpoNexus — Plataforma Integral de Estudio y OpoArcade (GACE A2)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style>
     :root{--ink:#302d39;--muted:#77747b;--purple:#75618e;--deep:#514064;--paper:#faf8f3;--line:#dfdcd7;--serif:'Lora',Georgia,serif;--sans:'DM Sans',Arial,sans-serif;--mint:#e2eee2;--butter:#fbefc9;--sky:#dfebf6;--peach:#f7e2d4;--pink:#f4e2e6;--lilac:#eae2f4}
@@ -27,7 +27,7 @@
     @media(max-width:1000px){.header-pin{display:none}}
     @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
   
-    /* === Enhanced TypeOpos Studio Styles === */
+    /* === Enhanced OpoNexus Studio Styles === */
     .pdf-host {
       width: 100%;
       height: 75vh;
@@ -405,7 +405,99 @@
       box-shadow: 0 4px 15px rgba(110,72,170,0.06);
     }
 
-</style>
+
+    /* === OpoNexus Enhanced 3D Flashcards === */
+    .flashcard-stage {
+      perspective: 1200px;
+      max-width: 620px;
+      margin: 18px auto;
+      min-height: 290px;
+    }
+    .flashcard-flipper {
+      position: relative;
+      width: 100%;
+      min-height: 290px;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.34, 1.3, 0.64, 1);
+      cursor: pointer;
+    }
+    .flashcard-flipper.flipped {
+      transform: rotateY(180deg);
+    }
+    .flashcard-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 16px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .flashcard-face-back {
+      transform: rotateY(180deg);
+      background: #fdfbf7;
+    }
+
+    /* === Tablet Notebook Backgrounds for Reader & Print === */
+    .notebook-bg-grid {
+      background-color: #faf8f5 !important;
+      background-image: linear-gradient(rgba(180, 173, 164, 0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(180, 173, 164, 0.25) 1px, transparent 1px) !important;
+      background-size: 20px 20px !important;
+    }
+    .notebook-bg-dots {
+      background-color: #faf8f5 !important;
+      background-image: radial-gradient(rgba(140, 130, 120, 0.35) 1.5px, transparent 1.5px) !important;
+      background-size: 20px 20px !important;
+    }
+    .notebook-bg-lines {
+      background-color: #faf8f5 !important;
+      background-image: linear-gradient(rgba(180, 173, 164, 0.28) 1px, transparent 1px) !important;
+      background-size: 100% 28px !important;
+    }
+    .notebook-bg-plain {
+      background-color: #faf8f5 !important;
+      background-image: none !important;
+    }
+
+    /* === Typography Modes === */
+    .font-mode-sans { font-family: 'DM Sans', 'Inter', system-ui, sans-serif !important; }
+    .font-mode-round { font-family: 'Nunito', system-ui, sans-serif !important; }
+    .font-mode-serif { font-family: 'Lora', Georgia, serif !important; }
+    .font-mode-mono { font-family: 'JetBrains Mono', monospace !important; }
+
+    /* === Pastel Highlighters === */
+    .hl-pastel-yellow { background-color: #fef08a !important; color: #1f2937 !important; border-radius: 3px; padding: 1px 3px; }
+    .hl-pastel-green { background-color: #bbf7d0 !important; color: #1f2937 !important; border-radius: 3px; padding: 1px 3px; }
+    .hl-pastel-pink { background-color: #fbcfe8 !important; color: #1f2937 !important; border-radius: 3px; padding: 1px 3px; }
+    .hl-pastel-blue { background-color: #bfdbfe !important; color: #1f2937 !important; border-radius: 3px; padding: 1px 3px; }
+    .hl-pastel-purple { background-color: #e9d5ff !important; color: #1f2937 !important; border-radius: 3px; padding: 1px 3px; }
+
+    /* === Pet Walking Animation === */
+    @keyframes petWalkAnim {
+      0% { transform: translateX(0) scaleX(1); }
+      45% { transform: translateX(-40vw) scaleX(1); }
+      50% { transform: translateX(-40vw) scaleX(-1); }
+      95% { transform: translateX(5vw) scaleX(-1); }
+      100% { transform: translateX(0) scaleX(1); }
+    }
+    .pet-walking-mode {
+      animation: petWalkAnim 16s ease-in-out infinite alternate !important;
+    }
+
+    /* === Audio / Media Card === */
+    .media-card {
+      background: #fdfbf7;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+    }
+
+  </style>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -415,7 +507,7 @@
   <footer class="footer shell"><span id="footer-brand"></span><span><i class="dot green"></i> Datos en este dispositivo <span aria-hidden="true">·</span> <button data-act="settings">Preferencias</button></span></footer>
   <dialog id="modal" aria-labelledby="modal-title"><div class="modal-head"><h2 id="modal-title"></h2><button class="icon-btn" data-act="close" aria-label="Cerrar ventana" id="close-icon"></button></div><div class="modal-content" id="modal-body"></div></dialog>
   <div id="announcer" aria-live="polite" role="status"></div>
-  <noscript>Activa JavaScript para abrir tu escritorio de TypeOpos Studio.</noscript>
+  <noscript>Activa JavaScript para abrir tu escritorio de OpoNexus Studio.</noscript>
   <script>
   'use strict';
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
@@ -764,7 +856,7 @@
   $('#modal').addEventListener('click',e=>{if(e.target===$('#modal')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeModal()}});
   function modalError(msg){let e=$('#modal-error');if(!e){e=document.createElement('p');e.id='modal-error';e.className='modal-error';$('#modal-body').append(e)}e.textContent=msg}
   function download(blob,name){const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),30000)}
-  async function database(){return new Promise((resolve,reject)=>{const r=indexedDB.open('TypeOposFiles',1);r.onupgradeneeded=()=>r.result.createObjectStore('files');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
+  async function database(){return new Promise((resolve,reject)=>{const r=indexedDB.open('OpoNexusFiles',1);r.onupgradeneeded=()=>r.result.createObjectStore('files');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
   async function fileStore(mode,key,value){const db=await database();return new Promise((res,rej)=>{const tx=db.transaction('files',mode==='get'?'readonly':'readwrite'),s=tx.objectStore('files'),r=mode==='get'?s.get(key):mode==='remove'?s.delete(key):s.put(value,key);tx.oncomplete=()=>{res(r.result);db.close()};tx.onerror=()=>{rej(tx.error);db.close()};tx.onabort=()=>{rej(tx.error||new Error('No se ha guardado el archivo.'));db.close()}})}
   function topicState(t){return t.errors>1?['bad','Crítico']:t.rounds>2?['good','Dominado']:t.rounds>0?['','En repaso']:['new','Sin empezar']}
   function stateLabel(t){const [c,l]=topicState(t);return `<span class="state-label ${c}"><i></i>${l}</span>`}
@@ -778,16 +870,21 @@
     const practicing=['tests','cases','flash','quiz'].includes(currentPage);
     const o = opp();
     $('#header').innerHTML=`<div class="nav-shell">
-      <button class="brand" data-go="home" aria-label="TypeOpos Studio, mi escritorio">
+      <button class="brand" data-go="home" aria-label="OpoNexus Studio, mi escritorio">
         ${logo}
-        <span class="brand-name">TypeOpos</span>
-        <span class="studio-label">STUDIO</span>
+        <span class="brand-name" style="font-weight:700;letter-spacing:-0.5px">OpoNexus</span><span class="studio-label" style="background:#553396;color:#fff;border-radius:6px;padding:1px 6px">PRO</span>
       </button>
       <button class="pill active-opp-header" data-act="switch-opp" title="Cambiar de oposición activa" style="display:inline-flex;align-items:center;gap:6px;background:#f8f6f0;border:1.5px solid #d9d1f0;border-radius:20px;padding:3px 11px;font-size:12px;font-weight:600;color:#553396;cursor:pointer">
         <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#38a169"></span>
         <span>${esc(o.short||o.name)}</span>
         <span style="opacity:.65;font-size:11px">(${o.topics.length} temas)</span>
         ${I('down',10)}
+      </button>
+      <!-- User Profile Pill -->
+      <button class="pill user-profile-header" data-act="profile-manager" title="Gestor de perfiles: cambiar o crear perfil para una amiga" style="display:inline-flex;align-items:center;gap:5px;background:#fff;border:1.5px solid #d9d1f0;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600;color:#553396;cursor:pointer">
+        <span>👤</span>
+        <span id="header-user-name">${esc(currentUserName())}</span>
+        ${I('down',9)}
       </button>
       <nav class="main-nav" aria-label="Navegación principal">
         <button class="nav-item ${currentPage==='home'?'active':''}" data-go="home">${I('grid',16)}Escritorio</button>
@@ -834,7 +931,7 @@
   function parseSyllabus(text){const bs=[],ts=[];let b='Temario general';function add(title,block,content=''){if(typeof title!=='string'||!title.trim())return;const bn=String(block||b).trim();if(!bs.includes(bn))bs.push(bn);ts.push({id:uid(),title:title.trim().slice(0,200),b:bs.indexOf(bn),text:String(content||'').slice(0,200000),rounds:0,errors:0,source:'',assets:[],updated:0})}if(text.trim().startsWith('[')||text.trim().startsWith('{')){let js;try{js=JSON.parse(text)}catch{throw Error('El JSON no es válido. Comprueba las comillas y las comas.')}const arr=Array.isArray(js)?js:js.temas||js.topics;if(!Array.isArray(arr))throw Error('El JSON debe contener una lista de temas.');arr.slice(0,500).forEach(t=>typeof t==='string'?add(t,b):add(t?.titulo||t?.title,t?.bloque||t?.block,t?.texto||t?.text))}else{for(const line of text.split('\n').slice(0,600)){if(line.trim().startsWith('#'))b=line.replace(/^\s*#+\s*/,'').trim()||b;else add(line.replace(/^\s*[-*]\s*/,''),b)}}return {blocks:bs.length?bs:['Temario general'],topics:ts}}
   function planModal(){const ds=daysOfWeek(),sum=ds.reduce((v,d)=>v+(dateKey(d)===dateKey()?elapsedToday():state.days[dateKey(d)]||0),0);modal('Mi planificador',`<p>Un objetivo sostenible para los siete días de la semana.</p><div class="between"><b>Esta semana</b><span class="tag">${humanMins(sum/60)} de ${humanMins(state.goal*7)}</span></div><div class="stack" style="gap:0;margin:10px 0 19px">${ds.map(d=>{const s=dateKey(d)===dateKey()?elapsedToday():(state.days[dateKey(d)]||0);return `<div class="history-row"><span>${esc(d.toLocaleDateString('es-ES',{weekday:'long',day:'numeric'}))}</span><span>${humanMins(s/60)} / ${humanMins(state.goal)}</span></div>`}).join('')}</div><form id="goal-form" class="stack"><label class="field"><span>Objetivo diario en minutos</span><input required name="goal" type="number" min="5" max="720" value="${state.goal}"></label><button class="btn primary">Guardar planificación</button></form>`)}
   function toggleSession(){if(state.session){let start=state.session;const now=Date.now();while(start<now){const end=new Date(start);end.setHours(24,0,0,0);const until=Math.min(now,+end),k=dateKey(new Date(start));state.days[k]=(state.days[k]||0)+Math.floor((until-start)/1000);start=until}state.session=0;toast('Sesión guardada en tu jornada.')}else{state.session=Date.now();toast('Sesión iniciada. Puedes seguir usando tu escritorio.')}save();renderRoute(false)}
-  function settings(){modal('Mi espacio personal',`<p>TypeOpos Studio · Ultimate Edition</p><form id="settings-form" class="stack"><label class="field"><span>Nombre de tu perfil</span><input name="name" required maxlength="35" value="${esc(state.name)}"></label><label class="field"><span>Objetivo diario (minutos)</span><input name="goal" type="number" min="5" max="720" required value="${state.goal}"></label><button class="btn primary">Guardar preferencias</button></form><div class="divider"></div><div class="stack">${btn('Gestionar oposiciones','switch-opp','layers')}${btn('Configurar inteligencia artificial','ai-settings','sparkle')}${btn('Descargar copia de mis datos','backup','download')}${btn('Restaurar una copia','restore','upload')}</div><div class="notice" style="margin-top:16px">${state.demo?'El cuaderno de muestra incluye progreso y apuntes de ejemplo. ':''}Tus datos se guardan en este navegador. Una copia incluye los documentos y el progreso, nunca la clave de IA.</div>${state.demo?`<div class="modal-actions">${btn('Empezar con el progreso a cero','clear-demo','refresh','sm')}</div>`:''}`)}
+  function settings(){modal('Mi espacio personal',`<p>OpoNexus Studio · Ultimate Edition</p><form id="settings-form" class="stack"><label class="field"><span>Nombre de tu perfil</span><input name="name" required maxlength="35" value="${esc(state.name)}"></label><label class="field"><span>Objetivo diario (minutos)</span><input name="goal" type="number" min="5" max="720" required value="${state.goal}"></label><button class="btn primary">Guardar preferencias</button></form><div class="divider"></div><div class="stack">${btn('Gestionar oposiciones','switch-opp','layers')}${btn('Configurar inteligencia artificial','ai-settings','sparkle')}${btn('Descargar copia de mis datos','backup','download')}${btn('Restaurar una copia','restore','upload')}</div><div class="notice" style="margin-top:16px">${state.demo?'El cuaderno de muestra incluye progreso y apuntes de ejemplo. ':''}Tus datos se guardan en este navegador. Una copia incluye los documentos y el progreso, nunca la clave de IA.</div>${state.demo?`<div class="modal-actions">${btn('Empezar con el progreso a cero','clear-demo','refresh','sm')}</div>`:''}`)}
   
   function setLibraryLawFilter(lawQuery) {
     libraryQuery = lawQuery;
@@ -1113,7 +1210,7 @@
   function topicList(){const o=opp();let count=0;const html=o.blocks.map((b,bi)=>{const ts=o.topics.filter(t=>t.b===bi&&norm(t.title+' '+b).includes(norm(libraryQuery))&&(!libraryFilter||(topicState(t)[0]||'review')===libraryFilter));count+=ts.length;if(!ts.length)return '';return `<details class="block-group" ${libraryQuery||libraryFilter||bi===0?'open':''}><summary><span class="block-index">${String(bi+1).padStart(2,'0')}</span><span>${esc(b)}</span><span class="block-count">${ts.length} temas</span>${I('down',15)}</summary>${ts.map(t=>`<button class="topic-row" data-act="read" data-id="${esc(t.id)}"><span class="topic-no">${String(o.topics.indexOf(t)+1).padStart(2,'0')}</span><span class="topic-title">${esc(t.title)}</span>${t.assets?.length?I('file',12):''}${stateLabel(t)}${I('right',13)}</button>`).join('')}</details>`}).join('');return count?html:`<div class="empty-state">${I('book',30)}<h3>${o.topics.length?'No hay coincidencias':'Tu cuaderno está listo'}</h3><p>${o.topics.length?'Prueba con otro término o cambia el filtro.':'Añade un tema o importa tus primeros apuntes para comenzar.'}</p>${o.topics.length?btn('Quitar filtros','reset-filter'):btn('Añadir mi primer tema','add-topic','plus')}</div>`}
   function addTopic(){modal('Añadir un tema',`<form id="topic-form" class="stack"><label class="field"><span>Título del tema</span><input name="title" required maxlength="200" placeholder="Ej. Los recursos administrativos"></label><label class="field"><span>Bloque</span><input list="block-options" name="block" required value="${esc(opp().blocks[0]||'Temario general')}"><datalist id="block-options">${opp().blocks.map(b=>`<option value="${esc(b)}">`).join('')}</datalist><small>Elige un bloque existente o escribe el nombre de uno nuevo.</small></label><label class="field"><span>Apuntes iniciales <small>(opcional)</small></span><textarea name="text" placeholder="Pega aquí tus apuntes..."></textarea></label><button class="btn primary">Crear tema</button></form>`)}
   let pendingFiles=[],pdfEngine=null;
-  function importNotes(id=''){pendingFiles=[];const t=topic(id)||currentTopic();modal('Importar apuntes',`<p>Archivos privados, guardados solo en este dispositivo.</p><form id="import-form" class="stack"><label class="field"><span>Tema de destino</span><select name="topic" id="import-topic"><option value="auto" selected>✨ Clasificación automática inteligente (detecta bloque y tema de cada PDF)</option><option value="new">➕ Crear un tema nuevo con estos apuntes</option>${opp().topics.map(x=>`<option value="${esc(x.id)}" ${x.id===t?.id?'selected':''}>${esc(x.title)}</option>`).join('')}</select></label><label class="field" id="import-title-field" ${t?'hidden':''}><span>Título del nuevo tema</span><input name="title" maxlength="200" placeholder="Nombre de tus apuntes"></label><div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Elegir archivos PDF, TXT o Markdown">${I('upload',25)}<strong>Arrastra tus apuntes aquí</strong><small>o haz clic para elegir · PDF, TXT y Markdown · máx. 30 MB por archivo</small></div><input type="file" id="note-files" accept=".pdf,.txt,.md,.markdown" multiple hidden><div id="chosen-files" class="small muted" hidden></div><label class="field"><span>O pega el texto directamente</span><textarea name="text" rows="4" placeholder="Tu temario, artículos, definiciones..."></textarea></label><label class="field"><span>URL de la fuente <small>(opcional)</small></span><input name="source" type="url" placeholder="https://www.boe.es/..."></label><label class="checkline"><input type="checkbox" name="replace">Reemplazar el texto anterior del tema en vez de ampliarlo.</label><div id="import-status" class="small muted" aria-live="polite"></div><div id="modal-error" class="modal-error"></div><button class="btn primary" type="submit">${I('upload',15)}Guardar mis apuntes</button></form>`);const drop=$('#dropzone');drop.onclick=()=>$('#note-files').click();drop.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('#note-files').click()}};drop.ondragover=e=>{e.preventDefault();drop.classList.add('drag')};drop.ondragleave=()=>drop.classList.remove('drag');drop.ondrop=e=>{e.preventDefault();drop.classList.remove('drag');updateFiles([...e.dataTransfer.files])};$('#note-files').onchange=e=>updateFiles([...e.target.files]);$('#import-topic').onchange=e=>$('#import-title-field').hidden=e.target.value!=='new'}
+  function importNotes(id=''){pendingFiles=[];const t=topic(id)||currentTopic();modal('Importar apuntes',`<p>Archivos privados, guardados solo en este dispositivo.</p><form id="import-form" class="stack"><label class="field"><span>Tema de destino</span><select name="topic" id="import-topic"><option value="auto" selected>✨ Clasificación automática inteligente (detecta bloque y tema de cada PDF)</option><option value="new">➕ Crear un tema nuevo con estos apuntes</option>${opp().topics.map(x=>`<option value="${esc(x.id)}" ${x.id===t?.id?'selected':''}>${esc(x.title)}</option>`).join('')}</select></label><label class="field" id="import-title-field" ${t?'hidden':''}><span>Título del nuevo tema</span><input name="title" maxlength="200" placeholder="Nombre de tus apuntes"></label><div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Elegir archivos PDF, audio, vídeo, presentaciones o apuntes">${I('upload',25)}<strong>Arrastra tus temas, audios o vídeos aquí</strong><small>o haz clic para elegir · PDF, Audios (MP3/M4A), Vídeos (MP4), Diapositivas (PPTX), TXT y Markdown · máx. 100 MB</small></div><input type="file" id="note-files" accept=".pdf,.txt,.md,.markdown,.mp3,.m4a,.wav,.ogg,.mp4,.webm,.pptx,.ppt,.odp" multiple hidden><div id="chosen-files" class="small muted" hidden></div><label class="field"><span>O pega el texto directamente</span><textarea name="text" rows="4" placeholder="Tu temario, artículos, definiciones..."></textarea></label><label class="field"><span>URL de la fuente <small>(opcional)</small></span><input name="source" type="url" placeholder="https://www.boe.es/..."></label><label class="checkline"><input type="checkbox" name="replace">Reemplazar el texto anterior del tema en vez de ampliarlo.</label><div id="import-status" class="small muted" aria-live="polite"></div><div id="modal-error" class="modal-error"></div><button class="btn primary" type="submit">${I('upload',15)}Guardar mis apuntes</button></form>`);const drop=$('#dropzone');drop.onclick=()=>$('#note-files').click();drop.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('#note-files').click()}};drop.ondragover=e=>{e.preventDefault();drop.classList.add('drag')};drop.ondragleave=()=>drop.classList.remove('drag');drop.ondrop=e=>{e.preventDefault();drop.classList.remove('drag');updateFiles([...e.dataTransfer.files])};$('#note-files').onchange=e=>updateFiles([...e.target.files]);$('#import-topic').onchange=e=>$('#import-title-field').hidden=e.target.value!=='new'}
   function updateFiles(list){pendingFiles=[...pendingFiles,...list].filter((f,i,a)=>a.findIndex(x=>x.name===f.name&&x.size===f.size)===i);const n=$('#chosen-files');
     n.hidden=false;
     const classifiedList = pendingFiles.map(f => {
@@ -1127,7 +1224,7 @@
   async function doImport(form){
     const fd=new FormData(form),raw=String(fd.get('text')||'').trim(),files=[...pendingFiles];
     if(!raw&&!files.length)throw Error('Añade un archivo o pega texto antes de guardar.');
-    if(files.some(f=>f.size>30*1024*1024||!(/\.(pdf|md|txt|markdown)$/i.test(f.name))))throw Error('Admite PDF, TXT o Markdown de hasta 30 MB por archivo.');
+    if(files.some(f=>f.size>100*1024*1024))throw Error('Cada archivo debe ocupar menos de 100 MB.');
     const o=opp();
     const isAuto = fd.get('topic') === 'auto';
     const isNew = fd.get('topic') === 'new';
@@ -1141,7 +1238,12 @@
         const key = uid(), pdf = /\.pdf$/i.test(f.name);
         status('Clasificando '+f.name+' en «'+targetTopic.title+'»...');
         await fileStore('put', key, f);
-        targetTopic.assets = [...(targetTopic.assets || []), { id: key, name: f.name, pdf }];
+        const isPdf = /\.pdf$/i.test(f.name);
+        const isAudio = /\.(mp3|m4a|wav|ogg|aac)$/i.test(f.name);
+        const isVideo = /\.(mp4|webm|mov)$/i.test(f.name);
+        const isSlides = /\.(pptx|ppt|odp)$/i.test(f.name);
+        const fileType = isPdf ? 'pdf' : isAudio ? 'audio' : isVideo ? 'video' : isSlides ? 'slides' : 'doc';
+        targetTopic.assets = [...(targetTopic.assets || []), { id: key, name: f.name, pdf: isPdf, type: fileType }];
         
         // Extract text if available
         let extracted = '';
@@ -1205,7 +1307,208 @@
   const tableHeads=['Figura / trámite','Órgano competente','Plazo / quórum','Efecto / excepción'];
   const tableHTML=rows=>`<div class="table-scroll"><table class="comp-table"><thead><tr>${tableHeads.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   function outlineHTML(t){const lines=summarize(t.text),n=words(lines.join(' ')).length,w=words(t.text).length;return `<div class="row wrap" style="margin-bottom:16px"><span class="tag">Síntesis local</span><span class="tiny muted">${n} de ${w} palabras · ${w?Math.round(100*n/w):0}% del original</span></div>${Object.entries(outlineGroups(lines)).map(([g,arr])=>`<div class="outline-group"><h4>${g}</h4><ul class="outline">${arr.map(s=>`<li>${highlight(s)}</li>`).join('')}</ul></div>`).join('')||'<p class="muted">Añade más texto para obtener una síntesis útil.</p>'}`}
-  function reader(id,schemes=false){const t=topic(id)||currentTopic();if(!t)return `<div class="page">${heading('Mis esquemas','Convierte tus apuntes en un repaso breve.')}<div class="surface empty-state">${I('book',30)}<h3>Empieza con un tema</h3><p>Importa tus apuntes para generar tu primer esquema.</p>${btn('Importar apuntes','import','upload','primary')}</div></div>`;opp().lastTopic=t.id;const pdfs=(t.assets||[]).filter(a=>a.pdf),isPdf=sourceTab==='pdf'&&pdfs.length,empty=`<div class="empty-state">${I('file',27)}<h3>Aún no hay texto</h3><p>Sube un documento o pega tus apuntes para empezar.</p><button class="btn soft" data-act="import" data-id="${esc(t.id)}">${I('upload',15)}Importar apuntes</button></div>`;return `<div class="page"><button class="bread" data-go="library">${I('back',13)}Volver al temario</button>${heading(schemes?'Esquemas de estudio':t.title,schemes?'Tu texto original y sus ideas esenciales, lado a lado.':opp().blocks[t.b]+' · '+t.rounds+' vueltas de estudio',`<div class="row">${btn('Importar','import','upload')}${btn('Marcar repaso','reviewed','check','primary')}</div>`,opp().short+' / Bloque '+(t.b+1))}${schemes?`<label class="field" style="margin-bottom:17px"><span>Tema de trabajo</span><select id="scheme-topic">${opp().topics.map(x=>`<option value="${esc(x.id)}" ${x.id===t.id?'selected':''}>${esc(x.title)}${x.text?'':' · sin apuntes'}</option>`).join('')}</select></label>`:''}<div class="split-reader"><section class="surface reader-col"><div class="reader-head"><h2>${I('book',16)}Documento original</h2><button class="icon-btn" data-act="edit-notes" aria-label="Editar apuntes">${I('pen',15)}</button></div>${pdfs.length?`<div class="row" style="padding:8px 16px"><button class="tab ${!isPdf?'selected':''}" data-act="source-text">Texto</button><button class="tab ${isPdf?'selected':''}" data-act="source-pdf">PDF original</button>${isPdf&&pdfs.length>1?`<select class="select" id="pdf-select">${pdfs.map(a=>`<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('')}</select>`:''}</div>`:''}<div class="document-body" id="source-body">${isPdf?`<div class="pdf-host" data-asset="${esc(pdfs[0].id)}"><span class="loading"></span> Abriendo documento local...</div>`:t.text?t.text.split(/\n\s*\n|\n/).filter(Boolean).map(s=>`<p>${highlight(s)}</p>`).join(''):empty}</div>${t.source?`<div class="export-bar"><a class="law-link" href="${esc(safeURL(t.source))}" target="_blank" rel="noopener noreferrer">Consultar fuente ${I('external',12)}</a></div>`:''}</section><section class="surface reader-col"><div class="reader-head"><div class="tabs">${[['outline','Esquema de llaves { }'],['table','Cuadros y Tablas'],['summary','Resumen Anti-Paja'],['tools','Practicar']].map(([k,l])=>`<button class="tab ${readerTab===k?'selected':''}" data-act="reader-tab" data-id="${k}">${l}</button>`).join('')}</div>${I('sparkle',16)}</div><div class="document-body">${readerTab==='tools'?`<h3 class="panel-title">Ponlo en práctica</h3><div class="stack">${btn('Test sobre este tema','topic-test','list')}${btn('Crear preguntas con IA','ai-questions','sparkle')}${btn('Generar supuesto práctico con IA','ai-case','scale')}${btn('Repasar flashcards','topic-flash','cards')}${btn('Jugar con mi temario','topic-game','game')}</div>`:!t.text?empty:readerTab==='table'?`<p class="small muted" style="margin-bottom:12px">Datos identificados en el texto. «No consta» indica que no se especifica en el fragmento.</p>${tableHTML(compareRows(t))}`:outlineHTML(t)}</div>${t.text&&readerTab!=='tools'?`<div class="export-bar"><span class="tiny muted" style="width:100%">EXPORTAR ${readerTab==='table'?'TABLA':'ESQUEMA'}</span>${btn('PDF · 1 columna','pdf1','download','sm')}${btn('PDF · 2 columnas','pdf2','download','sm')}${btn('Word .docx','docx','file','sm')}</div>`:''}</section></div></div>`}
+  function downloadWordDoc(t, tab) {
+    const title = t.title || 'Tema';
+    const content = tab === 'table' ? generateCuadrosHTML(t) : tab === 'summary' ? generateExecutiveSummaryHTML(t) : generateBracketTreeHTML(t);
+    const html = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head><meta charset='utf-8'><title>${title}</title>
+      <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; color: #222; }
+        h1 { color: #553396; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ccc; padding: 8px 12px; }
+        th { background: #f0eef9; color: #553396; }
+      </style>
+      </head>
+      <body>
+        <h1>${title} - OpoNexus Studio</h1>
+        <p><em>${opp().short || 'GACE A2'} · ${tab === 'table' ? 'Cuadro Sinóptico y Tablas' : tab === 'summary' ? 'Resumen Anti-Paja' : 'Esquema de Llaves'}</em></p>
+        <hr>
+        ${content}
+      </body>
+      </html>
+    `;
+    const blob = new Blob([html], { type: 'application/msword;charset=utf-8' });
+    download(blob, `OpoNexus-${title.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '_')}.doc`);
+    toast('Documento Word descargado.');
+  }
+
+  function renderMediaBar(t) {
+    const assets = t.assets || [];
+    const audios = assets.filter(a => a.type === 'audio' || /\.(mp3|m4a|wav|ogg)$/i.test(a.name));
+    const videos = assets.filter(a => a.type === 'video' || /\.(mp4|webm|mov)$/i.test(a.name));
+    const slides = assets.filter(a => a.type === 'slides' || /\.(pptx|ppt|odp)$/i.test(a.name));
+
+    if (!audios.length && !videos.length && !slides.length) return '';
+
+    return `
+      <div class="media-card stack" style="gap:10px">
+        <div class="row between">
+          <strong style="color:var(--deep);font-size:13px">🎵 Materiales Multimedia del Tema</strong>
+          <span class="tag" style="background:#f0eef9;color:#553396;font-size:10px">${audios.length + videos.length + slides.length} adjuntos</span>
+        </div>
+        ${audios.map(a => `
+          <div style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid var(--line)">
+            <div class="row between small" style="margin-bottom:4px">
+              <span>🎧 <strong>Audio de clase / voz:</strong> ${esc(a.name)}</span>
+              <label class="row tiny muted">Velocidad <select onchange="this.closest('div').parentElement.querySelector('audio').playbackRate = +this.value" style="padding:1px 4px;font-size:10px"><option value="1">1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option></select></label>
+            </div>
+            <audio controls style="width:100%;height:32px" id="audio-${esc(a.id)}"></audio>
+          </div>
+        `).join('')}
+        ${videos.map(v => `
+          <div style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid var(--line)">
+            <div class="small" style="margin-bottom:4px">🎬 <strong>Vídeo explicativo:</strong> ${esc(v.name)}</div>
+            <video controls style="width:100%;max-height:220px;border-radius:6px;background:#000" id="video-${esc(v.id)}"></video>
+          </div>
+        `).join('')}
+        ${slides.map(s => `
+          <div class="row between" style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid var(--line);font-size:12px">
+            <span>📊 <strong>Diapositivas PowerPoint:</strong> ${esc(s.name)}</span>
+            <button class="btn sm soft" onclick="toast('Descargando presentación...');">Descargar PPTX</button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  function reader(id, schemes = false) {
+    const t = topic(id) || currentTopic();
+    if (!t) return `<div class="page">${heading('Mis esquemas', 'Convierte tus apuntes en un repaso estructurado y visual.')}<div class="surface empty-state">${I('book', 30)}<h3>Empieza con un tema</h3><p>Importa tus apuntes para generar tu primer esquema.</p>${btn('Importar apuntes', 'import', 'upload', 'primary')}</div></div>`;
+    opp().lastTopic = t.id;
+    const pdfs = (t.assets || []).filter(a => a.pdf || /\.pdf$/i.test(a.name));
+    const isPdf = sourceTab === 'pdf' && pdfs.length;
+    const empty = `<div class="empty-state">${I('file', 27)}<h3>Aún no hay apuntes en este tema</h3><p>Sube un documento, PDFs, audios o pega tus apuntes para activar el cuaderno.</p><button class="btn soft" data-act="import" data-id="${esc(t.id)}">${I('upload', 15)}Importar apuntes o audios</button></div>`;
+
+    return `
+      <div class="page font-mode-${currentFontMode}">
+        <button class="bread" data-go="library">${I('back', 13)} Volver al temario</button>
+        ${heading(schemes ? 'Esquemas y Cuadros de Estudio' : t.title, schemes ? 'Tu texto oficial y sus ideas esenciales en esquema de llaves, cuadros y resumen.' : (opp().blocks[t.b] || 'Temario') + ' · ' + t.rounds + ' vueltas de estudio', `
+          <div class="row" style="gap:6px">
+            ${btn('Importar apuntes / audio', 'import', 'upload', 'sm')}
+            ${btn('Marcar vuelta', 'reviewed', 'check', 'primary', 'sm')}
+          </div>
+        `, (opp().short || 'GACE A2') + ' / Bloque ' + ((t.b || 0) + 1))}
+
+        ${schemes ? `
+          <label class="field" style="margin-bottom:17px"><span>Tema seleccionado</span>
+            <select id="scheme-topic">
+              ${opp().topics.map(x => `<option value="${esc(x.id)}" ${x.id === t.id ? 'selected' : ''}>${esc(x.title)}${x.text ? '' : ' · sin apuntes'}</option>`).join('')}
+            </select>
+          </label>
+        ` : ''}
+
+        <div class="split-reader">
+          <!-- COLUMNA IZQUIERDA: DOCUMENTO ORIGINAL / VISOR / AUDIOS -->
+          <section class="surface reader-col">
+            <div class="reader-head">
+              <div class="row" style="gap:8px">
+                <h2>${I('book', 16)} Documento original</h2>
+                <button class="icon-btn" data-act="edit-notes" title="Editar texto">${I('pen', 14)}</button>
+              </div>
+              <!-- Barra de Subrayadores Pastel -->
+              <div class="row" style="gap:4px">
+                <span class="tiny muted">Subrayar:</span>
+                <button class="icon-btn" onclick="activePastelColor='yellow';applyPastelHighlight();" title="Amarillo pastel" style="width:20px;height:20px;border-radius:50%;background:#fef08a;border:1.5px solid #d4c547;padding:0"></button>
+                <button class="icon-btn" onclick="activePastelColor='green';applyPastelHighlight();" title="Verde pastel" style="width:20px;height:20px;border-radius:50%;background:#bbf7d0;border:1.5px solid #86efac;padding:0"></button>
+                <button class="icon-btn" onclick="activePastelColor='pink';applyPastelHighlight();" title="Rosa pastel" style="width:20px;height:20px;border-radius:50%;background:#fbcfe8;border:1.5px solid #f472b6;padding:0"></button>
+                <button class="icon-btn" onclick="activePastelColor='blue';applyPastelHighlight();" title="Azul pastel" style="width:20px;height:20px;border-radius:50%;background:#bfdbfe;border:1.5px solid #60a5fa;padding:0"></button>
+                <button class="icon-btn" onclick="activePastelColor='purple';applyPastelHighlight();" title="Lavanda pastel" style="width:20px;height:20px;border-radius:50%;background:#e9d5ff;border:1.5px solid #c084fc;padding:0"></button>
+              </div>
+            </div>
+
+            ${pdfs.length ? `
+              <div class="row" style="padding:8px 16px;background:#faf8f5;border-bottom:1px solid var(--line)">
+                <button class="tab ${!isPdf ? 'selected' : ''}" data-act="source-text">Texto de apuntes</button>
+                <button class="tab ${isPdf ? 'selected' : ''}" data-act="source-pdf">PDF original (${pdfs.length})</button>
+                ${isPdf && pdfs.length > 1 ? `
+                  <select class="select" id="pdf-select" style="flex:1;max-width:220px;padding:2px 8px;font-size:11px">
+                    ${pdfs.map(a => `<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('')}
+                  </select>
+                ` : ''}
+              </div>
+            ` : ''}
+
+            <!-- Barra Multimedia (si hay audios/vídeos) -->
+            ${renderMediaBar(t)}
+
+            <div class="document-body notebook-bg-${currentPaperBg}" id="source-body">
+              ${isPdf ? `
+                <div class="pdf-host" data-asset="${esc(pdfs[0].id)}"><span class="loading"></span> Abriendo visor de PDF local...</div>
+              ` : t.text ? t.text.split(/\n\s*\n|\n/).filter(Boolean).map(s => `<p>${highlight(s)}</p>`).join('') : empty}
+            </div>
+
+            ${t.source ? `
+              <div class="export-bar"><a class="law-link" href="${esc(safeURL(t.source))}" target="_blank" rel="noopener noreferrer">Consultar fuente oficial BOE / INAP ${I('external', 12)}</a></div>
+            ` : ''}
+          </section>
+
+          <!-- COLUMNA DERECHA: ESQUEMAS, CUADROS, RESUMEN ANTIPAJA -->
+          <section class="surface reader-col">
+            <div class="reader-head">
+              <div class="tabs">
+                ${[['outline', '🌳 Esquema de Llaves { }'], ['table', '⚖️ Cuadros y Tablas'], ['summary', '🎯 Resumen Anti-Paja'], ['tools', 'Practicar']].map(([k, l]) => `
+                  <button class="tab ${readerTab === k ? 'selected' : ''}" data-act="reader-tab" data-id="${k}">${l}</button>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Barra de Opciones de Cuaderno (Fondo y Tipografía) -->
+            <div class="row between wrap" style="padding:6px 14px;background:#fdfbf7;border-bottom:1px solid var(--line);font-size:11px">
+              <div class="row" style="gap:6px">
+                <span class="muted">Fondo:</span>
+                <button class="btn sm soft ${currentPaperBg === 'grid' ? 'primary' : ''}" onclick="setPaperBg('grid')" style="padding:2px 7px;font-size:10px">⊞ Cuadrícula</button>
+                <button class="btn sm soft ${currentPaperBg === 'dots' ? 'primary' : ''}" onclick="setPaperBg('dots')" style="padding:2px 7px;font-size:10px">⁝ Punteado</button>
+                <button class="btn sm soft ${currentPaperBg === 'lines' ? 'primary' : ''}" onclick="setPaperBg('lines')" style="padding:2px 7px;font-size:10px">≡ Rayado</button>
+                <button class="btn sm soft ${currentPaperBg === 'plain' ? 'primary' : ''}" onclick="setPaperBg('plain')" style="padding:2px 7px;font-size:10px">◻ Liso</button>
+              </div>
+              <div class="row" style="gap:6px">
+                <span class="muted">Tipografía:</span>
+                <select class="select" onchange="setFontMode(this.value)" style="padding:2px 6px;font-size:11px">
+                  <option value="sans" ${currentFontMode === 'sans' ? 'selected' : ''}>Sans Limpia (Inter)</option>
+                  <option value="round" ${currentFontMode === 'round' ? 'selected' : ''}>Redondita (Nunito)</option>
+                  <option value="serif" ${currentFontMode === 'serif' ? 'selected' : ''}>Clásica (Lora)</option>
+                  <option value="mono" ${currentFontMode === 'mono' ? 'selected' : ''}>Mecanografía</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="document-body notebook-bg-${currentPaperBg}">
+              ${readerTab === 'tools' ? `
+                <h3 class="panel-title">Ponlo en práctica</h3>
+                <div class="stack" style="gap:10px;margin-top:10px">
+                  ${btn('Test sobre este tema', 'topic-test', 'list')}
+                  ${btn('Generar preguntas con IA', 'ai-questions', 'sparkle')}
+                  ${btn('Generar supuesto práctico con IA', 'ai-case', 'scale')}
+                  ${btn('Repasar flashcards del tema', 'topic-flash', 'cards')}
+                  ${btn('Jugar en OpoArcade', 'topic-game', 'game')}
+                </div>
+              ` : readerTab === 'table' ? `
+                ${generateCuadrosHTML(t)}
+              ` : readerTab === 'summary' ? `
+                ${generateExecutiveSummaryHTML(t)}
+              ` : `
+                ${generateBracketTreeHTML(t)}
+              `}
+            </div>
+
+            <!-- Barra de Exportación Completa -->
+            ${readerTab !== 'tools' ? `
+              <div class="export-bar wrap" style="gap:6px">
+                <span class="tiny muted" style="width:100%">EXPORTAR ${readerTab === 'table' ? 'CUADROS Y TABLAS' : readerTab === 'summary' ? 'RESUMEN ANTIPAJA' : 'ESQUEMA DE LLAVES'}</span>
+                <button class="btn sm soft" data-act="pdf1" title="Descargar PDF 1 columna con fondo de libreta">${I('download', 12)} PDF · 1 columna</button>
+                <button class="btn sm soft" data-act="pdf2" title="Descargar PDF 2 columnas / doble página">${I('download', 12)} PDF · 2 columnas</button>
+                <button class="btn sm soft" onclick="downloadWordDoc(currentTopic(), readerTab)" title="Descargar en formato Word .doc">${I('file', 12)} Descargar Word .doc</button>
+                <button class="btn sm" onclick="window.print()" title="Imprimir">${I('printer', 12) || '🖨️'} Imprimir</button>
+              </div>
+            ` : ''}
+          </section>
+        </div>
+      </div>
+    `;
+  }
+
   async function openPdfHost(asset){
     const host=$('#modal[open] .pdf-host')||$('#contenido .pdf-host');
     if(!host)return;
@@ -1298,7 +1601,7 @@
     }
   }
   // PDF objects and the OOXML package are built locally, without an export service.
-  function pdfBlob(t,cols=1,tab=readerTab){const W=595,H=842,M=35,gap=21,cw=(W-2*M-(cols-1)*gap)/cols,pages=[];let pg='',y=0,col=0,top=0;const ctx=document.createElement('canvas').getContext('2d');const hex=s=>Array.from(String(s).replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,'-').replace(/…/g,'...')).map(c=>(c.charCodeAt(0)<256?c.charCodeAt(0):c==='€'?128:63).toString(16).padStart(2,'0')).join('');const txt=(x,yy,s,size=10,b=false,color='.18 .21 .26')=>{pg+=`${color} rg BT /F${b?2:1} ${size} Tf 1 0 0 1 ${x.toFixed(2)} ${(H-yy).toFixed(2)} Tm <${hex(s)}> Tj ET\n`};const rect=(x,yy,w,h,color)=>{pg+=`${color} rg ${x.toFixed(2)} ${(H-yy-h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re f\n`};function wrapText(s,width,size,b=false){ctx.font=(b?'bold ':'')+size+'px Arial';const out=[];let line='';for(const word of words(s)){if(ctx.measureText(line+(line?' ':'')+word).width>width&&line){out.push(line);line=''}if(ctx.measureText(word).width>width){for(const char of word){if(ctx.measureText(line+char).width>width&&line){out.push(line);line=''}line+=char}}else line+=(line?' ':'')+word}if(line)out.push(line);return out}function newPage(){if(pg)pages.push(pg);pg='';rect(0,0,W,H,'.980 .969 .949');rect(0,0,W,42,'.867 .839 .969');txt(M,26,'TypeOpos Studio  /  Cuaderno de repaso',11,true);const titleLines=wrapText(t.title,W-M*2,18,true);y=69;for(const l of titleLines){txt(M,y,l,18,true);y+=22}txt(M,y+5,opp().short+'  |  '+(tab==='table'?'Tabla comparativa':'Esquema esencial')+'  |  '+cols+(cols===1?' columna':' columnas'),9);top=y+25;y=top;col=0;txt(M,H-22,'TypeOpos Studio  -  '+new Date().toLocaleDateString('es-ES'),8);txt(W-M-17,H-22,String(pages.length+1),8)}function nextCol(){if(col+1<cols){col++;y=top}else newPage()}newPage();if(tab==='table'){const rows=compareRows(t),widths=[.25,.24,.22,.29].map(r=>cw*r),font=cols===2?7.1:9.3;function row(cells,head=false){const wrap=cells.map((c,i)=>wrapText(c,widths[i]-8,font,head)),height=Math.max(...wrap.map(l=>l.length))*(font+3)+10;if(y+height>H-45){nextCol();if(!head)row(tableHeads,true)}let x=M+col*(cw+gap);wrap.forEach((lines,i)=>{rect(x,y,widths[i]-.7,height-.7,head?'.867 .839 .969':i%2?'.952 .964 .930':'.988 .983 .967');lines.forEach((l,j)=>txt(x+4,y+font+4+j*(font+3),l,font,head));x+=widths[i]});y+=height}row(tableHeads,true);rows.forEach((r,i)=>{if(cols===2&&i===Math.ceil(rows.length/2)&&col===0){nextCol();row(tableHeads,true)}row(r)})}else{const groups=Object.entries(outlineGroups(summarize(t.text))),units=[];for(const [group,ls] of groups){units.push({s:group,head:true});for(const l of ls)units.push({s:l,head:false})}const mid=Math.ceil(units.length/2);units.forEach((u,idx)=>{if(cols===2&&idx===mid&&col===0)nextCol();const size=u.head?11:10,ls=wrapText(u.s,cw-(u.head?12:15),size,u.head),height=ls.length*14+11;if(y+height>H-43)nextCol();const x=M+col*(cw+gap);if(u.head){rect(x,y,cw,height-3,'.733 .941 .816');ls.forEach((l,j)=>txt(x+6,y+14+j*14,l,size,true))}else{rect(x+2,y+6,3,3,'.55 .43 .63');ls.forEach((l,j)=>txt(x+12,y+11+j*14,l,size))}y+=height})}if(t.source){if(y+47>H-40)nextCol();y+=16;txt(M+col*(cw+gap),y,'Fuente de los apuntes:',8,true);for(const l of wrapText(t.source,cw,7)){y+=10;if(y>H-40)nextCol();txt(M+col*(cw+gap),y,l,7)}}pages.push(pg);const objects=['<< /Type /Catalog /Pages 2 0 R >>',`<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_,i)=>(5+2*i)+' 0 R').join(' ')}] >>`,'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>','<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'];pages.forEach((p,i)=>{objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${6+2*i} 0 R >>`);objects.push('<< /Length '+p.length+' >>\nstream\n'+p+'endstream')});let doc='%PDF-1.4\n',offsets=[0];objects.forEach((o,i)=>{offsets.push(doc.length);doc+=(i+1)+' 0 obj\n'+o+'\nendobj\n'});const pos=doc.length;doc+='xref\n0 '+offsets.length+'\n0000000000 65535 f \n'+offsets.slice(1).map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('')+'trailer\n<< /Size '+offsets.length+' /Root 1 0 R >>\nstartxref\n'+pos+'\n%%EOF';return new Blob([doc],{type:'application/pdf'})}
+  function pdfBlob(t,cols=1,tab=readerTab){const W=595,H=842,M=35,gap=21,cw=(W-2*M-(cols-1)*gap)/cols,pages=[];let pg='',y=0,col=0,top=0;const ctx=document.createElement('canvas').getContext('2d');const hex=s=>Array.from(String(s).replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,'-').replace(/…/g,'...')).map(c=>(c.charCodeAt(0)<256?c.charCodeAt(0):c==='€'?128:63).toString(16).padStart(2,'0')).join('');const txt=(x,yy,s,size=10,b=false,color='.18 .21 .26')=>{pg+=`${color} rg BT /F${b?2:1} ${size} Tf 1 0 0 1 ${x.toFixed(2)} ${(H-yy).toFixed(2)} Tm <${hex(s)}> Tj ET\n`};const rect=(x,yy,w,h,color)=>{pg+=`${color} rg ${x.toFixed(2)} ${(H-yy-h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re f\n`};function wrapText(s,width,size,b=false){ctx.font=(b?'bold ':'')+size+'px Arial';const out=[];let line='';for(const word of words(s)){if(ctx.measureText(line+(line?' ':'')+word).width>width&&line){out.push(line);line=''}if(ctx.measureText(word).width>width){for(const char of word){if(ctx.measureText(line+char).width>width&&line){out.push(line);line=''}line+=char}}else line+=(line?' ':'')+word}if(line)out.push(line);return out}function newPage(){if(pg)pages.push(pg);pg='';rect(0,0,W,H,'.980 .969 .949');rect(0,0,W,42,'.867 .839 .969');txt(M,26,'OpoNexus Studio / Cuaderno Oficial',11,true);const titleLines=wrapText(t.title,W-M*2,18,true);y=69;for(const l of titleLines){txt(M,y,l,18,true);y+=22}txt(M,y+5,opp().short+'  |  '+(tab==='table'?'Tabla comparativa':'Esquema esencial')+'  |  '+cols+(cols===1?' columna':' columnas'),9);top=y+25;y=top;col=0;txt(M,H-22,'OpoNexus Studio  -  '+new Date().toLocaleDateString('es-ES'),8);txt(W-M-17,H-22,String(pages.length+1),8)}function nextCol(){if(col+1<cols){col++;y=top}else newPage()}newPage();if(tab==='table'){const rows=compareRows(t),widths=[.25,.24,.22,.29].map(r=>cw*r),font=cols===2?7.1:9.3;function row(cells,head=false){const wrap=cells.map((c,i)=>wrapText(c,widths[i]-8,font,head)),height=Math.max(...wrap.map(l=>l.length))*(font+3)+10;if(y+height>H-45){nextCol();if(!head)row(tableHeads,true)}let x=M+col*(cw+gap);wrap.forEach((lines,i)=>{rect(x,y,widths[i]-.7,height-.7,head?'.867 .839 .969':i%2?'.952 .964 .930':'.988 .983 .967');lines.forEach((l,j)=>txt(x+4,y+font+4+j*(font+3),l,font,head));x+=widths[i]});y+=height}row(tableHeads,true);rows.forEach((r,i)=>{if(cols===2&&i===Math.ceil(rows.length/2)&&col===0){nextCol();row(tableHeads,true)}row(r)})}else{const groups=Object.entries(outlineGroups(summarize(t.text))),units=[];for(const [group,ls] of groups){units.push({s:group,head:true});for(const l of ls)units.push({s:l,head:false})}const mid=Math.ceil(units.length/2);units.forEach((u,idx)=>{if(cols===2&&idx===mid&&col===0)nextCol();const size=u.head?11:10,ls=wrapText(u.s,cw-(u.head?12:15),size,u.head),height=ls.length*14+11;if(y+height>H-43)nextCol();const x=M+col*(cw+gap);if(u.head){rect(x,y,cw,height-3,'.733 .941 .816');ls.forEach((l,j)=>txt(x+6,y+14+j*14,l,size,true))}else{rect(x+2,y+6,3,3,'.55 .43 .63');ls.forEach((l,j)=>txt(x+12,y+11+j*14,l,size))}y+=height})}if(t.source){if(y+47>H-40)nextCol();y+=16;txt(M+col*(cw+gap),y,'Fuente de los apuntes:',8,true);for(const l of wrapText(t.source,cw,7)){y+=10;if(y>H-40)nextCol();txt(M+col*(cw+gap),y,l,7)}}pages.push(pg);const objects=['<< /Type /Catalog /Pages 2 0 R >>',`<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_,i)=>(5+2*i)+' 0 R').join(' ')}] >>`,'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>','<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'];pages.forEach((p,i)=>{objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${6+2*i} 0 R >>`);objects.push('<< /Length '+p.length+' >>\nstream\n'+p+'endstream')});let doc='%PDF-1.4\n',offsets=[0];objects.forEach((o,i)=>{offsets.push(doc.length);doc+=(i+1)+' 0 obj\n'+o+'\nendobj\n'});const pos=doc.length;doc+='xref\n0 '+offsets.length+'\n0000000000 65535 f \n'+offsets.slice(1).map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('')+'trailer\n<< /Size '+offsets.length+' /Root 1 0 R >>\nstartxref\n'+pos+'\n%%EOF';return new Blob([doc],{type:'application/pdf'})}
   function zipStored(files){const enc=new TextEncoder(),parts=[],central=[];let offset=0,cdSize=0;const crcTable=Array.from({length:256},(_,i)=>{let v=i;for(let j=0;j<8;j++)v=(v&1)?0xedb88320^(v>>>1):v>>>1;return v>>>0});const le=(n,size)=>Array.from({length:size},(_,i)=>(n>>>(8*i))&255);for(const [filename,content] of Object.entries(files)){const name=enc.encode(filename),data=enc.encode(content);let crc=0xffffffff;for(const byte of data)crc=crcTable[(crc^byte)&255]^(crc>>>8);crc=(crc^0xffffffff)>>>0;const common=[...le(20,2),...le(2048,2),0,0,0,0,33,0,...le(crc,4),...le(data.length,4),...le(data.length,4),...le(name.length,2),0,0];const local=Uint8Array.from([80,75,3,4,...common,...name]);parts.push(local,data);const cent=Uint8Array.from([80,75,1,2,20,0,...common,0,0,0,0,0,0,0,0,0,0,...le(offset,4),...name]);central.push(cent);cdSize+=cent.length;offset+=local.length+data.length}const n=central.length;return [...parts,...central,Uint8Array.from([80,75,5,6,0,0,0,0,...le(n,2),...le(n,2),...le(cdSize,4),...le(offset,4),0,0])]}
   function docxBlob(t,tab=readerTab){const ns='http://schemas.openxmlformats.org/wordprocessingml/2006/main',pre='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',p=(s,size=22,b=false,bg='')=>`<w:p><w:pPr>${bg?`<w:shd w:fill="${bg}"/>`:''}<w:spacing w:after="120"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>${b?'<w:b/>':''}<w:color w:val="2D3748"/><w:sz w:val="${size}"/></w:rPr><w:t xml:space="preserve">${esc(s)}</w:t></w:r></w:p>`;let body=p('OPOSAPIENS STUDIO',20,true,'DDD6FE')+p(t.title,36,true)+p(opp().short+' / '+(tab==='table'?'Tabla comparativa':'Esquema de repaso'),20);if(tab==='table'){const rows=[tableHeads,...compareRows(t)];body+='<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(x=>`<w:${x} w:val="single" w:sz="4" w:color="DDD6DE"/>`).join('')+'</w:tblBorders></w:tblPr><w:tblGrid>'+Array(4).fill('<w:gridCol w:w="2240"/>').join('')+'</w:tblGrid>'+rows.map((r,i)=>'<w:tr>'+r.map(c=>`<w:tc><w:tcPr><w:tcW w:w="2240" w:type="dxa"/><w:shd w:fill="${i===0?'DDD6FE':i%2?'FAF7F2':'E8F1E6'}"/></w:tcPr>${p(c,19,i===0)}</w:tc>`).join('')+'</w:tr>').join('')+'</w:tbl>'}else{for(const [g,ls] of Object.entries(outlineGroups(summarize(t.text)))){body+=p(g,25,true,'BBF7D0');ls.forEach(l=>body+=p('• '+l))}}if(t.source)body+=p('Fuente: '+t.source,18);const types='http://schemas.openxmlformats.org/package/2006/content-types',rels='http://schemas.openxmlformats.org/package/2006/relationships';const files={'[Content_Types].xml':pre+`<Types xmlns="${types}"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`,'_rels/.rels':pre+`<Relationships xmlns="${rels}"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`,'word/document.xml':pre+`<w:document xmlns:w="${ns}"><w:background w:color="FAF7F2"/><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1100" w:bottom="1100" w:left="1250" w:right="1250"/></w:sectPr></w:body></w:document>`};return new Blob(zipStored(files),{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})}
   function exportNotes(type){const t=currentTopic();if(!t?.text)return toast('Añade apuntes al tema antes de exportar.');const name=t.title.replace(/[^\p{L}\p{N} -]/gu,'').slice(0,80),isWord=type==='docx';download(isWord?docxBlob(t):pdfBlob(t,type==='pdf2'?2:1),name+' - '+(readerTab==='table'?'tabla':'esquema')+(isWord?'.docx':' - '+(type==='pdf2'?'2 columnas':'1 columna')+'.pdf'));toast('Documento preparado para descargar.')}
@@ -1320,8 +1623,152 @@
   {title:'Un expediente de gasto',block:'Gestión financiera y presupuestaria',file:'PRE / 042',facts:'Un ministerio tramita, con crédito adecuado y suficiente, la adquisición de equipos informáticos. Primero autoriza el gasto y reserva crédito. Después se adjudica el contrato. Entregados los equipos, se acredita la conformidad y se recibe la factura. La unidad debe identificar cada fase hasta el abono al proveedor.',docs:['Certificado de existencia de crédito.','Acuerdo de adjudicación y compromiso del gasto.','Acta de recepción y factura conformada.'],ids:[36,37,38,39,40,41],solution:'El presupuesto se refiere al año natural (art. 34.1 LGP) y el crédito es limitativo (art. 46). La aprobación reserva crédito; el compromiso vincula frente a terceros; el reconocimiento declara la obligación exigible. Siguen ordenación y pago material, conforme al art. 73 de la Ley 47/2003.'},
   {title:'La incorporación de una funcionaria',block:'Recursos humanos y TREBEP',file:'RRH / 011',facts:'Una Administración incluye una plaza en su oferta de empleo público. Las bases remiten a los requisitos generales del TREBEP, sin una edad mínima especial. Una aspirante de 17 años reúne los demás requisitos. Tras superar la selección, consulta sus vacaciones por un año completo y sus posibilidades de progresión sin cambiar de puesto.',docs:['Oferta de empleo público publicada.','Convocatoria y documentación de la aspirante.','Consulta sobre vacaciones y carrera profesional.'],ids:[31,32,33,34,35],solution:'La edad mínima general es 16 años (art. 56.1.c TREBEP). La ejecución de la oferta debe desarrollarse en tres años improrrogables (art. 70.1). Rigen igualdad, mérito y capacidad (art. 55.1). Por un año completo corresponden 22 días hábiles de vacaciones, regla general del art. 50.1. La carrera horizontal permite progresar sin cambiar de puesto (art. 16.3.a).'}];
   const caseOptions=()=>[...caseLibrary,...(opp().cases||[])];
-  function casesView(){const all=caseOptions(),c=all[chosenCase]||all[0];return `<div class="page">${heading('Supuestos prácticos','Lee el expediente, aplica la norma y razona tu respuesta.',btn('Generar supuesto con IA','ai-case','sparkle'),'Laboratorio de casos')}<div class="content-grid"><section class="surface workspace"><label class="field"><span>Bloque o supuesto</span><select id="case-select">${all.map((x,i)=>`<option value="${i}" ${i===chosenCase?'selected':''}>${esc(x.block||'Mis casos')} · ${esc(x.title)}</option>`).join('')}</select></label><div class="divider"></div><div class="row wrap"><span class="tag">Expediente ${esc(c.file||'personal')}</span><span class="tiny muted">${c.generated?'Borrador generado por IA':'Caso ficticio de entrenamiento'}</span></div><h2 class="panel-title" style="margin-top:13px">${esc(c.title)}</h2><p class="case-facts">${esc(c.facts)}</p><h4 class="field-label" style="margin:17px 0 8px">Documentos del expediente</h4>${(c.docs||[]).map((d,i)=>`<div class="row" style="padding:6px 0;font-size:12px">${I('file',14)}${String(i+1).padStart(2,'0')} · ${esc(d)}</div>`).join('')}<button class="btn primary" data-act="start-case" style="margin-top:18px">Resolver el caso · ${(c.ids||c.questions||[]).length} preguntas ${I('arrow',14)}</button></section><aside class="surface module-aside">${toolArt('cases')}<h3>Resolución motivada</h3><p>Intenta resolver el expediente antes de contrastar el razonamiento jurídico.</p><details style="margin-top:16px"><summary class="text-btn" style="cursor:pointer">Consultar resolución ${I('down',13)}</summary><p style="font-size:12px;margin-top:10px">${esc(c.solution)}</p>${(c.questions||c.ids.map(n=>bank[n-1])).slice(0,1).map(sourceLink).join('')}</details><div class="divider"></div><p class="tiny">Material de estudio, no asesoramiento jurídico. Contrasta los artículos con la norma vigente.</p></aside></div></div>`}
-  function aiSettings(){modal('Inteligencia artificial',`<p>Conecta tu propia cuenta de OpenAI. El resto del escritorio no necesita una clave.</p><form id="ai-settings-form" class="stack"><label class="field"><span>Clave de API de OpenAI</span><input name="key" type="password" autocomplete="off" placeholder="${apiKey?'Clave conectada para esta sesión':'sk-...'}"><small>Se conserva únicamente en memoria hasta cerrar o recargar la página. Usa una clave restringida en un equipo de confianza.</small></label><label class="field"><span>Modelo compatible con JSON</span><input name="model" required value="${esc(state.model)}"></label><div class="notice">El uso de la API puede generar costes en tu cuenta. No se envía nada al guardar estos ajustes.</div><button class="btn primary">Guardar configuración</button>${apiKey?btn('Desconectar clave','forget-key','lock'):''}</form>`)}
+  let caseMode = 'test'; // 'test', 'write', 'oral'
+  let caseWrittenDraft = '';
+  let speechRecognizer = null;
+  let isListeningOral = false;
+  let oralTranscript = '';
+
+  function toggleOralRecognition() {
+    const SpeechAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechAPI) {
+      toast('Tu navegador no soporta dictado por voz (Web Speech API). Prueba en Google Chrome o Edge.');
+      return;
+    }
+    if (isListeningOral) {
+      if (speechRecognizer) speechRecognizer.stop();
+      isListeningOral = false;
+      renderRoute(false);
+      toast('Dictado en pausa.');
+      return;
+    }
+    speechRecognizer = new SpeechAPI();
+    speechRecognizer.lang = 'es-ES';
+    speechRecognizer.continuous = true;
+    speechRecognizer.interimResults = true;
+    speechRecognizer.onstart = () => {
+      isListeningOral = true;
+      renderRoute(false);
+      toast('🎙️ Micrófono activado. Habla con claridad al tribunal...');
+    };
+    speechRecognizer.onresult = (e) => {
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; ++i) {
+        if (e.results[i].isFinal) {
+          oralTranscript += ' ' + e.results[i][0].transcript;
+        } else {
+          interim += e.results[i][0].transcript;
+        }
+      }
+      const el = document.getElementById('oral-transcription-live');
+      if (el) el.innerHTML = '<strong>Transcripción en vivo:</strong> ' + esc(oralTranscript) + ' <i style="color:var(--muted)">' + esc(interim) + '</i>';
+    };
+    speechRecognizer.onerror = (e) => {
+      isListeningOral = false;
+      renderRoute(false);
+      toast('Aviso del micrófono: ' + (e.error || 'comprueba permisos de audio'));
+    };
+    speechRecognizer.onend = () => {
+      isListeningOral = false;
+      renderRoute(false);
+    };
+    speechRecognizer.start();
+  }
+
+  function casesView() {
+    const all = caseOptions(), c = all[chosenCase] || all[0];
+    const qCount = (c.ids || c.questions || []).length;
+    
+    return `<div class="page">${heading('Supuestos Prácticos GACE A2', 'Tres modalidades de preparación: test oficial, redacción jurídica de dictamen y exposición oral.', btn('Generar supuesto con IA', 'ai-case', 'sparkle'), 'Segundo Ejercicio / Casos Oficiales')}
+      <div class="content-grid">
+        <section class="surface workspace">
+          <div class="row between wrap" style="margin-bottom:12px">
+            <label class="field" style="flex:1;min-width:240px"><span>Expediente / Caso Práctico</span>
+              <select id="case-select">
+                ${all.map((x,i) => `<option value="${i}" ${i===chosenCase?'selected':''}>${esc(x.block||'Bloque IV')} · ${esc(x.title)}</option>`).join('')}
+              </select>
+            </label>
+            <div class="tabs" style="align-self:flex-end">
+              <button class="tab ${caseMode==='test'?'selected':''}" onclick="caseMode='test';renderRoute(false);">${I('list',13)} Modo Test</button>
+              <button class="tab ${caseMode==='write'?'selected':''}" onclick="caseMode='write';renderRoute(false);">${I('pen',13)} Redacción Jurídica</button>
+              <button class="tab ${caseMode==='oral'?'selected':''}" onclick="caseMode='oral';renderRoute(false);">${I('sparkle',13)} 🎙️ Hablar en Alto</button>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="row wrap"><span class="tag">Expediente ${esc(c.file||'Oficial')}</span><span class="tiny muted">${c.generated?'Borrador generado por IA':'Caso Oficial GACE Subgrupo A2'}</span></div>
+          <h2 class="panel-title" style="margin-top:12px">${esc(c.title)}</h2>
+          <p class="case-facts" style="line-height:1.75;font-size:13.5px">${esc(c.facts)}</p>
+          
+          <h4 class="field-label" style="margin:16px 0 8px">Documentos unidos al expediente</h4>
+          <div style="background:#fdfbf7;padding:10px 14px;border-radius:10px;border:1px solid var(--line);margin-bottom:16px">
+            ${(c.docs||[]).map((d,i) => `<div class="row" style="padding:4px 0;font-size:12px">${I('file',14)}<strong>Doc. ${String(i+1).padStart(2,'0')}:</strong> ${esc(d)}</div>`).join('')}
+          </div>
+
+          <!-- MODO TEST -->
+          ${caseMode === 'test' ? `
+            <div class="stack" style="margin-top:14px">
+              <div class="notice" style="background:#f0eef9;border-color:#d9d1f0;padding:10px 14px">
+                📝 <strong>Modo Test del Supuesto:</strong> Resuelve las ${qCount} preguntas oficiales asociadas al expediente con penalización por fallo (1/3).
+              </div>
+              <button class="btn primary" data-act="start-case" style="margin-top:8px">${I('play',14)} Iniciar resolución del caso (${qCount} preguntas tipo test)</button>
+            </div>
+          ` : ''}
+
+          <!-- MODO REDACCIÓN JURÍDICA -->
+          ${caseMode === 'write' ? `
+            <div class="stack" style="margin-top:14px">
+              <div class="notice row between" style="background:#fdf7e7;border-color:#f5e5ba;padding:10px 14px">
+                <span>✍️ <strong>Redacción de Propuesta de Resolución / Dictamen:</strong> Estructura tu respuesta con Antecedentes, Fundamentos de Derecho y Fallo motivado.</span>
+                <span class="tiny font-mono" id="word-count-badge">Palabras: 0</span>
+              </div>
+              <textarea id="case-write-area" rows="12" style="font-family:var(--sans);font-size:13px;line-height:1.7;padding:12px;border:1.5px solid var(--line);border-radius:10px;width:100%" placeholder="I. HECHOS Y ANTECEDENTES DE DERECHO...&#10;II. FUNDAMENTOS JURÍDICOS (Citar artículos aplicables de la LPAC / LCSP / TREBEP)...&#10;III. PROPUESTA DE RESOLUCIÓN..." oninput="document.getElementById('word-count-badge').textContent = 'Palabras: ' + this.value.trim().split(/\s+/).filter(Boolean).length;"></textarea>
+              <div class="row between wrap">
+                <button class="btn soft sm" onclick="modal('Rúbrica Oficial de Corrección', '<div class=\'stack\'><h4>Criterios del Tribunal Calificador (GACE A2):</h4><ul><li>1. Identificación correcta del régimen legal aplicable.</li><li>2. Precisión en la cita de artículos (LPAC, LRJSP, LCSP).</li><li>3. Claridad expositiva y rigor formal.</li><li>4. Sentido correcto de la resolución o recurso procedente.</li></ul></div>')">📋 Ver rúbrica del tribunal</button>
+                <button class="btn primary sm" onclick="modal('Resolución Oficial en Paralelo', '<div class=\'stack\'><h4>Resolución Motivada del Expediente:</h4><p style=\'line-height:1.7;white-space:pre-wrap\'>${esc(c.solution)}</p></div>', true)">⚖️ Comparar con Resolución Oficial</button>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- MODO HABLAR EN ALTO -->
+          ${caseMode === 'oral' ? `
+            <div class="stack" style="margin-top:14px">
+              <div class="notice" style="background:#e2edde;border-color:#c8dfc1;padding:10px 14px">
+                🎙️ <strong>Exposición Oral / Hablar en Alto:</strong> Entrena la exposición del dictamen dictando en voz alta al micrófono. La app transcribirá tu respuesta y comprobará los artículos que has mencionado.
+              </div>
+              <div class="row" style="gap:10px;margin-top:4px">
+                <button class="btn ${isListeningOral ? 'bad' : 'primary'}" onclick="toggleOralRecognition()">
+                  ${isListeningOral ? '⏹️ Detener micrófono' : '🎙️ Hablar en alto / Dictar al tribunal'}
+                </button>
+                <button class="btn soft sm" onclick="oralTranscript = ''; document.getElementById('oral-transcription-live').innerHTML = '<i>Transcripción vacía.</i>';">Limpiar</button>
+              </div>
+              <div id="oral-transcription-live" style="min-height:90px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:13px;line-height:1.6">
+                ${oralTranscript ? '<strong>Transcripción acumulada:</strong> ' + esc(oralTranscript) : '<i>Haz clic en «Hablar en alto» y expón los fundamentos jurídicos del caso...</i>'}
+              </div>
+            </div>
+          ` : ''}
+        </section>
+
+        <aside class="surface module-aside">
+          ${toolArt('cases')}
+          <h3>Resolución Oficial Motivada</h3>
+          <p>Consulta la motivación jurídica que exige el Tribunal Calificador del INAP para este supuesto.</p>
+          <details style="margin-top:14px">
+            <summary class="text-btn" style="cursor:pointer;font-weight:600">Ver fundamentación legal ${I('down',12)}</summary>
+            <div style="font-size:12px;line-height:1.65;margin-top:10px;background:#faf8f5;padding:10px;border-radius:8px;border-left:3px solid #553396">
+              ${esc(c.solution)}
+            </div>
+            ${(c.questions||c.ids.map(n=>bank[n-1])).slice(0,1).map(sourceLink).join('')}
+          </details>
+          <div class="divider"></div>
+          <div class="small muted">
+            <strong>Subgrupo A2 (GACE):</strong> En el examen práctico puntúa especialmente la congruencia, la cita de plazos hábiles/naturales y el agotamiento de la vía administrativa.
+          </div>
+        </aside>
+      </div>
+    </div>`;
+  }
+
   function aiModal(kind){const ts=opp().topics.filter(t=>t.text?.trim());if(!ts.length){modal('Añade tus apuntes',`<p>La generación se basa en tu material. Importa un tema con texto y referencias legales para empezar.</p>${btn('Importar apuntes','import','upload','primary')}`);return}modal(kind==='case'?'Generar supuesto práctico con IA':'Generar preguntas con IA',`<p>Un borrador basado en tus apuntes, con explicación, distractores y referencias para contrastar.</p><form id="ai-generate-form" class="stack" data-kind="${kind}"><label class="field"><span>Tema de origen</span><select name="topic">${ts.map(t=>`<option value="${esc(t.id)}" ${t.id===currentTopic()?.id?'selected':''}>${esc(t.title)}</option>`).join('')}</select></label><div class="form-grid compact"><label class="field"><span>Preguntas</span><select name="count">${(kind==='case'?[5,6,8,10]:[10,15,20,30]).map(n=>`<option>${n}</option>`).join('')}</select></label><label class="field"><span>Modelo</span><input name="model" required value="${esc(state.model)}"></label></div>${!apiKey?`<label class="field"><span>Tu clave de API OpenAI</span><input name="key" type="password" required autocomplete="off" placeholder="sk-..."><small>No se guarda en disco ni se incluye en las copias.</small></label>`:'<div class="tag">Clave de sesión conectada</div>'}<label class="checkline"><input type="checkbox" required name="consent"><span>Autorizo el envío de hasta 24.000 caracteres de este tema a OpenAI. Entiendo que puede tener coste y revisaré las citas generadas.</span></label><div id="ai-status" class="small muted" aria-live="polite"></div><div id="modal-error" class="modal-error"></div><button class="btn primary">${I('sparkle',15)}${kind==='case'?'Generar supuesto práctico':'Generar preguntas'}</button></form>`)}
   const citedArticles=s=>[...norm(s).matchAll(/\b(?:articulos?|arts?\.?)\s*(\d+(?:\.\d+)*(?:\.[a-z])?)/g)].map(m=>m[1]);
   async function generateAI(form){
@@ -1361,14 +1808,505 @@
   let flashTopic='',petDraft=null,gameSource='',wordDrag=null;
   const srsKey=c=>opp().id+':'+c.id;
   function flashDeck(){const qs=questionPool({scope:flashTopic?'topic':'all',tid:flashTopic,count:16});return [...qs.map(q=>({id:q.id,t:q.t,front:q.q,back:q.a[q.c],why:q.why,ref:q.ref,url:q.url})),...(opp().cards||[])].filter(c=>!flashTopic||c.t===flashTopic)}
-  function flashView(){const deck=flashDeck(),due=deck.filter(c=>(state.srs[srsKey(c)]?.due||0)<=Date.now());let c=due.find(c=>c.id===flashCurrent)||due[0];flashCurrent=c?.id||null;const upcoming=deck.map(v=>state.srs[srsKey(v)]?.due).filter(x=>x>Date.now()).sort((a,b)=>a-b)[0];return `<div class="page">${heading('Flashcards','Recuerda primero. Comprueba después. Repite en el momento adecuado.',btn('Crear tarjeta','new-card','plus'),'Memoria / Repetición espaciada')}<div class="content-grid"><section><label class="field" style="margin-bottom:14px"><span>Mazo de estudio</span><select id="flash-topic"><option value="">Todos mis temas</option>${opp().topics.map(t=>`<option value="${esc(t.id)}" ${t.id===flashTopic?'selected':''}>${esc(t.title)}</option>`).join('')}</select></label>${c?`<div class="flash-surface surface ${flashFlipped?'revealed':''}"><span class="eyebrow">${flashFlipped?'Reverso · Respuesta':'Anverso · Recuerdo activo'}</span>${flashFlipped?`<div class="flash-answer">${esc(c.back)}</div><p class="small muted" style="max-width:540px">${esc(c.why||'')}</p><div style="margin-top:12px">${sourceLink(c)}</div>`:`<h2>${esc(c.front)}</h2>${btn('Mostrar respuesta','flip-card','refresh','soft')}`}</div>${flashFlipped?`<div class="row wrap" style="justify-content:center;margin:17px 0">${[['again','Otra vez · 10 min'],['good','Bien · '+nextInterval(c,'good')+' d'],['easy','Fácil · '+nextInterval(c,'easy')+' d']].map(([k,l])=>`<button class="btn ${k==='good'?'primary':''}" data-act="rate-card" data-id="${k}">${l}</button>`).join('')}</div>`:'<p class="small muted" style="text-align:center;margin:13px">Responde en voz alta antes de dar la vuelta.</p>'}`:`<div class="surface empty-state">${I('check',30)}<h3>${deck.length?'Repaso completado':'Un mazo por estrenar'}</h3><p>${upcoming?'Próximo repaso: '+new Date(upcoming).toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'}):'Crea una tarjeta o importa apuntes para preparar tu mazo.'}</p>${btn('Crear una tarjeta','new-card','plus')}</div>`}</section><aside class="surface module-aside">${toolArt('flash')}<h3>Tu ritmo de memoria</h3><p>Las tarjetas difíciles vuelven antes. Las que dominas se espacian durante más días.</p><div class="divider"></div><div class="between small"><span>Pendientes ahora</span><b>${due.length}</b></div><div class="between small" style="margin-top:10px"><span>Tarjetas del mazo</span><b>${deck.length}</b></div></aside></div></div>`}
-  function nextInterval(c,rate){const prev=state.srs[srsKey(c)]||{interval:0};return rate==='again'?0:Math.min(365,prev.interval?Math.max(1,Math.round(prev.interval*(rate==='easy'?2.7:2))):rate==='easy'?4:1)}
+  function flashView(){
+    const deck = flashDeck();
+    const due = deck.filter(c => (state.srs[srsKey(c)]?.due || 0) <= Date.now());
+    let c = due.find(c => c.id === flashCurrent) || due[0];
+    flashCurrent = c?.id || null;
+    const upcoming = deck.map(v => state.srs[srsKey(v)]?.due).filter(x => x > Date.now()).sort((a,b) => a-b)[0];
+    
+    return `<div class="page">${heading('Flashcards en 3D', 'Voltea la tarjeta en el medio para poner a prueba tu memoria activa.', btn('Crear tarjeta', 'new-card', 'plus'), 'Memoria / Repetición espaciada')}
+      <div class="content-grid">
+        <section>
+          <div class="row between" style="margin-bottom:14px">
+            <label class="field" style="flex:1"><span>Mazo de estudio</span>
+              <select id="flash-topic">
+                <option value="">Todos mis temas (${deck.length} tarjetas)</option>
+                ${opp().topics.map(t => `<option value="${esc(t.id)}" ${t.id === flashTopic ? 'selected' : ''}>${esc(t.title)}</option>`).join('')}
+              </select>
+            </label>
+          </div>
+          ${c ? `
+            <div class="flashcard-stage">
+              <div class="flashcard-flipper ${flashFlipped ? 'flipped' : ''}" onclick="flashFlipped = !flashFlipped; renderRoute(false); playRetroSound('beep');" role="button" aria-label="Voltear tarjeta al centro">
+                <!-- Anverso -->
+                <div class="flashcard-face flashcard-face-front">
+                  <div class="between">
+                    <span class="eyebrow ink-purple">Anverso · Recuerdo Activo</span>
+                    <span class="tag" style="background:#f0eef9;color:#553396">Toca el centro para voltear ↷</span>
+                  </div>
+                  <div style="flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px 0">
+                    <h2 style="font-size:22px;line-height:1.45;color:var(--deep)">${esc(c.front)}</h2>
+                  </div>
+                  <div class="small muted" style="text-align:center">
+                    💡 Responde mentalmente o en voz alta antes de girar la tarjeta
+                  </div>
+                </div>
+                <!-- Reverso -->
+                <div class="flashcard-face flashcard-face-back">
+                  <div class="between">
+                    <span class="eyebrow ink-purple">Reverso · Respuesta Oficial</span>
+                    <span class="tag" style="background:#e2edde;color:#2b6e34">Comprobación ↶</span>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px 0">
+                    <div class="flash-answer" style="font-size:19px;line-height:1.55;font-weight:600;color:#22543d;margin-bottom:10px">${esc(c.back)}</div>
+                    ${c.why ? `<p class="small muted" style="max-width:500px">${esc(c.why)}</p>` : ''}
+                  </div>
+                  <div style="text-align:center;margin-top:auto">${sourceLink(c)}</div>
+                </div>
+              </div>
+            </div>
+            ${flashFlipped ? `
+              <div class="row wrap" style="justify-content:center;margin:18px 0;gap:8px">
+                <button class="btn sm" onclick="flashFlipped = false; renderRoute(false);">↺ Volver al anverso</button>
+                ${[['again','Otra vez · 10 min'], ['hard','Difícil · 1 d'], ['good','Bien · ' + nextInterval(c,'good') + ' d'], ['easy','Fácil · ' + nextInterval(c,'easy') + ' d']].map(([k,l]) => `
+                  <button class="btn ${k==='good'?'primary':''}" data-act="rate-card" data-id="${k}">${l}</button>
+                `).join('')}
+              </div>
+            ` : `
+              <div style="text-align:center;margin:14px 0">
+                <button class="btn primary" onclick="flashFlipped = true; renderRoute(false); playRetroSound('beep');">Mostrar respuesta ↷</button>
+              </div>
+            `}
+          ` : `
+            <div class="surface empty-state">
+              ${I('check',30)}
+              <h3>${deck.length ? 'Repaso completado' : 'Un mazo por estrenar'}</h3>
+              <p>${upcoming ? 'Próximo repaso programado: ' + new Date(upcoming).toLocaleString('es-ES', {dateStyle:'short', timeStyle:'short'}) : 'Crea una tarjeta o importa apuntes para preparar tu mazo de estudio.'}</p>
+              ${btn('Crear una tarjeta', 'new-card', 'plus')}
+            </div>
+          `}
+        </section>
+        <aside class="surface module-aside">
+          ${toolArt('flash')}
+          <h3>Tu ritmo de memoria</h3>
+          <p>Las tarjetas difíciles vuelven antes. Las que dominas se espacian durante más días según la curva del olvido.</p>
+          <div class="divider"></div>
+          <div class="between small"><span>Pendientes hoy</span><b>${due.length}</b></div>
+          <div class="between small" style="margin-top:10px"><span>Total en el mazo</span><b>${deck.length}</b></div>
+          <div class="divider"></div>
+          <button class="btn sm soft w-full" onclick="flashFlipped = !flashFlipped; renderRoute(false);">Girar tarjeta en el centro</button>
+        </aside>
+      </div>
+    </div>`;
+  }
+
   function rateCard(rate){const c=flashDeck().find(c=>c.id===flashCurrent);if(!c||!flashFlipped)return;const days=nextInterval(c,rate);state.srs[srsKey(c)]={interval:days,due:Date.now()+(rate==='again'?600000:days*86400000),reviews:(state.srs[srsKey(c)]?.reviews||0)+1};flashCurrent=null;flashFlipped=false;save();renderRoute(false);toast(rate==='again'?'Volverá en 10 minutos.':'Próximo repaso en '+days+' días.')}
   function newCard(){modal('Crear una flashcard',`<form id="card-form" class="stack"><label class="field"><span>Tema</span><select name="topic">${opp().topics.map(t=>`<option value="${esc(t.id)}" ${t.id===(flashTopic||currentTopic()?.id)?'selected':''}>${esc(t.title)}</option>`).join('')||'<option value="">Mazo general</option>'}</select></label><label class="field"><span>Anverso · Pregunta o concepto</span><textarea name="front" required maxlength="1200" placeholder="¿Qué quieres recordar?"></textarea></label><label class="field"><span>Reverso · Respuesta</span><textarea name="back" required maxlength="3000" placeholder="Una respuesta breve y clara."></textarea></label><button class="btn primary">Añadir a mi mazo</button></form>`)}
   function avatarSVG(prompt){const n=norm(prompt);if(!/gato|gata|zorro|zorra|perro|perra/.test(n)){let svg=owlArt(prompt);if(n.includes('toga'))svg=svg.replace('<path d="M88 90c','<path d="M89 93q30 13 66-1l4 39q-37 18-75-1Z" fill="#6b6174"/><path d="m108 98 13 14 14-14" fill="#eee7db"/><path d="M88 90c');if(n.includes('sin gafas'))svg=svg.replace(/<circle cx="(?:102|142)" cy="71" r="17"[^>]*\/>/g,'');return svg}const dog=/perro|perra/.test(n),fox=/zorr/.test(n),color=n.includes('verde')?'#a4bba1':n.includes('azul')?'#a2baca':n.includes('rosa')?'#d8adba':n.includes('lila')?'#baa8ce':fox?'#d5a071':'#c8b198';return `<svg class="pet-art" viewBox="0 0 250 156" role="img" aria-label="Avatar generado a partir de tu descripción"><ellipse cx="127" cy="143" rx="58" ry="5" fill="#ddd0bb"/><g class="pet-breathe" stroke="#685948" stroke-width="1.8" stroke-linejoin="round"><path d="M151 119q28 6 22-26 24 33-16 44Z" fill="${color}"/><path d="M92 104q-12 39 32 39t33-40Z" fill="${n.includes('toga')?'#796d82':color}"/><path d="M84 69 ${dog?'Q60 23 89 43':'L80 33 108 48'}Q126 39 143 47 ${dog?'Q170 21 168 71':'L168 31 165 72'}Q175 115 125 120 76 117 84 69Z" fill="${color}"/><path d="m88 49 6 16 11-10m44 1 12-12-2 18" fill="#dcb3a6"/><path d="M92 88q12-12 33 0 20-13 35-1-4 25-35 26-28-1-33-25Z" fill="#f6ead6"/><g class="owl-eyes" fill="#4f443e"><ellipse cx="105" cy="78" rx="4" ry="6"/><ellipse cx="145" cy="78" rx="4" ry="6"/></g><path d="m118 89 7 7 7-7q-8-4-14 0Z" fill="#886b63"/><path d="M125 96q-1 10-10 6m10-6q1 10 10 6" fill="none"/>${n.includes('gafas')?'<g fill="none" stroke-width="2.5"><circle cx="105" cy="78" r="14"/><circle cx="145" cy="78" r="14"/><path d="M119 78q6-6 12 0"/></g>':''}<path d="m98 117 27 7 27-9-2 21-24 8-28-8Z" fill="#a9c1ad"/><path d="m125 124 1 20" fill="none"/>${/birrete|toga|sombrero/.test(n)?'<path d="m87 39 36-14 38 11-36 14Z" fill="#b6a1c6"/><path d="m155 37 1 21" fill="none"/>':''}${/cafe|taza/.test(n)?'<path d="M51 116h24v20q-12 10-23-1Z" fill="#e4d1b2"/><path d="M75 119q14-2 7 10l-7 2" fill="none"/><ellipse cx="63" cy="116" rx="12" ry="3" fill="#8f7056"/>':''}</g></svg>`}
+  
+  /* =================================================================
+     OPONEXUS: MULTI-PROFILE & LOCAL USER MANAGER
+     ================================================================= */
+  const PROFILES_KEY = 'oponexus_profiles_v1';
+  const ACTIVE_USER_KEY = 'oponexus_active_user_v1';
+
+  function getProfilesList() {
+    try {
+      const list = JSON.parse(localStorage.getItem(PROFILES_KEY));
+      if (Array.isArray(list) && list.length) return list;
+    } catch(e) {}
+    return ['Mi Perfil'];
+  }
+
+  function currentUserName() {
+    return localStorage.getItem(ACTIVE_USER_KEY) || getProfilesList()[0];
+  }
+
+  function getUserStorageKey(name) {
+    return 'oponexus_user_' + encodeURIComponent(name);
+  }
+
+  function switchProfile(name) {
+    if (!name) return;
+    save();
+    localStorage.setItem(ACTIVE_USER_KEY, name);
+    const raw = localStorage.getItem(getUserStorageKey(name));
+    if (raw) {
+      try {
+        state = JSON.parse(raw);
+      } catch(e) {
+        state = initialState();
+      }
+    } else {
+      state = initialState();
+      state.name = name;
+      localStorage.setItem(getUserStorageKey(name), JSON.stringify(state));
+    }
+    resetContext();
+    save();
+    renderRoute(false);
+    toast('Sesión activa: ' + name);
+  }
+
+  function createNewProfile(name) {
+    const clean = String(name || '').trim();
+    if (!clean) throw Error('Introduce un nombre para el nuevo perfil.');
+    const list = getProfilesList();
+    if (list.includes(clean)) throw Error('Ya existe un perfil con ese nombre.');
+    list.push(clean);
+    localStorage.setItem(PROFILES_KEY, JSON.stringify(list));
+    switchProfile(clean);
+  }
+
+  function deleteProfile(name) {
+    const list = getProfilesList();
+    if (list.length <= 1) throw Error('Debe quedar al menos un perfil activo.');
+    const filtered = list.filter(x => x !== name);
+    localStorage.setItem(PROFILES_KEY, JSON.stringify(filtered));
+    localStorage.removeItem(getUserStorageKey(name));
+    if (currentUserName() === name) {
+      switchProfile(filtered[0]);
+    } else {
+      renderRoute(false);
+    }
+    toast('Perfil «' + name + '» eliminado.');
+  }
+
+  function profileManagerModal() {
+    const list = getProfilesList();
+    const current = currentUserName();
+    modal('Gestor de Usuarios y Perfiles', `
+      <div class="stack" style="gap:14px">
+        <p class="small muted">Cada persona tiene sus propios temas, apuntes, vueltas de estudio y mascotas totalmente independientes en este navegador.</p>
+        <div class="stack" style="gap:8px">
+          ${list.map(p => `
+            <div class="surface row between" style="padding:10px 14px;border:1px solid ${p === current ? '#553396' : 'var(--line)'};border-radius:10px;background:${p === current ? '#f0eef9' : '#fff'}">
+              <div class="row">
+                <span style="font-size:18px">${p === current ? '⭐' : '👤'}</span>
+                <div>
+                  <strong style="color:${p === current ? '#553396' : 'var(--ink)'}">${esc(p)}</strong>
+                  ${p === current ? '<span class="tag" style="margin-left:6px;background:#e9d5ff;color:#553396;font-size:10px">Activo</span>' : ''}
+                </div>
+              </div>
+              <div class="row" style="gap:6px">
+                ${p !== current ? `<button class="btn sm primary" onclick="switchProfile('${esc(p.replace(/'/g, "\'"))}');closeModal();">Activar</button>` : ''}
+                ${list.length > 1 ? `<button class="icon-btn" onclick="if(confirm('¿Eliminar el perfil «${esc(p)}»?')) { deleteProfile('${esc(p.replace(/'/g, "\'"))}'); profileManagerModal(); }" title="Eliminar perfil" style="color:#c53030">✕</button>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <form id="new-profile-form" onsubmit="event.preventDefault(); try { createNewProfile(this.elements.pname.value); closeModal(); } catch(e){ modalError(e.message); }" class="row" style="gap:8px;margin-top:10px">
+          <input name="pname" required placeholder="Nombre de tu amiga (ej. Marta GACE)..." style="flex:1" maxlength="30">
+          <button class="btn primary sm">➕ Crear perfil</button>
+        </form>
+      </div>
+    `);
+  }
+
+  /* =================================================================
+     OPONEXUS: 8-BIT RETRO SOUND FX ENGINE (WEB AUDIO API)
+     ================================================================= */
+  let retroSoundEnabled = true;
+  let audioCtx = null;
+  function getAudioContext() {
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) audioCtx = new AC();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function playRetroSound(kind) {
+    if (!retroSoundEnabled) return;
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const t = ctx.currentTime;
+      if (kind === 'beep') {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(880, t);
+        osc.frequency.setValueAtTime(1174.66, t + 0.05);
+        g.gain.setValueAtTime(0.08, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+        osc.connect(g);
+        g.connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.13);
+      } else if (kind === 'punch') {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(180, t);
+        osc.frequency.exponentialRampToValueAtTime(40, t + 0.15);
+        g.gain.setValueAtTime(0.18, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+        osc.connect(g);
+        g.connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.17);
+      } else if (kind === 'victory') {
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, t + idx * 0.1);
+          g.gain.setValueAtTime(0.12, t + idx * 0.1);
+          g.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.1 + 0.25);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start(t + idx * 0.1);
+          osc.stop(t + idx * 0.1 + 0.26);
+        });
+      } else if (kind === 'defeat') {
+        const notes = [392.00, 311.13, 261.63]; // G4, Eb4, C4
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, t + idx * 0.15);
+          g.gain.setValueAtTime(0.1, t + idx * 0.15);
+          g.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.15 + 0.28);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start(t + idx * 0.15);
+          osc.stop(t + idx * 0.15 + 0.3);
+        });
+      }
+    } catch(e) {}
+  }
+
+  /* =================================================================
+     OPONEXUS: POMODORO SOUND STUDIO (WHITE NOISE, RAIN & LO-FI JAZZ)
+     ================================================================= */
+  let pomoAmbientMode = 'none'; // 'none', 'white_noise', 'rain', 'lofi_jazz'
+  let pomoAmbientNodes = null;
+
+  function stopPomoAmbient() {
+    if (pomoAmbientNodes) {
+      try {
+        if (pomoAmbientNodes.source) pomoAmbientNodes.source.stop();
+        if (pomoAmbientNodes.timer) clearInterval(pomoAmbientNodes.timer);
+      } catch(e) {}
+      pomoAmbientNodes = null;
+    }
+  }
+
+  function startPomoAmbient(mode) {
+    stopPomoAmbient();
+    pomoAmbientMode = mode;
+    if (mode === 'none') return;
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      if (mode === 'white_noise' || mode === 'rain') {
+        const bufferSize = ctx.sampleRate * 3;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        let lastOut = 0.0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          if (mode === 'rain') {
+            lastOut = (lastOut + (0.02 * white)) / 1.02; // Brown/pink filter
+            data[i] = lastOut * 3.5;
+          } else {
+            data[i] = white * 0.2; // Soft white
+          }
+        }
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = mode === 'rain' ? 800 : 3000;
+        const gain = ctx.createGain();
+        gain.gain.value = 0.06;
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        source.start();
+        pomoAmbientNodes = { source, gain };
+      } else if (mode === 'lofi_jazz') {
+        // Synthesize periodic warm Rhodes maj7 / m7 chords
+        const chords = [
+          [261.63, 329.63, 392.00, 493.88], // Cmaj7
+          [220.00, 261.63, 329.63, 392.00], // Am7
+          [293.66, 349.23, 440.00, 523.25], // Dm7
+          [196.00, 246.94, 293.66, 349.23]  // G7
+        ];
+        let chordIdx = 0;
+        const playChord = () => {
+          if (!pomoRunning) return;
+          const notes = chords[chordIdx % chords.length];
+          chordIdx++;
+          const t = ctx.currentTime;
+          notes.forEach(f => {
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(f, t);
+            g.gain.setValueAtTime(0.015, t);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + 4.2);
+            osc.connect(g);
+            g.connect(ctx.destination);
+            osc.start(t);
+            osc.stop(t + 4.3);
+          });
+        };
+        playChord();
+        const timer = setInterval(playChord, 5000);
+        pomoAmbientNodes = { timer };
+      }
+    } catch(e) {}
+  }
+
+  /* =================================================================
+     OPONEXUS: NOTEBOOK STYLING & PASTEL HIGHLIGHTING ENGINE
+     ================================================================= */
+  let currentPaperBg = localStorage.getItem('oponexus_paper_bg') || 'grid'; // 'grid', 'dots', 'lines', 'plain'
+  let currentFontMode = localStorage.getItem('oponexus_font_mode') || 'sans'; // 'sans', 'round', 'serif', 'mono'
+  let activePastelColor = 'yellow'; // 'yellow', 'green', 'pink', 'blue', 'purple', 'none'
+
+  function setPaperBg(bg) {
+    currentPaperBg = bg;
+    localStorage.setItem('oponexus_paper_bg', bg);
+    renderRoute(false);
+  }
+
+  function setFontMode(f) {
+    currentFontMode = f;
+    localStorage.setItem('oponexus_font_mode', f);
+    renderRoute(false);
+  }
+
+  function applyPastelHighlight() {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed) {
+      toast('Selecciona primero texto con el ratón para subrayarlo.');
+      return;
+    }
+    const range = sel.getRangeAt(0);
+    const span = document.createElement('span');
+    span.className = 'hl-pastel-' + activePastelColor;
+    span.textContent = sel.toString();
+    range.deleteContents();
+    range.insertNode(span);
+    sel.removeAllRanges();
+    toast('Texto subrayado en tono pastel.');
+  }
+
+  /* =================================================================
+     OPONEXUS: MASCOT WARDROBE & PRESET COMPANIONS
+     ================================================================= */
+  let petWalkingActive = false;
+  const defaultSavedPets = [
+    { id: 'atenea', name: 'Atenea', personality: 'Motivadora', prompt: 'Un búho sabio con birrete, toga y gafas de jurista', image: '', title: 'Búho Constitucional' },
+    { id: 'felix', name: 'Félix', personality: 'Estricta con los plazos', prompt: 'Un zorro astuto con corbata roja y pluma de firmar', image: '', title: 'Zorro Tramitador LPAC' },
+    { id: 'minerva', name: 'Minerva', personality: 'Sarcástica con los plazos', prompt: 'Una gata inspectora con café humeante y gafas de sol', image: '', title: 'Gata Inspectora de Hacienda' },
+    { id: 'argos', name: 'Argos', personality: 'Motivadora', prompt: 'Un perro guardián con capa y la Constitución Española', image: '', title: 'Guardián del BOE' },
+    { id: 'opopanda', name: 'OpoPanda', personality: 'Zen y concentración', prompt: 'Un oso panda relajado con taza de té de bambú y reloj pomodoro', image: '', title: 'Panda Zen Pomodoro' }
+  ];
+
+  function getSavedPets() {
+    if (!Array.isArray(state.savedPets) || !state.savedPets.length) {
+      state.savedPets = [...defaultSavedPets];
+    }
+    return state.savedPets;
+  }
+
+  function saveCurrentPetToWardrobe() {
+    const pets = getSavedPets();
+    const newEntry = {
+      id: uid(),
+      name: state.pet.name,
+      personality: state.pet.personality,
+      prompt: state.pet.prompt,
+      image: state.pet.image || '',
+      title: 'Mascota Personalizada'
+    };
+    pets.push(newEntry);
+    save();
+    toast('¡Mascota «' + newEntry.name + '» guardada en tu armario!');
+    petWardrobeModal();
+  }
+
+  function activateSavedPet(petId) {
+    const p = getSavedPets().find(x => x.id === petId);
+    if (!p) return;
+    state.pet = {
+      name: p.name,
+      personality: p.personality,
+      prompt: p.prompt,
+      image: p.image || ''
+    };
+    save();
+    renderRoute(false);
+    toast('¡Compañero activo: ' + p.name + '!');
+  }
+
+  function deleteSavedPet(petId) {
+    const pets = getSavedPets();
+    if (pets.length <= 1) {
+      toast('Debes conservar al menos una mascota en tu armario.');
+      return;
+    }
+    state.savedPets = pets.filter(x => x.id !== petId);
+    save();
+    toast('Mascota eliminada del armario.');
+    petWardrobeModal();
+  }
+
+  function togglePetWalking() {
+    petWalkingActive = !petWalkingActive;
+    const petEl = document.getElementById('floating-pet-widget');
+    if (petEl) {
+      petEl.classList.toggle('pet-walking-mode', petWalkingActive);
+    }
+    toast(petWalkingActive ? '🐾 Tu mascota se pasea por la pantalla mientras estudias.' : 'Tu mascota regresa a su rincón de estudio.');
+  }
+
+  function petWardrobeModal() {
+    const pets = getSavedPets();
+    modal('Armario y Vestidor de Mascotas', `
+      <div class="stack" style="gap:14px">
+        <div class="row between">
+          <p class="small muted" style="margin:0">Elige a tu compañero o diseña uno nuevo para cada sesión:</p>
+          <button class="btn sm soft" onclick="togglePetWalking()">🐾 ${petWalkingActive ? 'Fijar mascota' : 'Pasear mascota'}</button>
+        </div>
+        <div class="choice-grid" style="grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));gap:10px">
+          ${pets.map(p => {
+            const isCurrent = state.pet.name === p.name;
+            return `
+              <div class="surface" style="padding:12px;border:1.5px solid ${isCurrent ? '#553396' : 'var(--line)'};border-radius:12px;text-align:center;background:${isCurrent ? '#f0eef9' : '#fff'}">
+                <div style="width:56px;height:56px;margin:0 auto 8px auto">
+                  ${p.image ? `<img src="${p.image}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">` : avatarSVG(p.prompt)}
+                </div>
+                <strong style="display:block;font-size:13px;color:var(--deep)">${esc(p.name)}</strong>
+                <small class="muted" style="display:block;font-size:10px;margin-bottom:8px">${esc(p.title || p.personality)}</small>
+                <div class="row" style="justify-content:center;gap:4px">
+                  ${isCurrent ? `<span class="badge-plazo" style="background:#e9d5ff;color:#553396">Activo</span>` : `<button class="btn sm primary" onclick="activateSavedPet('${esc(p.id)}');closeModal();">Elegir</button>`}
+                  ${pets.length > 1 ? `<button class="icon-btn" onclick="if(confirm('¿Eliminar esta mascota del armario?')) deleteSavedPet('${esc(p.id)}')" title="Borrar" style="color:#c53030;font-size:11px">✕</button>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        <div class="divider"></div>
+        <div class="row between">
+          <button class="btn sm" onclick="petSettings()">${I('settings', 12)} Personalizar aspecto actual</button>
+          <button class="btn sm primary" onclick="saveCurrentPetToWardrobe()">💾 Guardar mascota actual en el armario</button>
+        </div>
+      </div>
+    `);
+  }
+
   function petSettings(){petDraft={...state.pet};modal('Personalizar OpoPet',`<form id="pet-form" class="stack"><div class="pet-preview" id="pet-preview">${petImage()}</div><div class="form-grid"><label class="field"><span>Nombre</span><input name="name" required maxlength="25" value="${esc(state.pet.name)}"></label><label class="field"><span>Personalidad</span><select name="personality">${['Motivadora','Estricta','Sarcástica con los plazos'].map(x=>`<option ${state.pet.personality===x?'selected':''}>${x}</option>`).join('')}</select></label></div><label class="field"><span>Describe tu avatar</span><input name="prompt" maxlength="160" value="${esc(state.pet.prompt)}"><small>Generador SVG local: búho, gato, perro o zorro; prueba un color, gafas, toga o café.</small></label>${btn('Generar avatar SVG','generate-pet','sparkle')}<label class="field"><span>O usa tu propia imagen</span><input type="file" id="pet-file" accept="image/png,image/jpeg,image/webp,image/gif"><small>La imagen se procesa localmente y se adapta al tamaño de la mascota.</small></label><div id="modal-error" class="modal-error"></div><button class="btn primary">Guardar mi compañero</button></form>`);$('#pet-file').onchange=async e=>{try{const f=e.target.files[0];if(!f)return;if(!/^image\/(png|jpeg|webp|gif)$/.test(f.type)||f.size>10*1024*1024)throw Error('Elige una imagen PNG, JPG, WebP o GIF de menos de 10 MB.');const src=await readDataURL(f),im=new Image();im.src=src;await im.decode();const cv=document.createElement('canvas'),scale=Math.min(1,440/Math.max(im.width,im.height));cv.width=Math.max(1,Math.round(im.width*scale));cv.height=Math.max(1,Math.round(im.height*scale));cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);petDraft.image=cv.toDataURL('image/png');$('#pet-preview').innerHTML=`<img class="pet-photo" src="${petDraft.image}" alt="Vista previa de tu mascota">`}catch(err){modalError(err.message)}}}
   const readDataURL=blob=>new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(Error('No se pudo leer el archivo.'));r.readAsDataURL(blob)});
-  function quickQuestion(){const pool=questionPool({count:4});if(!pool.length){modal('Pregunta rápida',`<p>Tu mascota necesita un tema con apuntes para preparar una pregunta.</p>${btn('Importar mi primer tema','import','upload','primary')}`);return}quickQ={...balancedQuestions([shuffle(pool)[0]])[0],answered:null};showQuick()}
+  function quickQuestion(){
+    let pool = questionPool({count:4});
+    if(!pool || !pool.length){
+      // Guaranteed fallback to official exam bank for GACE A2 / CE / LPAC!
+      pool = shuffle([...bank]).slice(0, 4);
+    }
+    quickQ = {...balancedQuestions([shuffle(pool)[0]])[0], answered:null};
+    showQuick();
+  }
   function showQuick(){const q=quickQ,done=q.answered!==null;modal('Pregunta rápida de '+state.pet.name,`<div class="row" style="margin-bottom:13px"><span class="tag">Recuerdo activo</span><span class="tiny muted">${esc(state.pet.personality)}</span></div><h3 class="question-title" style="font-size:20px">${esc(q.q)}</h3><div class="answer-list">${q.a.map((a,i)=>`<button class="answer ${done&&i===q.c?'right':done&&i===q.answered?'wrong':''}" data-act="quick-answer" data-id="${i}" ${done?'disabled':''}><span class="letter">${'ABCD'[i]}</span>${esc(a)}</button>`).join('')}</div>${done?`<div class="feedback ${q.answered===q.c?'good':'bad'}"><b>${esc(petLine(q.answered===q.c?'good':'bad'))}</b><br>${esc(q.why)}<br>${sourceLink(q)}</div><div class="modal-actions">${btn('Terminar','close')}${btn('Otra pregunta','quick','refresh','primary')}</div>`:''}`)}
   const legalWords=[['AUDIENCIA','Trámite que permite a la persona interesada formular alegaciones antes de la resolución.'],['BOLETÍN','Publicación periódica oficial en la que se insertan disposiciones y anuncios.'],['CONSTITUCIÓN','Norma suprema del ordenamiento jurídico español.'],['DECRETO','Disposición que, en el ámbito del Gobierno, adopta la forma de real decreto.'],['EXPEDIENTE','Conjunto ordenado de documentos y actuaciones que sirven de antecedente y fundamento a la resolución.'],['FUNCIONARIO','Empleado público vinculado por una relación estatutaria de Derecho administrativo.'],['GOBIERNO','Órgano que dirige la política interior y exterior y ejerce la función ejecutiva.'],['HÁBIL','Calificativo del día que cuenta para un plazo administrativo, frente a inhábil.'],['INVESTIDURA','Procedimiento por el que el Congreso otorga su confianza a un candidato a la Presidencia del Gobierno.'],['JURISDICCIÓN','Potestad de juzgar y hacer ejecutar lo juzgado.'],['KILOGRAMO','Unidad básica de masa del Sistema Internacional utilizada en la metrología legal.'],['LEY','Norma aprobada por un parlamento siguiendo el procedimiento legislativo.'],['MAYORÍA','Número de votos necesario para adoptar una decisión, que puede ser simple o absoluta.'],['NOTIFICACIÓN','Comunicación formal de una resolución o acto administrativo a una persona interesada.'],['DAÑO','Perjuicio cuya reparación puede reclamarse al exigir responsabilidad patrimonial.'],['ÓRGANO','Unidad administrativa a la que se atribuyen funciones con efectos jurídicos frente a terceros.'],['PRESUPUESTO','Expresión cifrada, conjunta y sistemática de derechos y obligaciones de carácter económico.'],['QUÓRUM','Número mínimo de integrantes necesario para la válida constitución o decisión de un órgano colegiado.'],['RECURSO','Medio de impugnación de un acto o resolución.'],['SILENCIO','Efecto jurídico de no resolver y notificar dentro del plazo, que puede ser estimatorio o desestimatorio.'],['TRIBUNAL','Órgano que puede ejercer jurisdicción o, cuando es calificador, evaluar una oposición.'],['UNANIMIDAD','Acuerdo adoptado con el voto favorable de todos.'],['VETO','Oposición que el Senado puede formular a un proyecto de ley conforme al artículo 90 de la Constitución.'],['WEB','Medio de publicación digital en el que se alojan portales institucionales.'],['EXPROPIACIÓN','Privación singular de bienes o derechos por causa de utilidad pública o interés social y con indemnización.'],['AYUNTAMIENTO','Órgano de gobierno y administración del municipio compuesto por alcalde y concejales.'],['ALZADA','Recurso que resuelve el superior jerárquico del órgano que dictó el acto.']];
   const alphabet='ABCDEFGHIJKLMNÑOPQRSTUVWXYZ';
@@ -1430,24 +2368,243 @@
   function sopaView(g){const found=g.placements.filter(p=>p.found),cells=new Set(found.flatMap(x=>x.cells));return `<div class="between wrap small"><span class="tag">${I('clock',13)}<span class="game-time">${remaining(Math.floor(((g.finished||Date.now())-g.started)/1000))}</span></span><span>${found.length} de ${g.placements.length} palabras</span></div><div class="word-list">${g.placements.map(p=>`<span class="${p.found?'found':''}">${esc(p.word)}</span>`).join('')}</div><div class="word-grid" role="group" aria-label="Sopa de letras de doce por doce">${g.grid.map((v,i)=>`<button class="word-cell ${cells.has(i)?'found':''} ${g.anchor===i?'selected':''}" data-act="word-cell" data-id="${i}" aria-label="${v}, fila ${Math.floor(i/12)+1}, columna ${i%12+1}" ${g.done?'disabled':''}>${v}</button>`).join('')}</div><p class="feedback" id="sopa-message">${esc(g.message)}</p>${g.done?gameEndButtons():''}`}
   function wordLine(a,b){const ax=a%12,ay=Math.floor(a/12),dx=b%12-ax,dy=Math.floor(b/12)-ay;if(dx&&dy&&Math.abs(dx)!==Math.abs(dy))return [];return Array.from({length:Math.max(Math.abs(dx),Math.abs(dy))+1},(_,i)=>(ay+i*Math.sign(dy))*12+ax+i*Math.sign(dx))}
   function selectWord(a,b){const g=activeGame;if(!g||g.type!=='sopa'||g.done)return;const path=wordLine(a,b),s=path.join(','),rev=[...path].reverse().join(','),match=g.placements.find(p=>p.cells.join(',')===s||p.cells.join(',')===rev);g.anchor=null;if(match&&!match.found){match.found=true;g.message='¡Encontrada! '+match.word+'.';if(g.placements.every(p=>p.found)){g.done=true;g.finished=Date.now();const sec=Math.max(1,Math.round((g.finished-g.started)/1000));gameRecord('sopa',sec);g.message='¡Tablero completo! Has encontrado todas las palabras en '+sec+' segundos.';petReact(true)}}else g.message=match?'Ya habías encontrado esa palabra.':'Esa selección no coincide. Prueba en línea recta entre los extremos.';renderRoute(false)}
-  function fighterView(g){return `<div class="between wrap small" style="margin-bottom:12px"><span class="tag">Ronda ${g.round}</span><span>${g.wins} rondas superadas · <span class="game-time">${Math.max(0,Math.ceil((g.deadline-Date.now())/1000))}</span> s</span></div><div class="battle ${g.feedback?'hit':''}"><div class="hp-bars"><div>El Opositor · ${g.player} HP<div class="hp-track"><i style="width:${g.player}%"></i></div></div><div>El Tribunal · ${g.enemy} HP<div class="hp-track"><i style="width:${g.enemy}%"></i></div></div></div><canvas id="battle-canvas" width="320" height="112" role="img" aria-label="Dos luchadores de pixel art frente a un palacio de justicia"></canvas><div class="battle-message">${g.done?'K.O. · FIN DE LA PARTIDA':g.enemy===0?'K.O. · RONDA SUPERADA':esc(g.feedback||'ROUND '+g.round+' / TU TURNO')}</div></div>${g.done?`<h2 class="panel-title" style="margin-top:18px">El Tribunal gana este combate</h2><p>${g.wins} rondas superadas. Revisa la explicación y vuelve al ring.</p>`:g.enemy===0?'<h2 class="panel-title" style="margin-top:18px">¡Victoria del Opositor!</h2>':`<h2 class="question-title" style="font-size:20px">${esc(g.q.q)}</h2>`}${!g.done&&g.enemy>0?`<div class="answer-list">${g.q.a.map((v,i)=>`<button class="answer ${g.answered!==null&&i===g.q.c?'right':g.answered===i?'wrong':''}" data-act="fight-answer" data-id="${i}" ${g.answered!==null?'disabled':''}><span class="letter">${'ABCD'[i]}</span>${esc(v)}</button>`).join('')}</div>`:''}${g.feedback?`<div class="feedback ${g.answered===g.q.c?'good':'bad'}"><b>${esc(g.feedback)}</b><br>${esc(g.q.why)}<br>${sourceLink(g.q)}</div>`:''}${g.done?gameEndButtons():g.answered!==null?btn(g.enemy===0?'Siguiente ronda':'Siguiente turno','fight-next','arrow','primary'):''}`}
-  function fighterAnswer(a){const g=activeGame;if(!g||g.type!=='fighter'||g.done||g.answered!==null)return;if(Date.now()>=g.deadline)a=-1;const correct=a===g.q.c;g.answered=a;g.hit=Date.now();if(correct){g.enemy=Math.max(0,g.enemy-25);g.feedback=['¡Golpe de recurso de alzada!','¡Combo de mayoría absoluta!','¡Defensa del artículo!'][Math.floor(Math.random()*3)]}else{g.player=Math.max(0,g.player-25);g.feedback=(a===-1?'Tiempo agotado. ':'')+['¡Silencio negativo!','¡Inadmisibilidad por plazo!'][Math.floor(Math.random()*2)]}adjustMistake(g.q,correct);if(!g.player){g.done=true;gameRecord('fighter',g.wins);petReact(false)}if(!g.enemy){g.wins++;const key=opp().id+':fighter';state.records[key]={best:Math.max(state.records[key]?.best||0,g.wins),plays:state.records[key]?.plays||0};petReact(true)}save();renderRoute(false)}
-  function nextFight(){const g=activeGame;if(!g||g.done||g.answered===null)return;if(!g.enemy){g.round++;g.enemy=100;g.player=Math.min(100,g.player+25)}g.qi++;if(g.qi%g.pool.length===0)g.pool=shuffle(g.pool);g.q=balancedQuestions([g.pool[g.qi%g.pool.length]])[0];g.answered=null;g.feedback='';g.deadline=Date.now()+20000;renderRoute(false)}
-  function drawBattle(){const cv=$('#battle-canvas'),g=activeGame;if(!cv||!g||g.type!=='fighter')return;const c=cv.getContext('2d'),box=(x,y,w,h,col)=>{c.fillStyle=col;c.fillRect(Math.round(x),Math.round(y),w,h)};c.imageSmoothingEnabled=false;box(0,0,320,112,'#4d4565');box(0,31,320,32,'#a78b98');box(0,55,320,28,'#d8b7a5');for(let i=0;i<24;i++)box((i*39)%320,2+(i*13)%32,1+(i%2),1,'#d9cada');box(259,9,14,14,'#e9d7b3');box(266,7,9,14,'#4d4565');for(let i=0;i<22;i++){const h=6+(i*17)%30;box(i*16,71-h,12+i%5,h,'#71677a');if(i%3===0)box(i*16+4,73-h,3,4,'#ccb49c')}box(78,40,166,37,'#8c818c');for(let i=0;i<6;i++){box(86+i*27,36,11,43,'#c5b6b7');box(88+i*27,38,3,39,'#e0ccbe');box(84+i*27,34,15,4,'#d5c4b9');box(83+i*27,77,17,4,'#d8c3b3')}for(let i=0;i<12;i++)box(70+i*7,34-i*2,183-i*14,3,'#b3a0a7');box(72,31,178,4,'#e0c9b8');for(let i=0;i<4;i++)box(60-i*8,81+i*3,204+i*16,3,i%2?'#b3a0a2':'#c9b4af');box(0,95,320,17,'#847783');for(let i=0;i<12;i++)box(i*31,100+(i%2)*8,26,1,'#aa98a0');const impact=g.hit?Math.max(0,1-(Date.now()-g.hit)/450):0,bounce=g.done?0:Math.round(Math.sin(Date.now()/260));const sprite=['     hhhhh     ','    hhhhhhhe   ','    hhsssse    ','    hssssee    ','     sssss     ','    wwssww     ','   jjjwwjjj    ','  jjjjwwjjjj   ','  jjsjwwjjss   ','  ss jwwj ss   ',' sss jwwj  ss  ','     jjjj      ','    pppppp     ','    ppp pp     ','    pp  ppp    ','   ppp   pp    ','   ppp   ppp   ','  bbbb   bbbb  '];function fighter(x,y,palette,flip=false,hit=false,down=false){c.save();c.translate(Math.round(x),Math.round(y));if(down){c.translate(0,45);c.rotate(flip?1.45:-1.45)}if(flip){c.scale(-1,1);c.translate(-45,0)}sprite.forEach((row,r)=>[...row].forEach((v,i)=>{if(v!==' ')box(i*3,r*3,3,3,palette[v])}));if(hit){box(33,22,19,6,palette.j);box(49,21,8,7,palette.s)}c.restore()}box(55,100,41,3,'#726572');box(220,100,42,3,'#726572');fighter(52+(g.answered===g.q.c?impact*65:0),46+bounce,{h:'#55404c',s:'#e3b28c',e:'#453744',w:'#f4e9d2',j:'#9f89bd',p:'#625a83',b:'#4a4059'},false,impact>.05&&g.answered===g.q.c,!g.player);fighter(219-(g.answered!==g.q.c?impact*62:0),45-bounce,{h:'#c2b9b9',s:'#ce9f88',e:'#3e3347',w:'#f6e9d3',j:'#555063',p:'#5d526b',b:'#3e374a'},true,impact>.05&&g.answered!==g.q.c,!g.enemy);if(impact>.2){const x=g.answered===g.q.c?207:104;box(x,66,13,4,'#f8df91');box(x+5,60,4,15,'#fbe8a9');box(x-3,62,5,3,'#e2a6a3')}if(impact>0)requestAnimationFrame(drawBattle)}
+  const FIGHTER_ARENAS = [
+    ['inap', '🏛️ Sede INAP (Tribunal Calificador)'],
+    ['congreso', '🦁 Hemiciclo del Congreso'],
+    ['moncloa', '🏛️ Palacio de la Moncloa'],
+    ['bruselas', '🇪🇺 Comisión Europea (Bruselas)'],
+    ['supremo', '⚖️ Tribunal Supremo']
+  ];
+
+  function fighterView(g) {
+    g.stage = g.stage || 'inap';
+    return `
+      <div class="between wrap small" style="margin-bottom:12px">
+        <div class="row" style="gap:8px">
+          <span class="tag">Ronda ${g.round}</span>
+          <select class="select" style="width:auto;padding:3px 8px;font-size:11px" onchange="activeGame.stage=this.value;renderRoute(false);">
+            ${FIGHTER_ARENAS.map(([k,l]) => `<option value="${k}" ${g.stage===k?'selected':''}>${l}</option>`).join('')}
+          </select>
+        </div>
+        <div class="row" style="gap:8px">
+          <button class="btn sm soft" onclick="retroSoundEnabled=!retroSoundEnabled;renderRoute(false);" title="Activar o desactivar sonido 8-bit">
+            ${retroSoundEnabled ? '🔊 Sonido 8-bit' : '🔇 Silencio'}
+          </button>
+          <span>${g.wins} victorias · <span class="game-time">${Math.max(0,Math.ceil((g.deadline-Date.now())/1000))}</span> s</span>
+        </div>
+      </div>
+
+      <div class="battle ${g.feedback?'hit':''}">
+        <div class="hp-bars">
+          <div>El Opositor · ${g.player} HP<div class="hp-track"><i style="width:${g.player}%"></i></div></div>
+          <div>El Tribunal · ${g.enemy} HP<div class="hp-track"><i style="width:${g.enemy}%"></i></div></div>
+        </div>
+        <canvas id="battle-canvas" width="320" height="112" role="img" aria-label="Combate pixel art"></canvas>
+        <div class="battle-message">${g.done?'K.O. · FIN DE LA PARTIDA':g.enemy===0?'K.O. · ¡RONDA SUPERADA!':esc(g.feedback||'ROUND '+g.round+' / TU TURNO')}</div>
+      </div>
+
+      ${g.done ? `
+        <h2 class="panel-title" style="margin-top:18px">El Tribunal gana este asalto</h2>
+        <p>${g.wins} rondas superadas. Revisa la fundamentación jurídica y vuelve a intentarlo.</p>
+      ` : g.enemy === 0 ? `
+        <h2 class="panel-title" style="margin-top:18px">¡Victoria del Opositor!</h2>
+        <p>Has derrotado al Tribunal en este asalto. ¡Pasa al siguiente mundo!</p>
+      ` : `
+        <h2 class="question-title" style="font-size:20px;margin:16px 0">${esc(g.q.q)}</h2>
+      `}
+
+      ${!g.done && g.enemy > 0 ? `
+        <div class="answer-list">
+          ${g.q.a.map((v,i) => `
+            <button class="answer ${g.answered!==null&&i===g.q.c?'right':g.answered===i?'wrong':''}" data-act="fight-answer" data-id="${i}" ${g.answered!==null?'disabled':''}>
+              <span class="letter">${'ABCD'[i]}</span>${esc(v)}
+            </button>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      ${g.feedback ? `
+        <div class="feedback ${g.answered===g.q.c?'good':'bad'}">
+          <b>${esc(g.feedback)}</b><br>${esc(g.q.why)}<br>${sourceLink(g.q)}
+        </div>
+      ` : ''}
+
+      ${g.done ? gameEndButtons() : g.answered !== null ? btn(g.enemy===0?'Siguiente asalto / Mundo':'Siguiente turno','fight-next','arrow','primary') : ''}
+    `;
+  }
+
+  function fighterAnswer(a) {
+    const g = activeGame;
+    if (!g || g.type !== 'fighter' || g.done || g.answered !== null) return;
+    if (Date.now() >= g.deadline) a = -1;
+    const correct = a === g.q.c;
+    g.answered = a;
+    g.hit = Date.now();
+    if (correct) {
+      g.enemy = Math.max(0, g.enemy - 25);
+      g.feedback = ['¡Golpe de Recurso de Alzada!','¡Combo de Mayoría Absoluta!','¡Defensa con el Art. 68 LPAC!','¡Impacto de Silencio Positivo!'][Math.floor(Math.random()*4)];
+      playRetroSound('punch');
+    } else {
+      g.player = Math.max(0, g.player - 25);
+      g.feedback = (a===-1?'¡Tiempo agotado! ':'')+['¡Silencio negativo desestimatorio!','¡Inadmisibilidad por fuera de plazo!','¡Pregunta trampa del tribunal!'][Math.floor(Math.random()*3)];
+      playRetroSound('defeat');
+    }
+    adjustMistake(g.q, correct);
+    if (!g.player) {
+      g.done = true;
+      gameRecord('fighter', g.wins);
+      playRetroSound('defeat');
+      petReact(false);
+    }
+    if (!g.enemy) {
+      g.wins++;
+      const key = opp().id + ':fighter';
+      state.records[key] = { best: Math.max(state.records[key]?.best||0, g.wins), plays: (state.records[key]?.plays||0)+1 };
+      playRetroSound('victory');
+      petReact(true);
+    }
+    save();
+    renderRoute(false);
+  }
+
+  function nextFight() {
+    const g = activeGame;
+    if (!g || g.done || g.answered === null) return;
+    if (!g.enemy) {
+      g.round++;
+      g.enemy = 100;
+      g.player = Math.min(100, g.player + 25);
+      // Advance to next world
+      const arenaKeys = ['inap', 'congreso', 'moncloa', 'bruselas', 'supremo'];
+      g.stage = arenaKeys[(g.round - 1) % arenaKeys.length];
+    }
+    g.qi++;
+    if (g.qi % g.pool.length === 0) g.pool = shuffle(g.pool);
+    g.q = balancedQuestions([g.pool[g.qi % g.pool.length]])[0];
+    g.answered = null;
+    g.feedback = '';
+    g.deadline = Date.now() + 20000;
+    renderRoute(false);
+  }
+
+  function drawBattle() {
+    const cv = $('#battle-canvas'), g = activeGame;
+    if (!cv || !g || g.type !== 'fighter') return;
+    const c = cv.getContext('2d'), box = (x,y,w,h,col) => { c.fillStyle=col; c.fillRect(Math.round(x), Math.round(y), w, h); };
+    c.imageSmoothingEnabled = false;
+
+    const stage = g.stage || 'inap';
+
+    // RENDER DIFFERENT WORLDS / ARENAS
+    if (stage === 'congreso') {
+      // Congreso de los Diputados (Red velvet, golden details, hemiciclo carpet)
+      box(0, 0, 320, 112, '#3b1c20'); // Dark red velvet wall
+      box(0, 30, 320, 35, '#6a2228');
+      box(0, 65, 320, 47, '#8f1d24'); // Red carpet
+      // Parliament tapestry & lions
+      box(120, 10, 80, 40, '#a32832');
+      box(125, 15, 70, 30, '#c79c38'); // Gold shield
+      // Columns
+      for (let i = 0; i < 6; i++) {
+        box(20 + i * 52, 20, 12, 60, '#d1b894');
+        box(18 + i * 52, 17, 16, 4, '#e6d3b3');
+      }
+    } else if (stage === 'bruselas') {
+      // European Commission Berlaymont (EU Blue, 12 gold stars, glass windows)
+      box(0, 0, 320, 112, '#0c2340'); // Dark EU blue
+      box(0, 35, 320, 40, '#134074');
+      box(0, 75, 320, 37, '#1d2d44'); // Modern slate floor
+      // EU Stars circle
+      for (let i = 0; i < 12; i++) {
+        const a = i * Math.PI / 6;
+        box(160 + Math.sin(a) * 22, 35 - Math.cos(a) * 16, 3, 3, '#ffd700');
+      }
+      // Glass panes
+      for (let i = 0; i < 8; i++) {
+        box(10 + i * 40, 15, 30, 50, '#214e7a');
+        box(12 + i * 40, 17, 26, 46, '#2b6299');
+      }
+    } else if (stage === 'moncloa') {
+      // Palacio de la Moncloa (Government white columns & steps)
+      box(0, 0, 320, 112, '#2b3a4a'); // Sky
+      box(0, 32, 320, 30, '#556b82');
+      box(0, 62, 320, 50, '#e5e0d8'); // Spanish stone steps
+      for (let i = 0; i < 7; i++) {
+        box(25 + i * 42, 22, 14, 55, '#f4f0ea');
+        box(23 + i * 42, 19, 18, 4, '#ffffff');
+      }
+    } else if (stage === 'supremo') {
+      // Tribunal Supremo (Dark wood, marble justice scales)
+      box(0, 0, 320, 112, '#231f20');
+      box(0, 28, 320, 36, '#42332a'); // Mahogany paneling
+      box(0, 64, 320, 48, '#634832');
+      // Scales of justice
+      box(158, 12, 4, 35, '#c5a059');
+      box(140, 20, 40, 3, '#c5a059');
+      box(136, 23, 12, 2, '#e0c078');
+      box(172, 23, 12, 2, '#e0c078');
+    } else {
+      // Sede INAP (Official tribunal exam room)
+      box(0,0,320,112,'#4d4565');
+      box(0,31,320,32,'#a78b98');
+      box(0,55,320,28,'#d8b7a5');
+      box(78,40,166,37,'#8c818c');
+      for(let i=0;i<6;i++){
+        box(86+i*27,36,11,43,'#c5b6b7');
+        box(88+i*27,38,3,39,'#e0ccbe');
+      }
+      // Official Exam Clock on wall
+      box(150, 8, 20, 20, '#ffffff');
+      box(152, 10, 16, 16, '#302d39');
+      box(159, 13, 2, 8, '#ff4444');
+      box(159, 17, 6, 2, '#ffffff');
+    }
+
+    // Floor base
+    box(0, 95, 320, 17, '#2a2430');
+
+    const impact = g.hit ? Math.max(0, 1 - (Date.now() - g.hit) / 450) : 0;
+    const bounce = g.done ? 0 : Math.round(Math.sin(Date.now() / 260));
+    const sprite = ['     hhhhh     ','    hhhhhhhe   ','    hhsssse    ','    hssssee    ','     sssss     ','    wwssww     ','   jjjwwjjj    ','  jjjjwwjjjj   ','  jjsjwwjjss   ','  ss jwwj ss   ',' sss jwwj  ss  ','     jjjj      ','    pppppp     ','    ppp pp     ','    pp  ppp    ','   ppp   pp    ','   ppp   ppp   ','  bbbb   bbbb  '];
+
+    function fighter(x,y,palette,flip=false,hit=false,down=false){
+      c.save();
+      c.translate(Math.round(x),Math.round(y));
+      if(down){c.translate(0,45);c.rotate(flip?1.45:-1.45)}
+      if(flip){c.scale(-1,1);c.translate(-45,0)}
+      sprite.forEach((row,r)=>[...row].forEach((v,i)=>{if(v!==' ')box(i*3,r*3,3,3,palette[v])}));
+      if(hit){box(33,22,19,6,palette.j);box(49,21,8,7,palette.s)}
+      c.restore();
+    }
+
+    box(55,100,41,3,'#554455');
+    box(220,100,42,3,'#554455');
+    fighter(52+(g.answered===g.q.c?impact*65:0), 46+bounce, {h:'#55404c',s:'#e3b28c',e:'#453744',w:'#f4e9d2',j:'#9f89bd',p:'#625a83',b:'#4a4059'}, false, impact>.05&&g.answered===g.q.c, !g.player);
+    fighter(219-(g.answered!==g.q.c?impact*62:0), 45-bounce, {h:'#c2b9b9',s:'#ce9f88',e:'#3e3347',w:'#f6e9d3',j:'#555063',p:'#5d526b',b:'#3e374a'}, true, impact>.05&&g.answered!==g.q.c, !g.enemy);
+
+    if(impact>.2){
+      const x = g.answered===g.q.c?207:104;
+      box(x,66,13,4,'#f8df91');
+      box(x+5,60,4,15,'#fbe8a9');
+      box(x-3,62,5,3,'#e2a6a3');
+    }
+    if(impact>0) requestAnimationFrame(drawBattle);
+  }
+
   async function backup(){
     toast('Preparando la copia local con tus documentos...');
     const ids=new Set(state.opps.flatMap(o=>[o.basePdf,...o.topics.flatMap(t=>(t.assets||[]).map(a=>a.id))]).filter(Boolean)),files=[];
     for(const id of ids){const blob=await fileStore('get',id);if(!blob)throw Error('Falta un documento referenciado. No se ha creado una copia incompleta.');files.push({id,data:await readDataURL(blob)})}
     const copy=JSON.parse(JSON.stringify(state));copy.session=0;if(state.session)copy.days[dateKey()]=elapsedToday();
-    download(new Blob([JSON.stringify({format:'oposapiens-backup/1',created:new Date().toISOString(),workspace:copy,files})],{type:'application/json'}),'TypeOpos-'+dateKey()+'.json');
+    download(new Blob([JSON.stringify({format:'oposapiens-backup/1',created:new Date().toISOString(),workspace:copy,files})],{type:'application/json'}),'OpoNexus-'+dateKey()+'.json');
     toast('Copia preparada: '+state.opps.length+' oposiciones y '+files.length+' documentos.');
   }
-  function restoreModal(){modal('Restaurar mi cuaderno',`<p>Elige una copia JSON exportada por TypeOpos Studio.</p><form id="restore-form" class="stack"><label class="field"><span>Copia de seguridad</span><input type="file" name="file" accept="application/json,.json" required></label><label class="checkline"><input type="checkbox" name="confirm" required>Entiendo que la copia sustituirá los datos actuales de este navegador.</label><div id="modal-error" class="modal-error"></div><button class="btn primary">${I('upload',15)}Validar y restaurar</button></form>`)}
+  function restoreModal(){modal('Restaurar mi cuaderno',`<p>Elige una copia JSON exportada por OpoNexus Studio.</p><form id="restore-form" class="stack"><label class="field"><span>Copia de seguridad</span><input type="file" name="file" accept="application/json,.json" required></label><label class="checkline"><input type="checkbox" name="confirm" required>Entiendo que la copia sustituirá los datos actuales de este navegador.</label><div id="modal-error" class="modal-error"></div><button class="btn primary">${I('upload',15)}Validar y restaurar</button></form>`)}
   async function restoreCopy(form){
     const file=new FormData(form).get('file');if(!file?.size)throw Error('Elige una copia JSON.');
     let data;try{data=JSON.parse(await file.text())}catch{throw Error('El archivo no contiene un JSON válido.')}
     const s=data.workspace,validQ=q=>q&&typeof q.q==='string'&&Array.isArray(q.a)&&q.a.length===4&&q.a.every(v=>typeof v==='string')&&Number.isInteger(q.c)&&q.c>=0&&q.c<4;
-    if(data.format!=='oposapiens-backup/1'||!s||s.version!==1||!Array.isArray(s.opps)||!s.opps.length||!Array.isArray(data.files))throw Error('Esta copia no corresponde a TypeOpos Studio.');
+    if(data.format!=='oposapiens-backup/1'||!s||s.version!==1||!Array.isArray(s.opps)||!s.opps.length||!Array.isArray(data.files))throw Error('Esta copia no corresponde a OpoNexus Studio.');
     for(const o of s.opps){if(typeof o.id!=='string'||typeof o.name!=='string'||!Array.isArray(o.blocks)||!o.blocks.every(b=>typeof b==='string')||!Array.isArray(o.topics)||!o.topics.every(t=>typeof t.id==='string'&&typeof t.title==='string'&&typeof t.text==='string'&&Number.isInteger(t.b)&&t.b>=0&&t.b<o.blocks.length&&Array.isArray(t.assets)&&t.assets.every(a=>typeof a.id==='string'&&!a.id.startsWith('@')))||!(o.questions||[]).every(validQ))throw Error('El temario o las preguntas de esta copia no son válidos.');o.baseURL=safeURL(o.baseURL);o.cards=(o.cards||[]).filter(c=>typeof c.front==='string'&&typeof c.back==='string');o.cases=(o.cases||[]).filter(c=>typeof c.facts==='string'&&Array.isArray(c.questions)&&c.questions.every(validQ))}
     if(typeof s.name!=='string'||!s.pet||typeof s.pet.name!=='string'||!s.days||!Array.isArray(s.history)||!Array.isArray(s.recent))throw Error('La configuración de la copia está incompleta.');
     const assets=new Set(data.files.map(f=>f.id));for(const o of s.opps){for(const id of [o.basePdf,...o.topics.flatMap(t=>t.assets.map(a=>a.id))].filter(Boolean))if(!assets.has(id))throw Error('La copia no contiene todos los documentos referenciados.')}
@@ -1505,9 +2662,9 @@
   }
 
   function pomodoroSettingsModal() {
-    modal('Configuración del Pomodoro', `
+    modal('Configuración del Pomodoro Studio', `
       <div class="stack" style="gap:14px">
-        <p class="small muted">Elige el ritmo que mejor se adapte a tu nivel de energía de hoy:</p>
+        <p class="small muted">Elige el ritmo y el sonido ambiental que mejor se adapte a tu nivel de energía de hoy:</p>
         <div class="choice-grid" style="grid-template-columns:repeat(3,1fr);gap:10px">
           <button type="button" class="btn ${pomoWorkMins===25?'primary':'soft'}" onclick="setPomodoroConfig(25, 5)">
             <strong>🍅 Clásico</strong><br><small>25m / 5m</small>
@@ -1519,7 +2676,7 @@
             <strong>⚡ Rápido</strong><br><small>15m / 3m</small>
           </button>
         </div>
-        <div class="form-grid" style="margin-top:8px">
+        <div class="form-grid" style="margin-top:6px">
           <label class="field"><span>Minutos de estudio</span>
             <input type="number" id="custom-pomo-work" min="5" max="120" value="${pomoWorkMins}">
           </label>
@@ -1527,13 +2684,32 @@
             <input type="number" id="custom-pomo-break" min="1" max="30" value="${pomoBreakMins}">
           </label>
         </div>
-        <label class="checkline" style="margin-top:4px">
+
+        <div class="field" style="margin-top:4px">
+          <span>🎧 Sonido ambiental de fondo durante el estudio</span>
+          <div class="choice-grid" style="grid-template-columns:repeat(2,1fr);gap:8px;margin-top:6px">
+            <button type="button" class="btn sm ${pomoAmbientMode==='none'?'primary':'soft'}" onclick="startPomoAmbient('none');pomodoroSettingsModal();">
+              🔇 Sin sonido (Silencio)
+            </button>
+            <button type="button" class="btn sm ${pomoAmbientMode==='white_noise'?'primary':'soft'}" onclick="startPomoAmbient('white_noise');pomodoroSettingsModal();">
+              📻 Ruido blanco (Aislamiento)
+            </button>
+            <button type="button" class="btn sm ${pomoAmbientMode==='rain'?'primary':'soft'}" onclick="startPomoAmbient('rain');pomodoroSettingsModal();">
+              🌧️ Lluvia suave / Marrón
+            </button>
+            <button type="button" class="btn sm ${pomoAmbientMode==='lofi_jazz'?'primary':'soft'}" onclick="startPomoAmbient('lofi_jazz');pomodoroSettingsModal();">
+              ☕ Música Jazz Lo-Fi (Café)
+            </button>
+          </div>
+        </div>
+
+        <label class="checkline" style="margin-top:6px">
           <input type="checkbox" id="pomo-sound-toggle" ${pomoSoundEnabled?'checked':''} onchange="pomoSoundEnabled = this.checked">
-          <span>Activar sonido de campana armónica al finalizar sesión</span>
+          <span>Activar campana tibetana armónica al terminar cada sesión</span>
         </label>
         <div class="modal-actions">
           <button class="btn" onclick="closeModal()">Cerrar</button>
-          <button class="btn primary" onclick="setPomodoroConfig(+document.getElementById('custom-pomo-work').value, +document.getElementById('custom-pomo-break').value)">Aplicar</button>
+          <button class="btn primary" onclick="setPomodoroConfig(+document.getElementById('custom-pomo-work').value, +document.getElementById('custom-pomo-break').value);closeModal();">Aplicar cambios</button>
         </div>
       </div>
     `);
@@ -1563,6 +2739,34 @@
   /* =================================================================
      TYPEOPOS STUDIO: FLOATING INTERACTIVE PET WIDGET
      ================================================================= */
+  
+  async function loadMediaBlobs() {
+    try {
+      const audios = document.querySelectorAll('audio[id^="audio-"]');
+      for (const el of audios) {
+        if (el.src && el.src.startsWith('blob:')) continue;
+        const assetId = el.id.replace('audio-', '');
+        const blob = await fileStore('get', assetId);
+        if (blob) {
+          const u = URL.createObjectURL(blob);
+          issuedURLs.push(u);
+          el.src = u;
+        }
+      }
+      const videos = document.querySelectorAll('video[id^="video-"]');
+      for (const el of videos) {
+        if (el.src && el.src.startsWith('blob:')) continue;
+        const assetId = el.id.replace('video-', '');
+        const blob = await fileStore('get', assetId);
+        if (blob) {
+          const u = URL.createObjectURL(blob);
+          issuedURLs.push(u);
+          el.src = u;
+        }
+      }
+    } catch(e) {}
+  }
+
   function renderFloatingPet() {
     let container = document.getElementById('floating-pet-widget');
     if (!container) {
@@ -1581,8 +2785,15 @@
         <p id="floating-pet-quote" style="margin:0 0 12px 0;font-size:12px;line-height:1.45;color:#4a3e3d;font-style:italic">“${esc(petLine('tip'))}”</p>
         <div class="stack" style="gap:6px">
           <button class="btn sm primary" data-act="quick-question">${I('sparkle', 12)} Pregunta exprés de examen</button>
-          <div class="row" style="gap:4px"><button class="btn sm soft" style="flex:1" data-act="toggle-pomo">${I('clock', 12)} ${pomoRunning ? 'Pausar' : 'Iniciar Pomodoro'}</button><button class="btn sm" data-act="pomo-settings" title="Configurar tiempos Pomodoro">⚙️</button></div>
-          <button class="btn sm" data-act="pet-settings">${I('settings', 12)} Cambiar o vestir mascota</button>
+          <div class="row" style="gap:4px">
+            <button class="btn sm soft" style="flex:1" data-act="toggle-pomo">${I('clock', 12)} ${pomoRunning ? 'Pausar' : 'Iniciar Pomodoro'}</button>
+            <button class="btn sm" data-act="pomo-settings" title="Configurar tiempos y sonido ambiente">⚙️</button>
+          </div>
+          <div class="row" style="gap:4px">
+            <button class="btn sm soft" style="flex:1" data-act="pet-wardrobe">👔 Armario de Mascotas</button>
+            <button class="btn sm" onclick="togglePetWalking()" title="Pasear o fijar mascota en pantalla">🐾</button>
+          </div>
+          <button class="btn sm" data-act="pet-settings">${I('settings', 12)} Personalizar diseño actual</button>
         </div>
       </div>
       <div class="floating-pet-avatar" onclick="toggleFloatingPetDialog()" title="¡Hola! Soy ${esc(state.pet.name)}. Haz clic para hablar conmigo.">
@@ -1857,7 +3068,7 @@
       case 'boe':html=bulletin();title='Convocatorias oficiales';break;
       default:currentPage='home';html=home();title='Mi escritorio';break;
     }
-    $('#contenido').innerHTML=html;document.title=title+' | TypeOpos Studio';renderFloatingPet();
+    $('#contenido').innerHTML=html;document.title=title+' | OpoNexus Studio';renderFloatingPet();loadMediaBlobs();
     if(page==='boe')$('.module-aside').insertAdjacentHTML('beforeend',`<a class="law-link" style="margin-top:14px" href="https://administracion.gob.es/pagFront/ofertasempleopublico/resultadosEmpleo.htm?tipoBusqueda=CONVOCATORIAS" target="_blank" rel="noopener noreferrer">Buscador estatal de empleo público ${I('external',12)}</a>`);
     if(opp().basePdf||opp().baseURL)$('.nav-right').insertAdjacentHTML('afterbegin',`<button class="header-pin" data-act="open-bases" title="Consultar las bases ancladas" aria-label="Consultar las bases ancladas">${I('pin',15)}</button>`);
     if(page==='home'&&opp().name==='Gestión de la Administración Civil del Estado')$('.opp-name').innerHTML='Gestión de la Administración<br>Civil del Estado';
@@ -1945,16 +3156,9 @@
       case 'paste-syllabus':pasteSyllabusModal();break;
       case 'toggle-pomo':togglePomodoro();break;
       case 'reset-pomo':resetPomodoro();break;
-      case 'quick-question':{
-        closeModal();
-        const pool = questionPool({count: 1});
-        if (pool.length) {
-          quickQuestionModal(pool[0]);
-        } else {
-          toast('Importa apuntes para desbloquear preguntas rápidas.');
-        }
-        break;
-      }
+      case 'quick-question': closeModal(); quickQuestion(); break;
+      case 'profile-manager': profileManagerModal(); break;
+      case 'pet-wardrobe': petWardrobeModal(); break;
       case 'extract-curr-pdf':{
         const t = currentTopic();
         if (t) {
@@ -2119,13 +3323,13 @@
     await check('PDF: páginas, tablas y referencias internas',async()=>{for(const cols of [1,2])for(const tab of ['outline','table']){const text=await pdfBlob(sample,cols,tab).text(),xref=Number(text.match(/startxref\n(\d+)/)?.[1]);if(!text.startsWith('%PDF-1.4')||!text.endsWith('%%EOF')||text.slice(xref,xref+4)!=='xref')return false;const entries=[...text.matchAll(/^(\d{10}) 00000 n /gm)];if(!entries.length||!entries.every((m,i)=>text.slice(+m[1]).startsWith((i+1)+' 0 obj')))return false}return true});
     await check('Word: paquete DOCX y XML válidos',async()=>{const ab=await docxBlob(sample,'table').arrayBuffer(),dv=new DataView(ab),decoder=new TextDecoder(),names=[];let p=0;while(p+30<ab.byteLength&&dv.getUint32(p,true)===0x04034b50){const size=dv.getUint32(p+18,true),nl=dv.getUint16(p+26,true),xl=dv.getUint16(p+28,true),start=p+30+nl+xl;names.push(decoder.decode(ab.slice(p+30,p+30+nl)));const xml=new DOMParser().parseFromString(decoder.decode(ab.slice(start,start+size)),'application/xml');if(xml.querySelector('parsererror'))return false;p=start+size}return names.includes('word/document.xml')&&names.includes('[Content_Types].xml')&&names.includes('_rels/.rels')&&dv.getUint32(ab.byteLength-22,true)===0x06054b50});
     await check('Rosco completo y tablero de palabras resoluble',()=>{const rosco=roscoData(),s=makeWordGrid();return rosco.length===27&&rosco.every(q=>wordKey(q.term).includes(q.letter))&&s.placements.length===6&&s.placements.every(p=>p.cells.map(i=>s.grid[i]).join('')===p.word)});
-    await check('Lectura y escritura en IndexedDB',async()=>{const k='@audit-'+uid();try{await fileStore('put',k,new Blob(['TypeOpos']));return (await (await fileStore('get',k)).text())==='TypeOpos'}finally{await fileStore('remove',k)}});
+    await check('Lectura y escritura en IndexedDB',async()=>{const k='@audit-'+uid();try{await fileStore('put',k,new Blob(['OpoNexus']));return (await (await fileStore('get',k)).text())==='OpoNexus'}finally{await fileStore('remove',k)}});
     await check('Preferencias persistentes en localStorage',()=>{const k=STORAGE+'.audit';try{localStorage.setItem(k,'ok');return localStorage.getItem(k)==='ok'}finally{localStorage.removeItem(k)}});
     const summary=$('#audit-summary');if(summary){summary.className='notice '+(rows.every(Boolean)?'success':'error');summary.style.marginTop='14px';summary.textContent=rows.filter(Boolean).length+' de '+rows.length+' comprobaciones correctas. Las APIs externas no se prueban con tus datos.'}
   }
   async function boot(){
     try{const s=JSON.parse(localStorage.getItem(STORAGE));if(s?.large){const large=await fileStore('get','@workspace');if(large?.version===1&&large.opps?.length)state=large}else if(!s)save()}catch{}
-    $('#close-icon').innerHTML=I('x',18);$('#footer-brand').innerHTML=I('book',13)+' TypeOpos Studio <span>·</span> Ultimate Edition';
+    $('#close-icon').innerHTML=I('x',18);$('#footer-brand').innerHTML=I('book',13)+' OpoNexus Studio <span>·</span> Ultimate Edition';
     renderRoute();setInterval(updateClock,1000);
   }
   boot();
