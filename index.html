@@ -498,68 +498,276 @@
     }
 
   
-    /* === SVG Elastic Braces for Esquemas de Llaves === */
+    /* === SVG Elastic Braces & Multi-Tier Novolex-Style Esquemas de Llaves === */
     .bracket-tree-container {
       display: flex;
       align-items: stretch;
-      gap: 12px;
+      gap: 10px;
       margin: 18px 0;
       overflow-x: auto;
-      padding: 10px 4px;
+      padding: 14px 6px;
+      min-width: 100%;
     }
     .bracket-root-card {
-      background: linear-gradient(135deg, #6e48aa, #553396);
-      color: white;
-      font-weight: 700;
-      padding: 16px 20px;
-      border-radius: 12px;
-      font-size: 14px;
+      background: linear-gradient(135deg, #4b2a82 0%, #341865 100%);
+      color: #ffffff;
+      padding: 20px 18px;
+      border-radius: 14px;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: center;
+      align-items: center;
       text-align: center;
-      box-shadow: 0 4px 15px rgba(85,51,150,0.25);
-      max-width: 200px;
+      min-width: 180px;
+      max-width: 210px;
       flex-shrink: 0;
+      box-shadow: 0 4px 18px rgba(52, 24, 101, 0.28);
+      border: 1px solid #6b46a8;
+    }
+    .bracket-root-sub {
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: .85;
+      margin-bottom: 6px;
+    }
+    .bracket-root-title {
+      font-weight: 800;
+      font-size: 13.5px;
+      line-height: 1.35;
+      margin-bottom: 8px;
+    }
+    .bracket-root-badge {
+      background: rgba(255, 255, 255, 0.18);
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 9.5px;
+      font-weight: 600;
     }
     .svg-brace {
-      width: 26px;
+      width: 22px;
       flex-shrink: 0;
       align-self: stretch;
     }
-    .bracket-branches-col {
+    .bracket-tier1-col {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
       justify-content: space-around;
       flex: 1;
-      min-width: 260px;
+      min-width: max-content;
     }
-    .bracket-branch-card {
-      background: #ffffff;
-      border: 1.5px solid #dcd5ee;
-      border-radius: 10px;
-      padding: 10px 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    .bracket-tier1-row {
       display: flex;
       align-items: stretch;
-      gap: 10px;
+      gap: 8px;
     }
-    .bracket-sub-col {
+    .bracket-tier1-card {
+      background: #ffffff;
+      border: 1.5px solid #c9bedf;
+      border-radius: 10px;
+      padding: 12px 14px;
+      min-width: 160px;
+      max-width: 190px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(85, 51, 150, 0.05);
+    }
+    .tier1-tag {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 700;
+      color: #7b59a6;
+      margin-bottom: 3px;
+    }
+    .tier1-title {
+      font-weight: 800;
+      font-size: 12px;
+      color: #3f2270;
+      line-height: 1.35;
+    }
+    .bracket-tier2-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: space-around;
+      flex: 1;
+      min-width: max-content;
+    }
+    .bracket-tier2-row {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+    }
+    .bracket-tier2-card {
+      background: #fbf9fd;
+      border: 1.2px solid #ddd5ec;
+      border-radius: 8px;
+      padding: 10px 12px;
+      min-width: 170px;
+      max-width: 215px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .tier2-title {
+      font-weight: 700;
+      font-size: 11.5px;
+      color: #553396;
+      line-height: 1.35;
+    }
+    .bracket-tier3-col {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      flex: 1;
+      justify-content: center;
+      min-width: 290px;
+      max-width: 480px;
     }
-    .bracket-leaf {
-      font-size: 12.5px;
-      color: #3b3534;
-      line-height: 1.5;
-      padding: 3px 0;
-      border-bottom: 1px dashed #ede8f5;
+    .bracket-tier3-leaf {
+      background: #ffffff;
+      border: 1px solid #eae5f2;
+      border-left: 3px solid #6e48aa;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 11.5px;
+      line-height: 1.45;
+      color: #2e2634;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
-    .bracket-leaf:last-child {
-      border-bottom: none;
+    .badge-trampa {
+      display: inline-block;
+      background: #ffe3e3;
+      color: #c92a2a;
+      border: 1px solid #ffa8a8;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin-right: 4px;
+      letter-spacing: 0.3px;
+    }
+    .badge-mayoria {
+      display: inline-block;
+      background: #f3f0ff;
+      color: #5f3dc4;
+      border: 1px solid #d0bfff;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+    .badge-plazo {
+      display: inline-block;
+      background: #fff4e6;
+      color: #d9480f;
+      border: 1px solid #ffd8a8;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+    .badge-norma {
+      display: inline-block;
+      background: #ebfbee;
+      color: #2b8a3e;
+      border: 1px solid #b2f2bb;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+
+    /* === Agenda y Calendario de Estudio Modal === */
+    .agenda-weekdays-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-weight: 700;
+      font-size: 11.5px;
+      color: #6e587b;
+      margin-bottom: 6px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--line);
+    }
+    .agenda-calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+    .agenda-day-cell {
+      min-height: 56px;
+      background: #ffffff;
+      border: 1px solid #eae5e0;
+      border-radius: 8px;
+      padding: 5px 6px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all .15s ease;
+    }
+    .agenda-day-cell.empty {
+      background: transparent;
+      border: 1px dashed transparent;
+    }
+    .agenda-day-cell.is-today {
+      border: 2px solid #6e48aa;
+      background: #faf7ff;
+    }
+    .agenda-day-cell.goal-met {
+      border-color: #a3d9a5;
+      background: #f4faf4;
+    }
+    .agenda-day-cell.has-studied:not(.goal-met) {
+      border-color: #dcd3eb;
+      background: #fbf9fe;
+    }
+    .agenda-day-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: #555;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .today-dot {
+      width: 6px;
+      height: 6px;
+      background: #6e48aa;
+      border-radius: 50%;
+    }
+    .agenda-time-badge {
+      display: inline-block;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: #eee8f5;
+      color: #553396;
+      margin-top: 2px;
+    }
+    .agenda-time-badge.met {
+      background: #d4edd6;
+      color: #176536;
+    }
+    .agenda-topic-tag {
+      display: block;
+      font-size: 9px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: #eef3ff;
+      color: #244b82;
+      padding: 1px 3px;
+      border-radius: 3px;
+      margin-top: 2px;
     }
 
     /* === Draggable Pet & Mascot Pomodoro Clock === */
@@ -1173,6 +1381,223 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
   function newOpp(){modal('Nueva oposición',`<p>Configura tu cuaderno de oposición o utiliza las plantillas oficiales del Estado:</p><form id="new-opp-form" class="stack"><label class="field"><span>Nombre de la oposición</span><input name="name" required maxlength="100" placeholder="Ej. Gestión de la Administración Civil del Estado (GACE A2)" value="Gestión de la Administración Civil del Estado (GACE A2)"></label><div class="form-grid compact"><label class="field"><span>Subgrupo</span><select name="group">${['A1','A2','B','C1','C2','AP','Otro'].map(x=>`<option ${x==='A2'?'selected':''}>${x}</option>`).join('')}</select></label><label class="field"><span>Nombre corto</span><input name="short" maxlength="20" placeholder="Ej. GACE A2" value="GACE A2"></label></div><label class="field"><span>Plantilla oficial inicial</span><select name="template"><option value="gace" selected>GACE A2 · 58 temas oficiales en 6 bloques (INAP)</option><option value="c1">Administrativo del Estado C1 · 43 temas oficiales</option><option value="empty">Temario en blanco / personalizado</option></select></label><label class="field"><span>Importar temas <small>(opcional)</small></span><textarea name="topics" placeholder="# Bloque I. Organización del Estado\nTema 1. La Constitución Española\nTema 4. La Corona..."></textarea><small>Un tema por línea. Usa # para bloques o pega JSON.</small></label><label class="field"><span>O elige un archivo TXT / JSON</span><input type="file" name="syllabusFile" accept=".txt,.json,text/plain,application/json"></label><div class="modal-error" id="modal-error"></div><div class="row" style="justify-content:flex-end">${btn('Cancelar','close')}<button class="btn primary" type="submit">${I('plus',15)}Crear oposición</button></div></form>`)}
   function parseSyllabus(text){const bs=[],ts=[];let b='Temario general';function add(title,block,content=''){if(typeof title!=='string'||!title.trim())return;const bn=String(block||b).trim();if(!bs.includes(bn))bs.push(bn);ts.push({id:uid(),title:title.trim().slice(0,200),b:bs.indexOf(bn),text:String(content||'').slice(0,200000),rounds:0,errors:0,source:'',assets:[],updated:0})}if(text.trim().startsWith('[')||text.trim().startsWith('{')){let js;try{js=JSON.parse(text)}catch{throw Error('El JSON no es válido. Comprueba las comillas y las comas.')}const arr=Array.isArray(js)?js:js.temas||js.topics;if(!Array.isArray(arr))throw Error('El JSON debe contener una lista de temas.');arr.slice(0,500).forEach(t=>typeof t==='string'?add(t,b):add(t?.titulo||t?.title,t?.bloque||t?.block,t?.texto||t?.text))}else{for(const line of text.split('\n').slice(0,600)){if(line.trim().startsWith('#'))b=line.replace(/^\s*#+\s*/,'').trim()||b;else add(line.replace(/^\s*[-*]\s*/,''),b)}}return {blocks:bs.length?bs:['Temario general'],topics:ts}}
   function planModal(){const ds=daysOfWeek(),sum=ds.reduce((v,d)=>v+(dateKey(d)===dateKey()?elapsedToday():state.days[dateKey(d)]||0),0);modal('Mi planificador',`<p>Un objetivo sostenible para los siete días de la semana.</p><div class="between"><b>Esta semana</b><span class="tag">${humanMins(sum/60)} de ${humanMins(state.goal*7)}</span></div><div class="stack" style="gap:0;margin:10px 0 19px">${ds.map(d=>{const s=dateKey(d)===dateKey()?elapsedToday():(state.days[dateKey(d)]||0);return `<div class="history-row"><span>${esc(d.toLocaleDateString('es-ES',{weekday:'long',day:'numeric'}))}</span><span>${humanMins(s/60)} / ${humanMins(state.goal)}</span></div>`}).join('')}</div><form id="goal-form" class="stack"><label class="field"><span>Objetivo diario en minutos</span><input required name="goal" type="number" min="5" max="720" value="${state.goal}"></label><button class="btn primary">Guardar planificación</button></form>`)}
+  function studyAgendaModal() {
+    const o = opp();
+    const today = new Date();
+    const curYear = today.getFullYear();
+    const curMonth = today.getMonth();
+    
+    if (!state.examDate) {
+      const future = new Date();
+      future.setMonth(future.getMonth() + 4);
+      future.setDate(20);
+      state.examDate = dateKey(future);
+    }
+    
+    state.scheduledReviews = state.scheduledReviews || [];
+    
+    const examD = new Date(state.examDate + 'T00:00:00');
+    const todayMidnight = new Date();
+    todayMidnight.setHours(0, 0, 0, 0);
+    const diffTime = examD.getTime() - todayMidnight.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    const firstDayOfMonth = new Date(curYear, curMonth, 1);
+    const daysInMonth = new Date(curYear, curMonth + 1, 0).getDate();
+    let startingDay = (firstDayOfMonth.getDay() + 6) % 7; 
+    
+    const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const currentMonthName = monthNames[curMonth];
+    
+    const ds = daysOfWeek();
+    const weekSecs = ds.reduce((v, d) => v + (dateKey(d) === dateKey() ? elapsedToday() : state.days[dateKey(d)] || 0), 0);
+    const weekGoalSecs = state.goal * 60 * 7;
+    const weekPct = Math.min(100, Math.round((weekSecs / weekGoalSecs) * 100));
+
+    let calendarCells = '';
+    for (let i = 0; i < startingDay; i++) {
+      calendarCells += `<div class="agenda-day-cell empty"></div>`;
+    }
+    for (let dayNum = 1; dayNum <= daysInMonth; dayNum++) {
+      const cellDate = new Date(curYear, curMonth, dayNum);
+      const k = dateKey(cellDate);
+      const isToday = k === dateKey();
+      const secs = (isToday ? elapsedToday() : state.days[k] || 0);
+      const goalMet = secs >= (state.goal * 60);
+      const hasStudied = secs > 0;
+      
+      const reviewsOnDay = (state.scheduledReviews || []).filter(r => r.date === k);
+      
+      calendarCells += `
+        <div class="agenda-day-cell ${isToday ? 'is-today' : ''} ${goalMet ? 'goal-met' : hasStudied ? 'has-studied' : ''}" data-date="${k}">
+          <div class="agenda-day-num">
+            <span>${dayNum}</span>
+            ${isToday ? '<span class="today-dot" title="Hoy"></span>' : ''}
+          </div>
+          <div class="agenda-day-info">
+            ${secs > 0 ? `<span class="agenda-time-badge ${goalMet ? 'met' : ''}">${humanMins(secs / 60)}</span>` : ''}
+            ${reviewsOnDay.map(r => `<span class="agenda-topic-tag" title="${esc(r.title)}">📖 ${esc(r.shortTitle || r.title.slice(0, 11))}</span>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    const modalHTML = `
+      <div class="study-agenda-modal stack" style="gap:16px">
+        <div class="agenda-countdown-card" style="background:linear-gradient(135deg, #f3edf9 0%, #ebe4f5 100%);border:1.5px solid #d9d1f0;border-radius:14px;padding:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div class="row" style="gap:14px;align-items:center">
+            <div style="width:48px;height:48px;border-radius:12px;background:#6e48aa;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 3px 10px rgba(110,72,170,0.3)">
+              ⏳
+            </div>
+            <div>
+              <div style="font-weight:800;font-size:17px;color:#432874">
+                ${diffDays > 0 ? `${diffDays} días para tu examen oficial` : diffDays === 0 ? '¡HOY ES EL DÍA DEL EXAMEN!' : 'Fecha de examen concluida'}
+              </div>
+              <div class="small muted" style="margin-top:2px">
+                Oposición: <strong>${esc(o.short || o.name)}</strong> · Fecha fijada: <strong>${examD.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>
+              </div>
+            </div>
+          </div>
+          <div class="row" style="gap:8px">
+            <button class="btn sm" onclick="changeExamDatePrompt()" style="background:#fff;border:1.5px solid #c9bee5;color:#553396;font-weight:600">
+              ${I('calendar', 13)} Modificar fecha
+            </button>
+            <button class="btn sm primary" onclick="toggleSession(); closeModal();">
+              ${I(state.session ? 'pause' : 'play', 12)} ${state.session ? 'Pausar estudio' : 'Iniciar estudio ya'}
+            </button>
+          </div>
+        </div>
+
+        <div class="row wrap between" style="background:#faf8f5;border:1px solid var(--line);border-radius:12px;padding:12px 16px;gap:12px">
+          <div>
+            <span class="tiny muted" style="text-transform:uppercase;letter-spacing:.8px;display:block">Tiempo estudiado esta semana</span>
+            <strong style="font-size:15px;color:var(--deep)">${humanMins(weekSecs / 60)}</strong>
+            <span class="small muted">de ${humanMins(weekGoalSecs / 60)} (${weekPct}%)</span>
+          </div>
+          <div>
+            <span class="tiny muted" style="text-transform:uppercase;letter-spacing:.8px;display:block">Meta diaria</span>
+            <strong style="font-size:15px;color:#553396">${state.goal} min/día</strong>
+          </div>
+          <div>
+            <span class="tiny muted" style="text-transform:uppercase;letter-spacing:.8px;display:block">Racha activa</span>
+            <strong style="font-size:15px;color:#1d6f42">🔥 ${streak()} días seguidos</strong>
+          </div>
+          <button class="btn sm soft" onclick="planModal()">${I('settings', 12)} Ajustar objetivo</button>
+        </div>
+
+        <div class="agenda-calendar-box surface" style="border:1px solid var(--line);border-radius:12px;padding:16px;">
+          <div class="row between" style="margin-bottom:12px">
+            <h3 style="margin:0;font-size:15px;color:var(--deep);display:flex;align-items:center;gap:6px">
+              <span>📅</span> ${currentMonthName} de ${curYear}
+            </h3>
+            <div class="row" style="gap:6px">
+              <span class="badge" style="background:#eaf5ea;color:#1d6f42;border:1px solid #c7e3c7;font-size:11px">● Meta cumplida</span>
+              <span class="badge" style="background:#f0eef9;color:#553396;border:1px solid #d9d1f0;font-size:11px">● Repaso agendado</span>
+            </div>
+          </div>
+
+          <div class="agenda-weekdays-grid">
+            <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+          </div>
+
+          <div class="agenda-calendar-grid">
+            ${calendarCells}
+          </div>
+        </div>
+
+        <div class="surface" style="border:1px solid var(--line);border-radius:12px;padding:16px;">
+          <div class="row between wrap" style="margin-bottom:10px">
+            <h4 style="margin:0;color:var(--deep);font-size:14px;display:flex;align-items:center;gap:6px">
+              <span>🎯</span> Planificar Repaso de Temario
+            </h4>
+            <span class="tiny muted">Organiza vueltas al temario según tu curva del olvido</span>
+          </div>
+          
+          <form onsubmit="scheduleReviewSubmit(event)" class="row wrap" style="gap:8px;align-items:flex-end">
+            <label class="field" style="flex:2;min-width:200px;margin:0">
+              <span style="font-size:11px">Seleccionar tema</span>
+              <select name="topicId" id="sched-topic" required style="padding:7px 10px;font-size:12.5px">
+                ${o.topics.map(t => `<option value="${esc(t.id)}">${esc(t.title)}</option>`).join('')}
+              </select>
+            </label>
+            <label class="field" style="flex:1;min-width:130px;margin:0">
+              <span style="font-size:11px">Fecha de repaso</span>
+              <input type="date" name="reviewDate" id="sched-date" required value="${dateKey()}" style="padding:6px 8px;font-size:12.5px">
+            </label>
+            <button class="btn primary sm" type="submit" style="height:36px">
+              ${I('plus', 12)} Agendar repaso
+            </button>
+          </form>
+
+          ${(state.scheduledReviews && state.scheduledReviews.length) ? `
+            <div class="stack" style="gap:6px;margin-top:12px">
+              <span class="tiny muted" style="font-weight:700">Próximos temas agendados:</span>
+              ${state.scheduledReviews.slice(0, 5).map((r, idx) => `
+                <div class="row between" style="padding:6px 10px;background:#fdfcf9;border:1px solid #eee;border-radius:8px;font-size:12px">
+                  <span style="color:#553396;font-weight:600">📅 ${r.date} · ${esc(r.title)}</span>
+                  <div class="row" style="gap:6px">
+                    <button class="text-btn tiny" onclick="closeModal();go('reader','${esc(r.topicId)}')">Estudiar ahora</button>
+                    <button class="icon-btn tiny" onclick="removeScheduledReview(${idx})" title="Eliminar">✕</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          ` : '<p class="tiny muted" style="margin-top:10px">No tienes repasos programados para los próximos días. Agenda uno arriba.</p>'}
+        </div>
+      </div>
+    `;
+
+    modal('Mi Agenda y Calendario de Estudio', modalHTML, true);
+  }
+
+  function changeExamDatePrompt() {
+    modal('Fecha Objetivo del Examen', `
+      <form onsubmit="event.preventDefault(); const val=this.examDate.value; if(val){ state.examDate=val; save(); toast('Fecha de examen guardada.'); studyAgendaModal(); }" class="stack">
+        <p class="small muted">Introduce la fecha prevista de tu examen oficial para el cálculo exacto de días:</p>
+        <label class="field"><span>Fecha del examen oficial</span>
+          <input type="date" name="examDate" required value="${esc(state.examDate || dateKey())}">
+        </label>
+        <div class="modal-actions">
+          <button class="btn" type="button" onclick="studyAgendaModal()">Volver a la Agenda</button>
+          <button class="btn primary" type="submit">${I('check', 12)} Guardar fecha</button>
+        </div>
+      </form>
+    `);
+  }
+
+  function scheduleReviewSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    const topicId = form.topicId.value;
+    const date = form.reviewDate.value;
+    const t = topic(topicId);
+    if (!t) return;
+    state.scheduledReviews = state.scheduledReviews || [];
+    state.scheduledReviews.push({
+      topicId: t.id,
+      title: t.title,
+      shortTitle: t.title.slice(0, 16),
+      date: date
+    });
+    state.scheduledReviews.sort((a, b) => a.date.localeCompare(b.date));
+    save();
+    toast('Repaso de «' + t.title.slice(0, 25) + '...» agendado para el ' + date);
+    studyAgendaModal();
+  }
+
+  function removeScheduledReview(idx) {
+    if (state.scheduledReviews && state.scheduledReviews[idx]) {
+      state.scheduledReviews.splice(idx, 1);
+      save();
+      toast('Repaso eliminado de la agenda.');
+      studyAgendaModal();
+    }
+  }
+
+  window.studyAgendaModal = studyAgendaModal;
+  window.changeExamDatePrompt = changeExamDatePrompt;
+  window.scheduleReviewSubmit = scheduleReviewSubmit;
+  window.removeScheduledReview = removeScheduledReview;
   function toggleSession(){if(state.session){let start=state.session;const now=Date.now();while(start<now){const end=new Date(start);end.setHours(24,0,0,0);const until=Math.min(now,+end),k=dateKey(new Date(start));state.days[k]=(state.days[k]||0)+Math.floor((until-start)/1000);start=until}state.session=0;toast('Sesión guardada en tu jornada.')}else{state.session=Date.now();toast('Sesión iniciada. Puedes seguir usando tu escritorio.')}save();renderRoute(false)}
   function settings(){modal('Mi espacio personal',`<p>Mi Cuaderno de Oposiciones · Ultimate Edition</p><form id="settings-form" class="stack"><label class="field"><span>Nombre de tu perfil</span><input name="name" required maxlength="35" value="${esc(state.name)}"></label><label class="field"><span>Objetivo diario (minutos)</span><input name="goal" type="number" min="5" max="720" required value="${state.goal}"></label><button class="btn primary">Guardar preferencias</button></form><div class="divider"></div><div class="stack">${btn('Gestionar oposiciones','switch-opp','layers')}${btn('Configurar inteligencia artificial','ai-settings','sparkle')}${btn('Descargar copia de mis datos','backup','download')}${btn('Restaurar una copia','restore','upload')}</div><div class="notice" style="margin-top:16px">${state.demo?'El cuaderno de muestra incluye progreso y apuntes de ejemplo. ':''}Tus datos se guardan en este navegador. Una copia incluye los documentos y el progreso, nunca la clave de IA.</div>${state.demo?`<div class="modal-actions">${btn('Empezar con el progreso a cero','clear-demo','refresh','sm')}</div>`:''}`)}
   
@@ -1545,8 +1970,25 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
   const highlight=s=>esc(s).replace(keyRX,'<strong>$1</strong>');
   function sentences(s){return String(s||'').replace(/\r/g,'').split(/\n+|(?<=[.!?;])\s+(?=[A-ZÁÉÍÓÚÑ¿])/).map(x=>x.trim()).filter(Boolean)}
   function summarize(text){const total=words(text).length,budget=Math.floor(total*.28);if(!budget)return [];if(text===noteProcedure)return ['Subsanación: 10 días; desistimiento previa resolución si no se subsana.','Días hábiles: excluir sábados, domingos y festivos. Inicio: día siguiente.','Audiencia: entre 10 y 15 días.','Alzada: superior jerárquico. Interposición contra acto expreso: un mes; resolución: tres meses.','Reposición: mismo órgano. Resolución y notificación: un mes.'];const pieces=sentences(text).flatMap(s=>s.split(/;\s*|:\s+(?=[A-ZÁÉÍÓÚ])/)).map((s,i)=>({s:s.replace(/^(?:En primer lugar,? |Cabe destacar que |Es importante señalar que |Por otra parte,? |Como hemos visto,? )/i,'').trim(),i})).filter(x=>words(x.s).length>=3);pieces.forEach(x=>{x.score=(x.s.match(keyRX)||[]).length*5+(/\b(debe|plazo|competent|requisito|define|consiste|principio|excep|función|efecto)/i.test(x.s)?3:0)+(/\d/.test(x.s)?1:0)});let left=budget;const out=[];for(const x of pieces.sort((a,b)=>b.score-a.score||a.i-b.i)){const ws=words(x.s);if(ws.length<=left&& !out.some(y=>y.s===x.s)){out.push(x);left-=ws.length}if(left<3)break}if(!out.length&&pieces.length){const x=pieces[0];out.push({i:x.i,s:x.s})}return out.sort((a,b)=>a.i-b.i).map(x=>x.s)}
-  function outlineGroups(lines){const groups={};for(const s of lines){const label=/plazo|días|meses|años|horas|mes\b|mayoría|quórum/i.test(s)?'Plazos y mayorías':/órgano|jerárquico|consejo|comisión|tribunal/i.test(s)?'Órganos y competencias':'Conceptos esenciales';(groups[label]||=[]).push(s)}return groups}
-  function compareRows(t){if(t.text===noteProcedure)return [['Subsanación','Órgano tramitador','10 días','Desistimiento previa resolución'],['Audiencia','Órgano instructor','10 a 15 días','Alegaciones y documentos'],['Alzada (acto expreso)','Superior jerárquico','1 mes para interponer; 3 meses para resolver','Silencio desestimatorio, salvo art. 24.1'],['Reposición','Mismo órgano','1 mes para resolver','Recurso potestativo']];const rows=sentences(t.text).filter(s=>s.match(keyRX)||/efecto|competente|recurso|excepción/i.test(s)).slice(0,16).map(s=>{const organ=s.match(/(?:[Ee]l |[Ll]a )?(?:[Ss]uperior jerárquico|[Cc]onsejo de Ministros|[Cc]ongreso(?: de los Diputados)?|[Óó]rgano de contratación|[Cc]omisión Europea|[Oo]rgano instructor|[Tt]ribunal Constitucional|[Ss]enado|[Pp]residente del Gobierno)/)?.[0],time=s.match(/(?:\d[\d.]*|un|una|dos|tres|cuatro|cinco|diez|quince|veintidós)\s+(?:días?(?:\s+(?:hábiles|naturales))?|mes(?:es)?|años?|horas?|euros)|mayoría\s+(?:simple|absoluta|cualificada)/i)?.[0],eff=s.match(/(?:salvo|excepto|sin perjuicio|desestimatori[oa]|desistimiento|no podrá|no podrán|previa resolución)[^.;]*/i)?.[0];return [s.split(/[:.]/)[0].split(' ').slice(0,10).join(' '),organ||'No consta',time||'No consta',eff||'No consta']});return rows.length?rows:[['Sin datos comparables','No consta','No consta','Añade reglas, plazos u órganos al texto.']]}
+  function isTopicConstitutional(t) {
+    if (!t) return false;
+    const title = (t.title || '').toLowerCase();
+    const id = t.id || '';
+    return id === 't1' || /constituci|corona|cortes|derechos fundamentales|garantías/i.test(title);
+  }
+  function compareRows(t){
+    if (isTopicConstitutional(t)) {
+      return [
+        ['Reforma Ordinaria (Art. 167 CE)', 'Cortes Generales (Congreso y Senado)', 'Mayoría de 3/5 cada Cámara', 'Desbloqueo: Absoluta Senado + 2/3 Congreso. Referéndum potestativo 1/10 (15 d)'],
+        ['Reforma Agravada (Art. 168 CE)', 'Cortes Generales + Nuevas Cortes electas', 'Mayoría de 2/3 principio y texto', 'Disolución automática obligatoria. Referéndum preceptivo vinculante'],
+        ['Investidura Pte. Gobierno (Art. 99 CE)', 'Congreso de los Diputados', '1ª Absoluta / 2ª Simple (48h)', 'Si en 2 meses no hay investidura: disolución de ambas Cámaras'],
+        ['Moción de Censura (Arts. 113-114 CE)', 'Congreso de los Diputados', 'Mayoría Absoluta del Congreso', 'Constructiva con candidato. 1/10 la propone. Votación tras 5 días'],
+        ['Convalidación Decretos-Leyes (Art. 86)', 'Congreso de los Diputados', 'Mayoría Simple', 'Plazo perentorio de 30 días naturales desde su promulgación'],
+        ['Derechos con Tutela Máxima (Art. 53.2)', 'Tribunales ordinarios y Tribunal Constitucional', 'Procedimiento preferente y sumario', 'Arts. 14 a 29 + 30.2 CE. Reserva Ley Orgánica + Recurso de Amparo ante TC']
+      ];
+    }
+    if(t.text===noteProcedure)return [['Subsanación','Órgano tramitador','10 días','Desistimiento previa resolución'],['Audiencia','Órgano instructor','10 a 15 días','Alegaciones y documentos'],['Alzada (acto expreso)','Superior jerárquico','1 mes para interponer; 3 meses para resolver','Silencio desestimatorio, salvo art. 24.1'],['Reposición','Mismo órgano','1 mes para resolver','Recurso potestativo']];
+    const rows=sentences(t.text).filter(s=>s.match(keyRX)||/efecto|competente|recurso|excepción/i.test(s)).slice(0,16).map(s=>{const organ=s.match(/(?:[Ee]l |[Ll]a )?(?:[Ss]uperior jerárquico|[Cc]onsejo de Ministros|[Cc]ongreso(?: de los Diputados)?|[Óó]rgano de contratación|[Cc]omisión Europea|[Oo]rgano instructor|[Tt]ribunal Constitucional|[Ss]enado|[Pp]residente del Gobierno)/)?.[0],time=s.match(/(?:\d[\d.]*|un|una|dos|tres|cuatro|cinco|diez|quince|veintidós)\s+(?:días?(?:\s+(?:hábiles|naturales))?|mes(?:es)?|años?|horas?|euros)|mayoría\s+(?:simple|absoluta|cualificada)/i)?.[0],eff=s.match(/(?:salvo|excepto|sin perjuicio|desestimatori[oa]|desistimiento|no podrá|no podrán|previa resolución)[^.;]*/i)?.[0];return [s.split(/[:.]/)[0].split(' ').slice(0,10).join(' '),organ||'No consta',time||'No consta',eff||'No consta']});return rows.length?rows:[['Sin datos comparables','No consta','No consta','Añade reglas, plazos u órganos al texto.']]}
   const tableHeads=['Figura / trámite','Órgano competente','Plazo / quórum','Efecto / excepción'];
   const tableHTML=rows=>`<div class="table-scroll"><table class="comp-table"><thead><tr>${tableHeads.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   function outlineHTML(t){const lines=summarize(t.text),n=words(lines.join(' ')).length,w=words(t.text).length;return `<div class="row wrap" style="margin-bottom:16px"><span class="tag">Síntesis local</span><span class="tiny muted">${n} de ${w} palabras · ${w?Math.round(100*n/w):0}% del original</span></div>${Object.entries(outlineGroups(lines)).map(([g,arr])=>`<div class="outline-group"><h4>${g}</h4><ul class="outline">${arr.map(s=>`<li>${highlight(s)}</li>`).join('')}</ul></div>`).join('')||'<p class="muted">Añade más texto para obtener una síntesis útil.</p>'}`}
@@ -3474,135 +3916,184 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
   
   
 
-  function extractTopicStructure(t) {
-    if (!t) return [];
+  function formatLeafContent(s) {
+    let out = esc(s);
+    out = out.replace(/\[TRAMPA(?::\s*([^\]]+))?\]/gi, '<span class="badge-trampa">🔴 TRAMPA TRIBUNAL</span> $1');
+    out = out.replace(/\[MAYORÍA(?::\s*([^\]]+))?\]/gi, '<span class="badge-mayoria">🟣 MAYORÍA</span> $1');
+    out = out.replace(/\[PLAZO(?::\s*([^\]]+))?\]/gi, '<span class="badge-plazo">⏱️ PLAZO</span> $1');
+    out = out.replace(/\[LEY(?::\s*([^\]]+))?\]/gi, '<span class="badge-norma">📜 LEY ORGÁNICA</span> $1');
+    return highlight(out);
+  }
+
+  function getNovolexTree(t) {
+    if (!t) return null;
     if (isTopicConstitutional(t)) {
-      return [
-        {
-          name: 'I. Estructura y Características de la CE 1978',
-          items: [
-            '169 Artículos, Preámbulo, Título Preliminar y 10 Títulos numerados.',
-            '4 Disposiciones Adicionales, 9 Transitorias, 1 Derogatoria y 1 Final.',
-            'Aprobación: 31 oct 1978; Referéndum: 6 dic; Sanción: 27 dic; BOE: 29 dic 1978.',
-            'Derogación expresa de las Leyes Fundamentales y de la Ley para la Reforma Política.'
-          ]
-        },
-        {
-          name: 'II. Valores Superiores y Principios Constitucionales',
-          items: [
-            'Valores superiores (Art. 1.1): Libertad, Justicia, Igualdad y Pluralismo político.',
-            'Soberanía popular (Art. 1.2) en el pueblo y Monarquía parlamentaria (Art. 1.3).',
-            'Principios Art. 9.3: Legalidad, jerarquía normativa y publicidad de las normas.',
-            'Seguridad jurídica, irretroactividad, responsabilidad e interdicción de arbitrariedad.'
-          ]
-        },
-        {
-          name: 'III. Derechos y Deberes Fundamentales (Título I)',
-          items: [
-            'Art. 14: Principio de igualdad formal ante la ley sin discriminación.',
-            'Sección 1ª (Arts. 15-29): Derechos fundamentales con máxima protección institucional.',
-            'Garantías (Art. 53): Reserva Ley Orgánica, procedimiento sumario y preferente, Amparo TC.'
-          ]
-        },
-        {
-          name: 'IV. Reforma Ordinaria vs Agravada (Título X)',
-          items: [
-            'Iniciativa (Art. 166): Gobierno, Congreso, Senado y CCAA (excluida la ILP).',
-            'Ordinaria (Art. 167): Mayoría 3/5 cada Cámara; referéndum facultativo (1/10 en 15 días).',
-            'Agravada (Art. 168): 2/3 cada Cámara + disolución + ratificación 2/3 + referéndum obligatorio.'
-          ]
-        },
-        {
-          name: 'V. Límites Temporales y Alerta de Trampas',
-          items: [
-            'Art. 169: Prohibición de iniciar reformas en tiempo de guerra o estados del Art. 116.',
-            '¡Ojo al test!: El Título I completo NO va por el 168, solo arts. 15 al 29.',
-            '¡Ojo al test!: La Iniciativa Legislativa Popular NO cabe para reforma constitucional.'
-          ]
-        }
-      ];
-    }
-    const raw = String(t.text || '').trim();
-    if (!raw) {
-      return [
-        {
-          name: 'I. Concepto, Objeto y Naturaleza Jurídica',
-          items: [
-            'Marco normativo regulador y ámbito de aplicación general.',
-            'Principios rectores: eficacia, jerarquía, descentralización y coordinación (Art. 103 CE).',
-            'Sujetos obligados y personas interesadas en el procedimiento.'
-          ]
-        },
-        {
-          name: 'II. Órganos Competentes y Atribuciones',
-          items: [
-            'Órgano competente para iniciar, tramitar y elevar la propuesta.',
-            'Órgano superior con potestad resolutoria y agotamiento de la vía administrativa.',
-            'Delegación de competencias, avocación y suplencia (Ley 40/2015).'
-          ]
-        },
-        {
-          name: 'III. Procedimiento, Fases y Trámites Esenciales',
-          items: [
-            'Iniciación de oficio o a solicitud de la persona interesada.',
-            'Subsanación de solicitudes defectuosas: 10 días hábiles (Art. 68 LPAC).',
-            'Trámite preceptivo de audiencia previa a la propuesta de resolución.'
-          ]
-        },
-        {
-          name: 'IV. Plazos, Quórum y Silencio Administrativo',
-          items: [
-            'Cómputo por días: se entienden hábiles salvo previsión en contra.',
-            'Plazo general de resolución y notificación: 3 meses (máx. 6 meses por Ley).',
-            'Sentido del silencio: positivo como regla general; excepciones de examen.'
-          ]
-        },
-        {
-          name: 'V. Régimen de Recursos y Revisión de Oficio',
-          items: [
-            'Recurso de Alzada: 1 mes ante el superior jerárquico.',
-            'Recurso Potestativo de Reposición: 1 mes ante el mismo órgano.',
-            'Revisión de oficio de actos nulos de pleno derecho (Art. 47 LPAC).'
-          ]
-        }
-      ];
+      return {
+        title: 'LA CONSTITUCIÓN ESPAÑOLA DE 1978',
+        metrics: '169 Artículos · 10 Títulos · 15 Disposiciones',
+        tier1: [
+          {
+            name: 'PARTE DOGMÁTICA (Principios y Derechos)',
+            category: 'BLOQUE I · DOGMÁTICA',
+            subbranches: [
+              {
+                name: 'Título Preliminar (Arts. 1 al 9)',
+                items: [
+                  'Art. 1.1: [MAYORÍA: 4 Valores Superiores] Libertad, Justicia, Igualdad y Pluralismo político.',
+                  'Art. 1.2: La soberanía nacional reside en el pueblo español, del que emanan los poderes del Estado.',
+                  'Art. 1.3: La forma política del Estado español es la Monarquía parlamentaria.',
+                  'Art. 2: Indisoluble unidad de la Nación española, patria común e indivisible; derecho a la autonomía y solidaridad.',
+                  'Arts. 3 al 8: Castellano y lenguas cooficiales (3), bandera (4), Madrid capital (5), partidos políticos (6), sindicatos (7), FF.AA. (8).',
+                  'Art. 9.3: [LEY: 7 Principios Jurídicos] Legalidad, jerarquía normativa, publicidad, irretroactividad de sanciones no favorables, seguridad jurídica, responsabilidad e interdicción de arbitrariedad.'
+                ]
+              },
+              {
+                name: 'Título I: Derechos y Deberes (Arts. 10 al 55)',
+                items: [
+                  'Art. 10: Dignidad de la persona, derechos inviolables y libre desarrollo; interpretación según DUDH.',
+                  'Cap. 1º (Arts. 11-13): Mayoría de edad a los [PLAZO: 18 años]. Ningún español de origen privado de su nacionalidad. Sufragio extranjeros en municipales (Reforma 1992).',
+                  'Art. 14: Principio de igualdad formal ante la ley sin discriminación alguna por razón de nacimiento, sexo, religión u opinión.',
+                  'Cap. 2º Secc. 1ª (Arts. 15-29): [TRAMPA: NIVEL MÁXIMO SUPERPROTEGIDO] Reserva de Ley Orgánica + Recurso de Amparo ante TC + Procedimiento preferente y sumario (Art. 53.2).',
+                  'Cap. 2º Secc. 2ª (Arts. 30-38): [PLAZO: NIVEL ORDINARIO] Reserva de Ley ordinaria + Respeto contenido esencial. ¡NO amparo! (salvo Art. 30.2 objeción de conciencia).',
+                  'Cap. 3º (Arts. 39-52): [LEY: PRINCIPIOS RECTORES] Familia, empleo, Seguridad Social, salud, medio ambiente, vivienda, discapacidad (Reforma 2024). Solo alegables según leyes que los desarrollen (53.3).'
+                ]
+              },
+              {
+                name: 'Garantías y Suspensión (Arts. 53 al 55)',
+                items: [
+                  'Art. 54: Defensor del Pueblo: Alto comisionado de las Cortes Generales. Defiende el Título I y supervisa la actividad de la Administración.',
+                  'Art. 55.1: Suspensión general en estados de excepción y sitio (Arts. 17, 18.2/3, 19, 20.1a/d, 20.5, 21, 28.2 y 37.2). [TRAMPA: ¡En alarma NO se suspenden derechos!].',
+                  'Art. 55.2: Suspensión individual por bandas armadas/terrorismo (Arts. 17.2, 18.2 y 18.3) con intervención judicial y control parlamentario.'
+                ]
+              }
+            ]
+          },
+          {
+            name: 'PARTE ORGÁNICA (Poderes del Estado y Órganos)',
+            category: 'BLOQUE II · ORGÁNICA',
+            subbranches: [
+              {
+                name: 'Título II: La Corona (Arts. 56 al 65)',
+                items: [
+                  'Art. 56: El Rey es Jefe del Estado, símbolo de su unidad y permanencia. Persona inviolable y exenta de responsabilidad política.',
+                  'Art. 64: [TRAMPA: INSTITUCIÓN DEL REFRENDO] Todo acto del Rey debe ser refrendado por Presidente del Gobierno, Ministros o Pte. Congreso (99). Salvo Art. 65.2 (Casa Real).',
+                  'Arts. 57-60: Dinámica de la Corona: Sucesión (primogenitura, línea, grado, varón, edad), Regencia (padre/madre o pariente mayor de edad) y Tutela (testamentaria, legítima o dativa por Cortes).'
+                ]
+              },
+              {
+                name: 'Título III: Las Cortes Generales (Arts. 66 al 96)',
+                items: [
+                  'Bicameralismo imperfecto: Congreso (300 a 400 diputados, 350 fijados por LOREG, d’Hondt con barrera 3%) y Senado (Cámara territorial: 4 por provincia + designados CCAA).',
+                  'Art. 71: Prerrogativas parlamentarias: Inviolabilidad (opiniones), Inmunidad (solo flagrante delito, suplicatorio) y Fuero especial ante Sala 2ª Tribunal Supremo.',
+                  'Art. 81: [MAYORÍA: LEYES ORGÁNICAS] Aprobadas por Mayoría Absoluta del Congreso en votación final sobre el conjunto del proyecto.',
+                  'Art. 86: [PLAZO: DECRETOS-LEYES] Extraordinaria y urgente necesidad. Convalidación obligatoria por el Congreso en el plazo de [PLAZO: 30 días naturales].'
+                ]
+              },
+              {
+                name: 'Títulos IV y V: Gobierno y Relaciones (Arts. 97 al 116)',
+                items: [
+                  'Art. 97: El Gobierno dirige la política interior/exterior, Admón civil y militar y defensa. Potestad ejecutiva y reglamentaria.',
+                  'Art. 99: [MAYORÍA: INVESTIDURA DEL PRESIDENTE] 1ª votación: Mayoría Absoluta; 2ª votación ([PLAZO: 48h]): Mayoría Simple. Plazo límite de [PLAZO: 2 meses] antes de disolución de Cortes.',
+                  'Arts. 112-114: Cuestión de Confianza (mayoría simple). Moción de Censura: [TRAMPA: CONSTRUCTIVA] con candidato propuesto; firmada por 1/10 diputados; votada por [MAYORÍA: ABSOLUTA].',
+                  'Art. 116: Estados de Alarma (Gobierno máx 15 d, prórroga Congreso), Excepción (Gobierno previa autorización Congreso máx 30+30 d) y Sitio ([MAYORÍA: ABSOLUTA CONGRESO]).'
+                ]
+              },
+              {
+                name: 'Títulos VI y IX: Poder Judicial y TC',
+                items: [
+                  'Poder Judicial (Arts. 117-127): Justicia emana del pueblo. Jueces independientes, inamovibles y sometidos a la ley. CGPJ: 20 vocales por 5 años ([MAYORÍA: 3/5 CORTES]).',
+                  'Tribunal Constitucional (Arts. 159-165): Intérprete supremo. 12 magistrados por 9 años renovados por terceras partes (4 cada 3 años): 4 Congreso (3/5), 4 Senado (3/5), 2 Gobierno, 2 CGPJ.'
+                ]
+              }
+            ]
+          },
+          {
+            name: 'REFORMA CONSTITUCIONAL (Título X: Arts. 166 al 169)',
+            category: 'BLOQUE III · REFORMA',
+            subbranches: [
+              {
+                name: 'Iniciativa y Límites (Arts. 166 y 169)',
+                items: [
+                  'Art. 166: Legitimación activa: Gobierno, Congreso de los Diputados, Senado y Asambleas de CCAA.',
+                  '[TRAMPA: ¡OJO AL TRIBUNAL!] Prohibición absoluta de Iniciativa Legislativa Popular (ILP) para reforma constitucional (Art. 87.3 excluye reforma CE).',
+                  'Art. 169: [TRAMPA: LÍMITES TEMPORALES] No podrá iniciarse la reforma constitucional en tiempo de guerra ni durante la vigencia de alarma, excepción o sitio (Art. 116).'
+                ]
+              },
+              {
+                name: 'Procedimiento Ordinario (Art. 167)',
+                items: [
+                  'Ámbito: Reformas parciales que NO afecten a las materias cualificadas del Art. 168.',
+                  '[MAYORÍA: APROBACIÓN 3/5] Mayoría de tres quintos de cada una de las Cámaras (Congreso y Senado).',
+                  'Comisión Mixta paritaria de Diputados y Senadores si no hay acuerdo para presentar nuevo texto a 3/5.',
+                  '[MAYORÍA: FÓRMULA DE DESBLOQUEO] Si el Senado aprueba por Mayoría Absoluta, el Congreso puede aprobar la reforma por [MAYORÍA: 2/3].',
+                  '[PLAZO: REFERÉNDUM POTESTATIVO] Solo si lo solicita 1/10 de diputados o senadores en el plazo de [PLAZO: 15 días] tras aprobación definitiva.'
+                ]
+              },
+              {
+                name: 'Procedimiento Agravado (Art. 168)',
+                items: [
+                  'Ámbito estricto: [TRAMPA: REVISIÓN TOTAL O REFORMA DE] Título Preliminar, Sección 1ª Cap. II Título I (Arts. 15 al 29) o Título II (La Corona).',
+                  'Paso 1: [MAYORÍA: APROBACIÓN DEL PRINCIPIO] Mayoría de dos tercios de cada Cámara (Congreso y Senado).',
+                  'Paso 2: [TRAMPA: DISOLUCIÓN AUTOMÁTICA] Disolución inmediata de las Cortes Generales y convocatoria de elecciones.',
+                  'Paso 3: [MAYORÍA: RATIFICACIÓN Y APROBACIÓN 2/3] Nuevas Cámaras electas ratifican la decisión y aprueban el nuevo texto por mayoría de dos tercios.',
+                  '[LEY: REFERÉNDUM PRECEPTIVO Y VINCULANTE] Convocatoria obligatoria de referéndum a todo el pueblo español.'
+                ]
+              }
+            ]
+          }
+        ]
+      };
     }
 
-    // Parse uploaded text into real structured branches
+    // Dynamic extraction for custom / imported topics
+    const raw = String(t.text || '').trim();
     const lines = raw.split(/\n+/).map(l => l.trim()).filter(l => l.length > 3);
-    const branches = [];
-    let currentBranch = null;
+    const subbranches = [];
+    let curSub = { name: 'Aspectos Generales', items: [] };
 
     for (const line of lines) {
-      // Look for headings: roman numerals, numbered titles or capital headers
-      if (/^(?:[I|V|X]+\.|\d+\.|TEMA|TÍTULO|CAPÍTULO|[A-ZÁÉÍÓÚ\s]{4,}:)/i.test(line) && line.length < 90) {
-        if (currentBranch && currentBranch.items.length) branches.push(currentBranch);
-        currentBranch = { name: line.replace(/^[-*•]\s*/, ''), items: [] };
-      } else if (currentBranch) {
-        if (currentBranch.items.length < 5) currentBranch.items.push(line.replace(/^[-*•]\s*/, ''));
+      if (/^(?:[I|V|X]+\.|\d+\.|TEMA|TÍTULO|CAPÍTULO|[A-ZÁÉÍÓÚ\s]{4,}:)/i.test(line) && line.length < 80) {
+        if (curSub.items.length) subbranches.push(curSub);
+        curSub = { name: line.replace(/^[-*•]\s*/, ''), items: [] };
       } else {
-        if (!currentBranch) currentBranch = { name: 'Aspectos Generales y Normativa', items: [] };
-        if (currentBranch.items.length < 5) currentBranch.items.push(line.replace(/^[-*•]\s*/, ''));
+        if (curSub.items.length < 5) curSub.items.push(line.replace(/^[-*•]\s*/, ''));
       }
     }
-    if (currentBranch && currentBranch.items.length) branches.push(currentBranch);
+    if (curSub.items.length) subbranches.push(curSub);
 
-    return branches.length ? branches : [
-      { name: 'Conceptos Clave del Tema', items: lines.slice(0, 4) },
-      { name: 'Normativa y Procedimiento', items: lines.slice(4, 8) }
-    ];
+    return {
+      title: t.title,
+      metrics: 'Estructura Oficial · ' + (opp().short || 'GACE A2'),
+      tier1: [
+        {
+          name: 'Marco Teórico y Normativo',
+          category: 'PARTE I',
+          subbranches: subbranches.slice(0, 2).length ? subbranches.slice(0, 2) : [
+            { name: 'Conceptos y Principios', items: ['Marco regulador general', 'Principios rectores de la materia'] }
+          ]
+        },
+        {
+          name: 'Procedimiento y Aplicación Práctica',
+          category: 'PARTE II',
+          subbranches: subbranches.slice(2, 5).length ? subbranches.slice(2, 5) : [
+            { name: 'Tramitación y Plazos', items: ['Plazos procedimentales y cómputo', 'Recursos aplicables'] }
+          ]
+        }
+      ]
+    };
   }
 
   function generateBracketTreeHTML(t) {
     if (!t) return '';
-    const branches = extractTopicStructure(t);
+    const tree = getNovolexTree(t);
+    if (!tree) return '';
 
     return `
       <div class="bracket-tree-wrapper">
         <div class="row between wrap" style="margin-bottom:14px;border-bottom:1px solid var(--line);padding-bottom:10px">
           <div class="row small">
-            <span class="font-bold" style="color:var(--deep);font-size:14px">🌳 Cuadro Sinóptico de Llaves { }</span>
-            <span class="tag" style="background:#f0eef9;color:#553396;border-color:#d9d1f0">Estructura Jerárquica Oficial</span>
+            <span class="font-bold" style="color:var(--deep);font-size:14px">🌳 Cuadro Sinóptico de Llaves { } · Estilo Academia Novolex</span>
+            <span class="tag" style="background:#f0eef9;color:#553396;border-color:#d9d1f0">Estructura Jerárquica Multidimensional</span>
           </div>
           <div class="row" style="gap:6px">
             <button class="btn sm soft" onclick="generateSelectedScheme()">${I('sparkle',12)} Esquema de texto seleccionado</button>
@@ -3613,30 +4104,47 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
         <div class="bracket-tree-container">
           <!-- RAÍZ DEL ESQUEMA -->
           <div class="bracket-root-card">
-            <div>
-              <small style="opacity:.8;display:block;text-transform:uppercase;font-size:10px;margin-bottom:4px">${opp().short || 'GACE A2'}</small>
-              <span>${esc(t.title)}</span>
-            </div>
+            <div class="bracket-root-sub">OPOSICIÓN OFICIAL · ${opp().short || 'GACE A2'}</div>
+            <div class="bracket-root-title">${esc(tree.title)}</div>
+            <div class="bracket-root-badge">${esc(tree.metrics)}</div>
           </div>
 
           <!-- LLAVE PRINCIPAL ELÁSTICA -->
           ${svgBrace()}
 
-          <!-- RAMAS PRINCIPALES -->
-          <div class="bracket-branches-col">
-            ${branches.map(b => `
-              <div class="bracket-branch-card">
-                <div style="font-weight:700;color:#553396;font-size:12.5px;min-width:160px;max-width:200px;display:flex;align-items:center">
-                  ${esc(b.name)}
+          <!-- TIER 1 COLUMN (PARTES / BLOQUES) -->
+          <div class="bracket-tier1-col">
+            ${tree.tier1.map(t1 => `
+              <div class="bracket-tier1-row">
+                <!-- TIER 1 CARD -->
+                <div class="bracket-tier1-card">
+                  <span class="tier1-tag">${esc(t1.category)}</span>
+                  <span class="tier1-title">${esc(t1.name)}</span>
                 </div>
-                <!-- SUB-LLAVE -->
+
+                <!-- LLAVE TIER 2 -->
                 ${svgBrace()}
-                <!-- SUB-RAMAS -->
-                <div class="bracket-sub-col">
-                  ${b.items.map(it => `
-                    <div class="bracket-leaf">
-                      <span style="color:#6e48aa;font-weight:bold">•</span>
-                      <span>${highlight(esc(it))}</span>
+
+                <!-- TIER 2 COLUMN (TÍTULOS / CAPÍTULOS) -->
+                <div class="bracket-tier2-col">
+                  ${t1.subbranches.map(t2 => `
+                    <div class="bracket-tier2-row">
+                      <!-- TIER 2 CARD -->
+                      <div class="bracket-tier2-card">
+                        <span class="tier2-title">${esc(t2.name)}</span>
+                      </div>
+
+                      <!-- LLAVE TIER 3 -->
+                      ${svgBrace()}
+
+                      <!-- TIER 3 COLUMN (ARTÍCULOS / REGLAS / PLAZOS) -->
+                      <div class="bracket-tier3-col">
+                        ${t2.items.map(it => `
+                          <div class="bracket-tier3-leaf">
+                            ${formatLeafContent(it)}
+                          </div>
+                        `).join('')}
+                      </div>
                     </div>
                   `).join('')}
                 </div>
@@ -3664,8 +4172,241 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
   }
 
   function generateCuadrosHTML(t) {
+    if (isTopicConstitutional(t)) {
+      return `
+        <div class="cuadros-container stack" style="gap:18px">
+          <div class="row between wrap">
+            <h3 class="panel-title" style="margin:0">${I('table', 16)} Cuadros y Tablas Oficiales de Derecho Constitucional (Tema 1)</h3>
+            <span class="tag" style="background:#f0eef9;color:#553396;border-color:#d9d1f0">Datos Literales de Examen</span>
+          </div>
+
+          <!-- CUADRO 1: COMPARATIVA DE REFORMA CONSTITUCIONAL -->
+          <div class="cuadro-card surface" style="padding:16px;border:1.5px solid #d9d1f0;border-radius:12px;">
+            <div class="row between" style="margin-bottom:10px">
+              <div>
+                <strong style="color:#553396;font-size:14px">⚖️ Cuadro Comparativo de Reforma Constitucional: Procedimiento Ordinario vs Agravado</strong>
+                <div class="tiny muted" style="margin-top:2px">Título X de la Constitución Española de 1978 (Arts. 166 a 169)</div>
+              </div>
+              <span class="badge" style="background:#fdf0ed;color:#c92a2a;border:1px solid #fcc2d7">Cae siempre en test</span>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="cuadro-table">
+                <thead>
+                  <tr>
+                    <th style="min-width:140px">Aspecto / Criterio</th>
+                    <th style="min-width:210px">Procedimiento Ordinario (Art. 167 CE)</th>
+                    <th style="min-width:210px">Procedimiento Agravado (Art. 168 CE)</th>
+                    <th style="min-width:200px">Ojo al Tribunal / Trampa de Examen</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Ámbito de Aplicación</strong></td>
+                    <td>Cualquier reforma parcial que NO afecte a materias especialmente protegidas.</td>
+                    <td><span class="badge-trampa">REVISIÓN TOTAL O REFORMA DE</span>: Título Preliminar, Sección 1ª Cap. II Título I (Arts. 15-29) o Título II (La Corona).</td>
+                    <td><small>¡El Título I completo NO va por el 168! Solo la Sección 1ª del Cap. II. El Art. 14 y la Sección 2ª van por el Art. 167.</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Iniciativa de Reforma</strong></td>
+                    <td>Gobierno, Congreso, Senado y Asambleas de CCAA (remisión a Arts. 87.1 y 87.2).</td>
+                    <td>Mismos órganos legitimados (Art. 166).</td>
+                    <td><span class="badge-trampa">🔴 ¡TRAMPA!</span> <small>NO cabe Iniciativa Legislativa Popular en ningún caso (Art. 87.3).</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Mayoría Parlamentaria Inicial</strong></td>
+                    <td><span class="badge-mayoria">3/5 de cada Cámara</span> (Congreso y Senado).</td>
+                    <td><span class="badge-mayoria">2/3 de cada Cámara</span> para aprobar el principio de reforma.</td>
+                    <td><small>Ordinario exige 3/5; Agravado exige 2/3.</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Desacuerdo / Comisión Mixta</strong></td>
+                    <td>Se crea Comisión Mixta paritaria de Diputados y Senadores para consensuar texto a 3/5.</td>
+                    <td>No hay Comisión Mixta. Si no se alcanza 2/3 en ambas Cámaras, decae.</td>
+                    <td><small>La Comisión Mixta paritaria solo existe en el Art. 167.</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Fórmula de Desbloqueo</strong></td>
+                    <td>Mayoría Absoluta en el Senado + <span class="badge-mayoria">2/3 en el Congreso</span>.</td>
+                    <td>No existe vía de desbloqueo.</td>
+                    <td><small>Exige mayoría absoluta del Senado y 2/3 del Congreso.</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Disolución de las Cortes</strong></td>
+                    <td>NO se disuelven las Cortes Generales.</td>
+                    <td><span class="badge-trampa">SÍ, DISOLUCIÓN INMEDIATA</span> y convocatoria de elecciones.</td>
+                    <td><small>Disolución automática obligatoria de Congreso y Senado.</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Ratificación Nuevas Cortes</strong></td>
+                    <td>No aplica (las mismas Cortes concluyen la tramitación).</td>
+                    <td>Las nuevas Cámaras electas ratifican la decisión y aprueban el nuevo texto por <span class="badge-mayoria">2/3 de ambas Cámaras</span>.</td>
+                    <td><small>Doble votación de 2/3: por las Cortes salientes y por las entrantes.</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Referéndum Popular</strong></td>
+                    <td><span class="badge-plazo">POTESTATIVO / FACULTATIVO</span>: Si lo solicita 1/10 de diputados o senadores en [PLAZO: 15 días].</td>
+                    <td><span class="badge-norma">PRECEPTIVO Y VINCULANTE</span>: Obligatorio en todo caso para su ratificación.</td>
+                    <td><small>En el 167 es facultativo (1/10 en 15 días); en el 168 es obligatorio siempre.</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Límites Temporales</strong></td>
+                    <td colspan="2" style="text-align:center"><span class="badge-trampa">🔴 PROHIBICIÓN ABSOLUTA (Art. 169)</span>: No podrá iniciarse en tiempo de guerra ni bajo estados del Art. 116 (alarma, excepción o sitio).</td>
+                    <td><small>La prohibición es para INICIAR la reforma, no para continuarla si ya estaba iniciada.</small></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- CUADRO 2: NIVELES DE PROTECCIÓN Y GARANTÍAS DE DERECHOS -->
+          <div class="cuadro-card surface" style="padding:16px;border:1.5px solid #d9d1f0;border-radius:12px;">
+            <div class="row between" style="margin-bottom:10px">
+              <div>
+                <strong style="color:#2b6cb0;font-size:14px">🛡️ Cuadro de Niveles de Protección y Garantías de los Derechos (Art. 53 CE)</strong>
+                <div class="tiny muted" style="margin-top:2px">Graduación del sistema de garantías del Título I de la Constitución Española</div>
+              </div>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="cuadro-table">
+                <thead>
+                  <tr>
+                    <th style="min-width:130px">Nivel de Protección</th>
+                    <th style="min-width:180px">Preceptos Constitucionales</th>
+                    <th style="min-width:220px">Garantías Normativas / Reserva</th>
+                    <th style="min-width:220px">Garantías Jurisdiccionales / Protección</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="background:#faf7fd">
+                    <td><strong style="color:#553396">Nivel 1: Máximo / Superprotegido</strong></td>
+                    <td><strong>Art. 14</strong> + <strong>Sección 1ª Cap. II Tít. I</strong> (Arts. 15 al 29) + <strong>Art. 30.2</strong> (solo amparo).</td>
+                    <td>
+                      • Reserva de <span class="badge-norma">Ley Orgánica (Art. 81)</span> para su desarrollo.<br>
+                      • Respeto obligatorio a su contenido esencial (Art. 53.1).<br>
+                      • Recurso y cuestión de inconstitucionalidad.<br>
+                      • Reforma por procedimiento agravado Art. 168 (salvo Art. 14 y 30.2 que van por 167).
+                    </td>
+                    <td>
+                      • Procedimiento judicial <span class="badge-mayoria">preferente y sumario</span> ante tribunales ordinarios (Art. 53.2).<br>
+                      • <span class="badge-trampa">Recurso de Amparo</span> ante el Tribunal Constitucional (Arts. 53.2 y 161.1.b).<br>
+                      • Defensor del Pueblo (Art. 54).
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#2b6cb0">Nivel 2: Ordinario / General</strong></td>
+                    <td><strong>Sección 2ª Cap. II Tít. I</strong> (Arts. 30 al 38, salvo 30.2 en amparo).</td>
+                    <td>
+                      • Reserva de Ley ordinaria (Art. 53.1).<br>
+                      • <span class="badge-trampa">Veto a Decreto-Ley</span> (Art. 86.1 prohíbe afectar a derechos del Tít. I).<br>
+                      • Respeto a su contenido esencial.<br>
+                      • Recurso y cuestión de inconstitucionalidad.<br>
+                      • Reforma por procedimiento ordinario Art. 167.
+                    </td>
+                    <td>
+                      • Tutela judicial ordinaria ante los tribunales de justicia (Art. 24).<br>
+                      • <span class="badge-trampa">¡NO tienen procedimiento preferente y sumario ni recurso de amparo ante el TC!</span> (Salvo objeción de conciencia del Art. 30.2).
+                    </td>
+                  </tr>
+                  <tr style="background:#fcfbf7">
+                    <td><strong style="color:#b7791f">Nivel 3: Informativo / Principios Rectores</strong></td>
+                    <td><strong>Capítulo III Tít. I</strong> (Arts. 39 al 52: familia, empleo, salud, vivienda, medio ambiente, discapacidad, consumidores).</td>
+                    <td>
+                      • Informan la legislación positiva, la práctica judicial y la actuación de los poderes públicos (Art. 53.3).<br>
+                      • Vinculación mediata condicionada.
+                    </td>
+                    <td>
+                      • Solo pueden ser alegados ante la jurisdicción ordinaria <span class="badge-norma">de acuerdo con lo que dispongan las leyes que los desarrollen</span> (Art. 53.3).<br>
+                      • <span class="badge-trampa">¡NO cabe recurso de amparo constitucional directo!</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- CUADRO 3: MAYORÍAS PARLAMENTARIAS Y PLAZOS CRÍTICOS -->
+          <div class="cuadro-card surface" style="padding:16px;border:1.5px solid #d9d1f0;border-radius:12px;">
+            <div class="row between" style="margin-bottom:10px">
+              <div>
+                <strong style="color:#8c3c3c;font-size:14px">⏱️ Cuadro de Mayorías Parlamentarias y Plazos Críticos de la Constitución Española</strong>
+                <div class="tiny muted" style="margin-top:2px">Quórums y cómputos temporales exigidos en preguntas de examen</div>
+              </div>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="cuadro-table">
+                <thead>
+                  <tr>
+                    <th>Institución / Trámite Constitucional</th>
+                    <th>Quórum / Mayoría Exigida</th>
+                    <th>Plazo Crítico de Examen</th>
+                    <th>Precepto Constitucional</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Investidura del Presidente del Gobierno</strong></td>
+                    <td>1ª votación: <span class="badge-mayoria">Mayoría Absoluta</span> del Congreso<br>2ª votación: <span class="badge-mayoria">Mayoría Simple</span></td>
+                    <td><span class="badge-plazo">48 horas</span> entre 1ª y 2ª votación.<br><span class="badge-plazo">2 meses</span> tope antes de disolución automática de Cortes.</td>
+                    <td><small class="muted font-mono">Art. 99 CE</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Moción de Censura</strong></td>
+                    <td><span class="badge-mayoria">Mayoría Absoluta</span> del Congreso de los Diputados</td>
+                    <td>Propuesta por al menos <span class="badge-mayoria">1/10 diputados</span> (35).<br>No se vota hasta pasados <span class="badge-plazo">5 días</span> (enfriamiento).<br>Mociones alternativas en los <span class="badge-plazo">2 primeros días</span>.</td>
+                    <td><small class="muted font-mono">Arts. 113 y 114.2 CE</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Cuestión de Confianza</strong></td>
+                    <td><span class="badge-mayoria">Mayoría Simple</span> del Congreso de los Diputados</td>
+                    <td>A iniciativa del Presidente previa deliberación de Consejo de Ministros.</td>
+                    <td><small class="muted font-mono">Arts. 112 y 114.1 CE</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Convalidación de Decretos-Leyes</strong></td>
+                    <td><span class="badge-mayoria">Mayoría Simple</span> del Congreso en debate de totalidad</td>
+                    <td>Plazo perentorio de <span class="badge-plazo">30 días naturales</span> desde su promulgación.</td>
+                    <td><small class="muted font-mono">Art. 86 CE</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Aprobación de Leyes Orgánicas</strong></td>
+                    <td><span class="badge-mayoria">Mayoría Absoluta del Congreso</span> en votación final de conjunto</td>
+                    <td>En el Senado: tramitación ordinaria por mayoría simple.</td>
+                    <td><small class="muted font-mono">Art. 81 CE</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Estados de Alarma, Excepción y Sitio</strong></td>
+                    <td>• Alarma: Consejo de Ministros (prórroga autorizada por Congreso)<br>• Excepción: Previa autorización del Congreso<br>• Sitio: <span class="badge-mayoria">Mayoría Absoluta del Congreso</span></td>
+                    <td>• Alarma: máx <span class="badge-plazo">15 días</span>.<br>• Excepción: máx <span class="badge-plazo">30 días</span> (prórroga 30 días).</td>
+                    <td><small class="muted font-mono">Art. 116 CE</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Renovación Tribunal Constitucional</strong></td>
+                    <td>12 miembros nombrados por el Rey por 9 años: 4 Congreso (<span class="badge-mayoria">3/5</span>), 4 Senado (<span class="badge-mayoria">3/5</span>), 2 Gobierno, 2 CGPJ</td>
+                    <td>Se renueva por terceras partes (<span class="badge-mayoria">4 magistrados</span>) cada <span class="badge-plazo">3 años</span>.</td>
+                    <td><small class="muted font-mono">Art. 159 CE</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Elección de Vocales del CGPJ</strong></td>
+                    <td>20 vocales por 5 años: 12 jueces/magistrados y 8 juristas de reconocida competencia (>15 años ejercicio) elegidos por <span class="badge-mayoria">3/5 de Congreso y Senado</span></td>
+                    <td>Mandato de <span class="badge-plazo">5 años</span>. Presidente nombrado por el Pleno.</td>
+                    <td><small class="muted font-mono">Art. 122 CE</small></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Sanción y Promulgación Real de Leyes</strong></td>
+                    <td>El Rey sanciona, promulga y ordena su publicación en el BOE</td>
+                    <td>Plazo preceptivo de <span class="badge-plazo">15 días</span> desde la aprobación por Cortes.</td>
+                    <td><small class="muted font-mono">Art. 91 CE</small></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Default administrative / procedural law tables for other topics
     const raw = String(t.text || '');
-    // Extract dynamic deadlines from text
     const extractedDeadlines = [];
     const rx = /([^.;\n]+(?:(\d+|un|una|dos|tres|cinco|diez|quince|veinte|treinta)\s+(?:días?(?:\s+hábiles|\s+naturales)?|mes(?:es)?|años?|horas?)|plazo[^.;\n]*|término[^.;\n]*)[^.;\n]*)/gi;
     let m;
@@ -3696,7 +4437,6 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
           <button class="btn sm soft" onclick="modal('Añadir fila al cuadro', '<form onsubmit=\'event.preventDefault();toast("Fila guardada en tu cuaderno de estudio.");closeModal();\' class=\'stack\'><label class=\'field\'><span>Actuación / Trámite</span><input required></label><label class=\'field\'><span>Plazo o Quórum</span><input required></label><label class=\'field\'><span>Norma o Artículo</span><input required></label><button class=\'btn primary sm\'>Guardar fila</button></form>')">➕ Añadir fila nemotécnica</button>
         </div>
 
-        <!-- TABLA DE PLAZOS DEL TEMA -->
         <div class="cuadro-card surface" style="padding:14px;border:1px solid var(--line);border-radius:12px;">
           <div class="row between" style="margin-bottom:8px">
             <strong style="color:#8c3c3c">⏱️ Cuadro de Plazos y Términos Clave de «${esc(t.title)}»</strong>
@@ -3726,7 +4466,6 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
           </div>
         </div>
 
-        <!-- TABLA COMPARATIVA DE ÓRGANOS Y COMPETENCIAS -->
         <div class="cuadro-card surface" style="padding:14px;border:1px solid var(--line);border-radius:12px;">
           <div class="row between" style="margin-bottom:8px">
             <strong style="color:#553396">⚖️ Cuadro Comparativo de Órganos y Competencias</strong>
@@ -3767,12 +4506,6 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
         </div>
       </div>
     `;
-  }
-
-  function isTopicConstitutional(t) {
-    const title = (t.title || '').toLowerCase();
-    const id = t.id || '';
-    return id === 't1' || /constituci|corona|cortes|derechos fundamentales|garantías/i.test(title);
   }
 
   function generateExecutiveSummaryHTML(t) {
