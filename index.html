@@ -482,104 +482,203 @@
   fact('LGP','73.1',53,'¿Qué fase culmina la gestión ordinaria del presupuesto de gastos?','Pago material|Ordenación del pago|Aprobación del gasto|Compromiso de gasto','Las fases son aprobación, compromiso, reconocimiento de la obligación, ordenación del pago y pago material.');
   fact('LGP','46',51,'¿Qué carácter tienen los créditos para gastos, conforme a la regla general?','Limitativo|Orientativo|Ilimitado|Meramente estadístico','Los créditos para gastos son limitativos. No se pueden adquirir compromisos ni obligaciones por cuantía superior al crédito autorizado.');
   const noteProcedure=`El procedimiento administrativo común\n\nSubsanación de solicitudes. El artículo 68.1 de la Ley 39/2015 establece que, si la solicitud no reúne los requisitos, se requerirá al interesado para que, en un plazo de diez días, subsane la falta o acompañe los documentos preceptivos. Si no lo hace, se le tendrá por desistido de su petición, previa resolución dictada en los términos del artículo 21.\n\nCómputo de plazos. Según el artículo 30.2, salvo que por Ley o en el Derecho de la Unión Europea se disponga otro cómputo, cuando los plazos se señalen por días, se entiende que estos son hábiles, excluyéndose los sábados, los domingos y los declarados festivos. El artículo 30.3 dispone que el cómputo comienza el día siguiente al de la notificación o publicación.\n\nTrámite de audiencia. El artículo 82.2 concede a los interesados un plazo no inferior a diez días ni superior a quince para alegar y presentar documentos y justificaciones.\n\nRecurso de alzada. El órgano competente para resolver es el superior jerárquico del que dictó el acto impugnado (artículo 121.1). El plazo de interposición frente a un acto expreso es de un mes (artículo 122.1). El plazo máximo para resolver y notificar es de tres meses (artículo 122.2).\n\nRecurso potestativo de reposición. Los actos que pongan fin a la vía administrativa podrán ser recurridos ante el mismo órgano que los hubiera dictado o ser impugnados directamente ante el orden jurisdiccional contencioso-administrativo (artículo 123.1). El plazo máximo para resolver y notificar es de un mes (artículo 124.2).\n\nGlosario de repaso\nAlzada: recurso administrativo que resuelve el superior jerárquico.\nSubsanación: corrección de un defecto de la solicitud.\nAudiencia: trámite en el que la persona interesada puede formular alegaciones.`;
-  function makeTemplate(){
+  function makeTemplateGACE() {
     let idx = 0;
-    const realBlocks = [
-      'Bloque I · Organización del Estado y Administración Pública (11 temas)',
-      'Bloque II · Unión Europea e Instituciones Comunitarias (6 temas)',
-      'Bloque III · Políticas Públicas, Igualdad y Régimen Jurídico (8 temas)',
-      'Bloque IV · Derecho Administrativo General y Procedimiento LPAC (14 temas)',
-      'Bloque V · Personal y Régimen de Funcionarios TREBEP (10 temas)',
-      'Bloque VI · Gestión Financiera, Presupuestos y Contratos LCSP (10 temas)'
+    const gaceBlocks = [
+      'Bloque I · Organización del Estado y de la Administración Pública (11 temas)',
+      'Bloque II · Unión Europea (6 temas)',
+      'Bloque III · Políticas Públicas (10 temas)',
+      'Bloque IV · Derecho Administrativo General (13 temas)',
+      'Bloque V · Administración de Recursos Humanos (10 temas)',
+      'Bloque VI · Gestión Financiera y Seguridad Social (8 temas)'
     ];
-    
-    // Official topics with 0 fake rounds (clean for the student)
-    const realSyllabus = [
+
+    const gaceSyllabus = [
       [
-        'Tema 1. La Constitución Española de 1978: Principios y Derechos Fundamentales',
-        'Tema 2. El Tribunal Constitucional. La reforma constitucional',
-        'Tema 3. Las Cortes Generales: Congreso de los Diputados y Senado',
-        'Tema 4. La Corona. Funciones del Rey. Sucesión y Regencia',
-        'Tema 5. El Poder Judicial. El CGPJ. El Tribunal Supremo',
-        'Tema 6. El Gobierno y la Administración. Presidente y Consejo de Ministros',
-        'Tema 7. La Administración General del Estado: Órganos superiores y directivos',
-        'Tema 8. La organización territorial del Estado: CCAA y Estatutos de Autonomía',
-        'Tema 9. La Administración Local: El Municipio, la Provincia y otras entidades',
-        'Tema 10. La Unión Europea: Tratados, fuentes y competencias',
-        'Tema 11. Políticas de Igualdad, Diversidad y Contra la Violencia de Género'
+        'Tema 1. La Constitución Española de 1978: Estructura y contenido. Valores superiores y principios constitucionales. La reforma de la Constitución',
+        'Tema 2. Los derechos y deberes fundamentales en la Constitución. Su garantía y suspensión. El Defensor del Pueblo',
+        'Tema 3. El Tribunal Constitucional. Organización, composición y atribuciones. Declaración de inconstitucionalidad y amparo',
+        'Tema 4. La Corona. Funciones constitucionales del Rey. Sucesión y regencia. El refrendo y sus formas',
+        'Tema 5. El Poder Legislativo. Las Cortes Generales: Congreso de los Diputados y Senado. Órganos de control dependientes',
+        'Tema 6. El Poder Ejecutivo. El Presidente del Gobierno y el Consejo de Ministros. Relaciones Gobierno-Cortes. El Consejo de Estado',
+        'Tema 7. El Poder Judicial. El principio de unidad jurisdiccional. El CGPJ. El Tribunal Supremo y el Ministerio Fiscal',
+        'Tema 8. La Administración General del Estado. Órganos superiores y directivos. Órganos territoriales y AGE en el exterior',
+        'Tema 9. El sector público institucional estatal: Organismos autónomos, entidades empresariales, agencias estatales y sociedades mercantiles',
+        'Tema 10. Organización territorial del Estado: Las Comunidades Autónomas. Estatutos de Autonomía. Competencias y financiación autonómica',
+        'Tema 11. La Administración Local: Entidades que la integran. El Municipio, la Provincia y otras entidades locales. Autonomía y competencias'
       ],
       [
-        'Tema 12. Las instituciones de la Unión Europea: Parlamento, Comisión y Consejo',
-        'Tema 13. El ordenamiento jurídico europeo: Reglamentos, Directivas y Decisiones',
-        'Tema 14. El Tribunal de Justicia de la Unión Europea y el Tribunal de Cuentas',
-        'Tema 15. El presupuesto de la Unión Europea y los Fondos Estructurales',
-        'Tema 16. La gobernanza económica en la Unión Europea',
-        'Tema 17. La acción exterior de la Unión Europea y España'
+        'Tema 12. La Unión Europea: Antecedentes, objetivos y naturaleza jurídica. Los Tratados constitutivos y modificativos (TUE y TFUE). Ampliación',
+        'Tema 13. Organización de la Unión Europea (I): El Consejo Europeo, el Consejo de la Unión y la Comisión Europea. Procedimiento decisorio',
+        'Tema 14. Organización de la Unión Europea (II): El Parlamento Europeo, el Tribunal de Justicia de la UE, el Tribunal de Cuentas y el BCE',
+        'Tema 15. Fuentes del Derecho de la Unión Europea: Reglamentos, directivas y decisiones. Primacía y eficacia directa en el ordenamiento interno',
+        'Tema 16. El presupuesto comunitario, los fondos estructurales y de inversión europeos, y la cohesión económica y social',
+        'Tema 17. Políticas de la Unión Europea: Mercado interior, gobernanza económica y monetaria, acción exterior y seguridad común'
       ],
       [
-        'Tema 18. El ciclo de las políticas públicas y su evaluación',
-        'Tema 19. La política de empleo y el Sistema Nacional de Empleo',
-        'Tema 20. El sistema de Seguridad Social: Régimen General y Especiales',
-        'Tema 21. Desarrollo sostenible y Agenda 2030',
-        'Tema 22. Protección de datos personales y garantía de los derechos digitales',
-        'Tema 23. Gobierno abierto, transparencia y acceso a la información pública',
-        'Tema 24. La administración digital y los servicios al ciudadano',
-        'Tema 25. Políticas de inclusión social y atención a personas en situación de dependencia'
+        'Tema 18. Modernización de la Administración General del Estado: La administración electrónica, servicios digitales al ciudadano e interoperabilidad',
+        'Tema 19. Política económica, presupuestaria y fiscal actual. Distribución y evolución del gasto público. Garantía de la unidad de mercado',
+        'Tema 20. Política ambiental: Distribución de competencias, biodiversidad, prevención de la contaminación y transición ecológica frente al cambio climático',
+        'Tema 21. La Seguridad Social: Estructura, financiación, régimen general y regímenes especiales. Acción protectora y clases de prestaciones',
+        'Tema 22. La evolución del empleo en España: Políticas activas de empleo, el Sistema Nacional de Empleo y prestaciones por desempleo',
+        'Tema 23. Política de inmigración y extranjería en España: Régimen de los extranjeros, derechos y libertades, asilo y protección internacional',
+        'Tema 24. El Gobierno Abierto: Transparencia, acceso a la información pública, buen gobierno (Ley 19/2013) y participación ciudadana',
+        'Tema 25. La protección de datos personales y la garantía de derechos digitales: RGPD europeo y Ley Orgánica 3/2018 (LOPDGDD)',
+        'Tema 26. Políticas públicas de igualdad y contra la violencia de género: Igualdad de trato, no discriminación LGTBI, discapacidad y dependencia',
+        'Tema 27. Otras políticas sectoriales: El Sistema Nacional de Salud, cooperación internacional para el desarrollo y la Agenda 2030 (ODS)'
       ],
       [
-        'Tema 26. Las fuentes del Derecho administrativo. Jerarquía normativa',
-        'Tema 27. El principio de legalidad y las potestades de la Administración',
-        'Tema 28. El acto administrativo: Requisitos, eficacia y nulidad (LPAC)',
-        'Tema 29. El silencio administrativo y el deber de resolver (LPAC)',
-        'Tema 30. Términos y plazos administrativos: Cómputo e interrupción',
-        'Tema 31. La iniciación e instrucción del procedimiento administrativo',
-        'Tema 32. La terminación del procedimiento: Desistimiento, renuncia y caducidad',
-        'Tema 33. La revisión de oficio de los actos administrativos',
-        'Tema 34. Los recursos administrativos: Alzada, Reposición y Revisión',
-        'Tema 35. Los contratos del sector público: Ámbito de aplicación (LCSP)',
-        'Tema 36. Tipos de contratos: Obras, concesión, suministros y servicios',
-        'Tema 37. Preparación, adjudicación y formalización de contratos',
-        'Tema 38. Los contratos menores en la LCSP: Régimen y límites cuantitativos',
-        'Tema 39. La responsabilidad patrimonial de la Administración Pública'
+        'Tema 28. Las fuentes del Derecho administrativo: La ley y sus clases. Decretos-leyes y Decretos legislativos. El reglamento y límites',
+        'Tema 29. El principio de legalidad y la potestad administrativa: Potestades regladas y discrecionales. La desviación de poder',
+        'Tema 30. El acto administrativo: Concepto, elementos, clases, eficacia y ejecutividad. Nulidad de pleno derecho y anulabilidad',
+        'Tema 31. Los contratos del sector público (I): Ámbito de aplicación de la Ley 9/2017 (LCSP), partes contratantes y objeto. Capacidad y solvencia',
+        'Tema 32. Los contratos del sector público (II): Tipos de contratos, preparación, adjudicación, formalización y régimen de contratos menores',
+        'Tema 33. Procedimientos y formas de la actividad administrativa: Actividad de policía, servicio público, arbitral y fomento (subvenciones)',
+        'Tema 34. La expropiación forzosa: Concepto, sujetos, causa expropiandi, justiprecio y procedimiento general y de urgencia',
+        'Tema 35. El régimen patrimonial de las Administraciones Públicas: Bienes de dominio público y bienes patrimoniales del Estado (Ley 33/2003)',
+        'Tema 36. Responsabilidad patrimonial de las Administraciones Públicas: Principios, requisitos de indemnizabilidad y procedimiento',
+        'Tema 37. El Procedimiento Administrativo Común (Ley 39/2015): Fases de iniciación, ordenación, instrucción y terminación. Cómputo de plazos',
+        'Tema 38. La obligación de resolver de la Administración y el régimen del silencio administrativo: Efectos estimatorios y desestimatorios',
+        'Tema 39. Revisión de los actos en vía administrativa: Revisión de oficio, declaración de lesividad y recursos (alzada y reposición)',
+        'Tema 40. La Jurisdicción Contencioso-Administrativa (Ley 29/1998): Órganos, competencias, partes legitimadas, procedimiento y recursos'
       ],
       [
-        'Tema 40. El Estatuto Básico del Empleado Público (TREBEP)',
-        'Tema 41. Clases de personal al servicio de las Administraciones Públicas',
-        'Tema 42. Acceso al empleo público: Principios de mérito y capacidad',
-        'Tema 43. Adquisición y pérdida de la condición de funcionario',
-        'Tema 44. Situaciones administrativas de los funcionarios de carrera',
-        'Tema 45. Derechos y deberes de los empleados públicos. Código de conducta',
-        'Tema 46. El régimen disciplinario: Faltas y sanciones',
-        'Tema 47. Régimen de incompatibilidades del personal público',
-        'Tema 48. La provisión de puestos de trabajo y la movilidad',
-        'Tema 49. El sistema retributivo de los funcionarios'
+        'Tema 41. El personal al servicio de las Administraciones Públicas: Clases de personal en el TREBEP. Adquisición y pérdida de la condición',
+        'Tema 42. Derechos y deberes de los empleados públicos: Código de conducta, ética pública y régimen disciplinario (faltas y sanciones)',
+        'Tema 43. Planificación estratégica de recursos humanos: Oferta de Empleo Público y sistemas de selección de personal',
+        'Tema 44. Provisión de puestos de trabajo y movilidad en la AGE: Concurso, libre designación, carrera profesional y promoción interna',
+        'Tema 45. Situaciones administrativas de los funcionarios de carrera: Régimen jurídico e incompatibilidades (Ley 53/1984)',
+        'Tema 46. El sistema de retribuciones del personal público: Retribuciones básicas y complementarias. Indemnizaciones por servicio',
+        'Tema 47. El personal laboral al servicio de las Administraciones Públicas: Régimen laboral y el IV Convenio Único de la AGE',
+        'Tema 48. Negociación colectiva, representación y participación de los empleados públicos. El derecho de huelga y sus garantías',
+        'Tema 49. Régimen especial de la Seguridad Social de los funcionarios civiles: MUFACE, Clases Pasivas del Estado y acción protectora',
+        'Tema 50. Acceso al empleo público y medidas de acción positiva para personas con discapacidad: Reserva de plazas y adaptación'
       ],
       [
-        'Tema 50. El Presupuesto General del Estado: Concepto y estructura (LGP)',
-        'Tema 51. Principios presupuestarios constitucionales y legales',
-        'Tema 52. Ciclo presupuestario: Elaboración, aprobación, ejecución y control',
-        'Tema 53. Los créditos presupuestarios y sus modificaciones',
-        'Tema 54. Fases del procedimiento de gasto: Aprobación, compromiso y pago',
-        'Tema 55. La ordenación y realización material de los pagos',
-        'Tema 56. El control interno de la gestión financiera: La IGAE',
-        'Tema 57. El control externo: El Tribunal de Cuentas',
-        'Tema 58. Las subvenciones públicas: Ley General de Subvenciones',
-        'Tema 59. La contabilidad pública y rendición de cuentas'
+        'Tema 51. El presupuesto del Estado: Concepto, principios y régimen de la Ley 47/2003 General Presupuestaria (LGP). Estabilidad presupuestaria',
+        'Tema 52. Las Leyes de Presupuestos Generales del Estado: Estructura orgánica, económica y funcional. Ciclo y proceso presupuestario',
+        'Tema 53. Los créditos presupuestarios: Especialidad cualitativa, cuantitativa y temporal. Modificaciones de crédito y gastos plurianuales',
+        'Tema 54. El control del gasto público en el Estado: La Intervención General (IGAE), función interventora, control financiero y Tribunal de Cuentas',
+        'Tema 55. Procedimiento administrativo de ejecución del presupuesto de gastos: Fases contables (Aprobación, Compromiso, Reconocimiento y Pago)',
+        'Tema 56. Gastos de bienes corrientes y servicios, inversión y transferencias: Anticipos de caja fija y pagos a justificar',
+        'Tema 57. Los ingresos públicos: Clasificación y estructura del sistema tributario estatal. Tasas, precios públicos e impuestos',
+        'Tema 58. Retribuciones y nóminas de los empleados públicos: Estructura, altas, bajas, retenciones de IRPF y liquidación de cuotas'
       ]
     ];
 
-    const topics = realSyllabus.flatMap((b, bi) => b.map(title => {
+    const topics = gaceSyllabus.flatMap((b, bi) => b.map(title => {
       idx++;
       const id = 't' + idx;
-      const qs = bank.filter(q => q.t === id);
+      let text = '';
+      if (idx === 1) text = 'Constitución Española de 1978: Aprobada en referéndum el 6 de diciembre de 1978. Consta de 169 artículos, un Título Preliminar y 10 Títulos numerados.';
+      if (idx === 4) text = 'La Corona: El Rey es el Jefe del Estado, símbolo de su unidad y permanencia. Sus actos son debidamente refrendados conforme al art. 64 CE.';
+      if (idx === 37) text = noteProcedure;
       return {
         id,
         title,
         b: bi,
-        rounds: 0, // Clean: 0 fake rounds
+        rounds: 0,
         errors: 0,
-        text: qs.map(q => q.ref + '\n' + q.why).join('\n\n'),
-        source: qs[0]?.url || '',
+        text,
+        source: 'https://www.inap.es/cuerpo-de-gestion-de-la-administracion-civil-del-estado',
+        assets: [],
+        updated: 0
+      };
+    }));
+
+    return {
+      id: 'gace-a2',
+      name: 'Gestión de la Administración Civil del Estado (GACE / A2)',
+      short: 'GACE A2',
+      group: 'A2',
+      blocks: gaceBlocks,
+      topics,
+      baseURL: 'https://www.inap.es/cuerpo-de-gestion-de-la-administracion-civil-del-estado',
+      basePdf: '',
+      template: true,
+      questions: [],
+      cards: [],
+      lastTopic: 't1'
+    };
+  }
+
+  function makeTemplateC1() {
+    let idx = 0;
+    const c1Blocks = [
+      'Bloque I · Organización del Estado y Administración Pública (11 temas)',
+      'Bloque II · Organización de Oficinas Públicas e Informática (7 temas)',
+      'Bloque III · Derecho Administrativo General y Procedimiento LPAC (9 temas)',
+      'Bloque IV · Gestión de Personal y Régimen de Funcionarios TREBEP (9 temas)',
+      'Bloque V · Gestión Financiera y Presupuestos LGP (7 temas)'
+    ];
+
+    const c1Syllabus = [
+      [
+        'Tema 1. La Constitución Española de 1978: Principios y Derechos Fundamentales',
+        'Tema 2. El Tribunal Constitucional. La reforma constitucional',
+        'Tema 3. Las Cortes Generales: Congreso de los Diputados y Senado',
+        'Tema 4. La Corona. Funciones constitucionales del Rey. Sucesión y Regencia',
+        'Tema 5. El Poder Judicial. El CGPJ. El Tribunal Supremo',
+        'Tema 6. El Gobierno y la Administración. Presidente y Consejo de Ministros',
+        'Tema 7. La Administración General del Estado: Órganos superiores y directivos',
+        'Tema 8. La organización territorial del Estado: Comunidades Autónomas y Estatutos',
+        'Tema 9. La Administración Local: El Municipio y la Provincia',
+        'Tema 10. La organización territorial y financiación autonómica',
+        'Tema 11. Políticas de Igualdad y contra la Violencia de Género'
+      ],
+      [
+        'Tema 12. Atención al público y servicios de información administrativa',
+        'Tema 13. El documento administrativo: Concepto, funciones y clases',
+        'Tema 14. Registro de documentos y archivo en la AGE',
+        'Tema 15. Administración electrónica y servicios digitales al ciudadano',
+        'Tema 16. Conceptos fundamentales de informática y redes',
+        'Tema 17. Ofimática: Tratamiento de textos y hojas de cálculo',
+        'Tema 18. Seguridad de la información y protección de datos (RGPD/LOPD)'
+      ],
+      [
+        'Tema 19. El acto administrativo: Requisitos, eficacia, nulidad y anulabilidad',
+        'Tema 20. El procedimiento administrativo común (Ley 39/2015)',
+        'Tema 21. Fases del procedimiento: Iniciación, ordenación, instrucción y terminación',
+        'Tema 22. Términos y plazos administrativos: Cómputo e interrupción',
+        'Tema 23. La obligación de resolver y régimen del silencio administrativo',
+        'Tema 24. Revisión de actos y recursos administrativos (Alzada y Reposición)',
+        'Tema 25. Contratos del sector público: Tipos y contratos menores (LCSP)',
+        'Tema 26. Procedimientos de licitación y adjudicación de contratos',
+        'Tema 27. Responsabilidad patrimonial de las Administraciones Públicas'
+      ],
+      [
+        'Tema 28. El Estatuto Básico del Empleado Público (TREBEP)',
+        'Tema 29. Clases de personal: Funcionarios, interinos, laborales y eventuales',
+        'Tema 30. Acceso al empleo público: Igualdad, mérito y capacidad',
+        'Tema 31. Situaciones administrativas de los funcionarios',
+        'Tema 32. Derechos y deberes de los funcionarios. Código de conducta',
+        'Tema 33. Régimen disciplinario: Faltas y sanciones',
+        'Tema 34. Régimen de incompatibilidades (Ley 53/1984)',
+        'Tema 35. Provisión de puestos de trabajo y movilidad',
+        'Tema 36. Sistema retributivo de los funcionarios'
+      ],
+      [
+        'Tema 37. El Presupuesto General del Estado: Concepto y estructura (LGP)',
+        'Tema 38. Principios presupuestarios constitucionales y legales',
+        'Tema 39. Ciclo presupuestario: Elaboración, aprobación, ejecución y control',
+        'Tema 40. Créditos presupuestarios y sus modificaciones',
+        'Tema 41. Fases de ejecución del gasto: Aprobación, compromiso y pago',
+        'Tema 42. Control del gasto público: IGAE y Tribunal de Cuentas',
+        'Tema 43. Las subvenciones públicas: Ley General de Subvenciones'
+      ]
+    ];
+
+    const topics = c1Syllabus.flatMap((b, bi) => b.map(title => {
+      idx++;
+      const id = 't' + idx;
+      return {
+        id,
+        title,
+        b: bi,
+        rounds: 0,
+        errors: 0,
+        text: idx === 20 ? noteProcedure : '',
+        source: 'https://www.inap.es/procesos-selectivos',
         assets: [],
         updated: 0
       };
@@ -590,7 +689,7 @@
       name: 'Administrativo del Estado (C1 / AGE)',
       short: 'Admin C1',
       group: 'C1',
-      blocks: realBlocks,
+      blocks: c1Blocks,
       topics,
       baseURL: 'https://www.inap.es/procesos-selectivos',
       basePdf: '',
@@ -600,16 +699,58 @@
       lastTopic: 't1'
     };
   }
-  const STORAGE='typeopos.studio.v1';
-  // Migration from older storage keys if present
-  try {
-    if (!localStorage.getItem(STORAGE) && localStorage.getItem('oposapiens.studio.v1')) {
-      localStorage.setItem(STORAGE, localStorage.getItem('oposapiens.studio.v1'));
-    }
-  } catch(e) {}
 
-  function initialState(){return {version:2,active:'c1-age',opps:[makeTemplate()],name:'Opositor',goal:120,days:{[dateKey()]:45*60,[dateKey(relDay(-1))]:7200,[dateKey(relDay(-2))]:7200},session:0,pet:{name:'OpoPet',personality:'Motivadora',prompt:'Un búho con birrete, gafas y café',image:''},history:[],mistakes:{},srs:{},records:{},recent:[{opp:'gace',topic:'t28',at:Date.now()},{opp:'gace',topic:'t1',at:Date.now()-86400000}],exam:null,model:'gpt-4o-mini',demo:true}}
-  let state;try{const d=JSON.parse(localStorage.getItem(STORAGE));state=d?.version===2&&Array.isArray(d.opps)&&d.opps.length?d:initialState()}catch{state=initialState()}
+  const makeTemplate = makeTemplateGACE;
+  const STORAGE='typeopos.studio.v1';
+
+  function initialState(){
+    return {
+      version: 3,
+      active: 'gace-a2',
+      opps: [makeTemplateGACE(), makeTemplateC1()],
+      name: 'Opositor',
+      goal: 120,
+      days: {[dateKey()]:45*60,[dateKey(relDay(-1))]:7200,[dateKey(relDay(-2))]:7200},
+      session: 0,
+      pet: {name:'OpoPet',personality:'Motivadora',prompt:'Un búho con birrete, gafas y café',image:''},
+      history: [],
+      mistakes: {},
+      srs: {},
+      records: {},
+      recent: [{opp:'gace-a2',topic:'t37',at:Date.now()},{opp:'gace-a2',topic:'t1',at:Date.now()-86400000}],
+      exam: null,
+      model: 'gpt-4o-mini',
+      demo: true
+    };
+  }
+
+  let state;
+  try {
+    const raw = localStorage.getItem(STORAGE) || localStorage.getItem('oposapiens.studio.v1');
+    let d = raw ? JSON.parse(raw) : null;
+    if (d && Array.isArray(d.opps) && d.opps.length) {
+      if (d.version !== 3) {
+        // Upgrade legacy cache: ensure GACE A2 is active with 58 official topics
+        d.version = 3;
+        const gace = makeTemplateGACE();
+        const c1 = makeTemplateC1();
+        d.opps = [gace, c1, ...d.opps.filter(o => !['gace-a2', 'c1-age', 'gace'].includes(o.id))];
+        d.active = 'gace-a2';
+        localStorage.setItem(STORAGE, JSON.stringify(d));
+      }
+      state = d;
+    } else {
+      state = initialState();
+      localStorage.setItem(STORAGE, JSON.stringify(state));
+    }
+  } catch(e) {
+    state = initialState();
+  }
+  if (!state.opps.some(o => o.id === 'gace-a2')) {
+    state.opps.unshift(makeTemplateGACE());
+    state.active = 'gace-a2';
+    save();
+  }
   const opp=()=>state.opps.find(x=>x.id===state.active)||state.opps[0];
   const topic=id=>opp().topics.find(t=>t.id===id);
   const currentTopic=()=>topic(opp().lastTopic)||opp().topics.find(x=>x.text)||opp().topics[0];
@@ -635,11 +776,18 @@
   function streak(){let n=0;for(let j=0;j<365;j++){if((state.days[dateKey(relDay(-j))]||0)>0)n++;else if(j>0||!state.days[dateKey(relDay(-1))])break}return n}
   function header(){
     const practicing=['tests','cases','flash','quiz'].includes(currentPage);
+    const o = opp();
     $('#header').innerHTML=`<div class="nav-shell">
       <button class="brand" data-go="home" aria-label="TypeOpos Studio, mi escritorio">
         ${logo}
         <span class="brand-name">TypeOpos</span>
         <span class="studio-label">STUDIO</span>
+      </button>
+      <button class="pill active-opp-header" data-act="switch-opp" title="Cambiar de oposición activa" style="display:inline-flex;align-items:center;gap:6px;background:#f8f6f0;border:1.5px solid #d9d1f0;border-radius:20px;padding:3px 11px;font-size:12px;font-weight:600;color:#553396;cursor:pointer">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#38a169"></span>
+        <span>${esc(o.short||o.name)}</span>
+        <span style="opacity:.65;font-size:11px">(${o.topics.length} temas)</span>
+        ${I('down',10)}
       </button>
       <nav class="main-nav" aria-label="Navegación principal">
         <button class="nav-item ${currentPage==='home'?'active':''}" data-go="home">${I('grid',16)}Escritorio</button>
@@ -676,13 +824,13 @@
   function daysOfWeek(){const dif=(new Date().getDay()+6)%7;return Array.from({length:7},(_,i)=>relDay(i-dif))}
   function petImage(){return state.pet.image?`<img class="pet-photo" src="${esc(state.pet.image)}" alt="Mi mascota de estudio">`:avatarSVG(state.pet.prompt)}
   function journal(){const secs=elapsedToday(),goal=state.goal,ds=daysOfWeek();return `<section class="journal surface"><div class="journal-head between"><h2 class="side-title">${I('clock',19)}Mi jornada</h2><button class="status-today" data-act="planner" title="Abrir el planificador">Hoy</button></div><div class="between"><span class="daily-goal">Objetivo diario</span><button data-act="planner" aria-label="Editar objetivo diario" class="icon-btn" style="width:21px;height:20px">${I('settings',13)}</button></div><div class="daily-total" id="daily-total">${humanMins(secs/60)} <small>/ ${humanMins(goal)}</small></div><div class="progress-track daily-track"><i id="daily-progress" style="width:${Math.min(100,secs/(goal*60)*100)}%"></i></div><div class="week">${ds.map((d,i)=>{const k=dateKey(d),today=k===dateKey(),done=(state.days[k]||0)>=goal*60;return `<button class="week-day ${today?'today':''} ${done?'done':''}" data-act="planner" title="${esc(d.toLocaleDateString('es-ES',{weekday:'long'}))}: ${humanMins((state.days[k]||0)/60)}"><span>${'LMXJVSD'[i]}</span><span class="day-circle">${done?I('check',13):today?'<span style="width:7px;height:7px;background:#a08ab2;border-radius:50%"></span>':'<span style="width:3px;height:3px;background:#c4bdc4;border-radius:50%"></span>'}</span></button>`}).join('')}</div><button class="btn session-btn ${state.session?'running':''}" data-act="session">${I(state.session?'pause':'play',11)}${state.session?'Pausar sesión':'Iniciar sesión de estudio'}${state.session?'<span class="timer-readout" id="live-timer"></span>':''}</button></section>`}
-  function home(){const o=opp(),studied=o.topics.filter(t=>t.rounds>0).length,pct=o.topics.length?Math.round(100*studied/o.topics.length):0,recent=state.recent.filter(r=>r.opp===o.id&&topic(r.topic)).slice(0,2);const day=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});return `<div class="page"><section class="page-intro home-head"><div><div class="eyebrow intro-kicker">Tu espacio de estudio</div><h1>Mi escritorio${titleDoodle}</h1><p>Un tema, un repaso y un paso más hacia tu plaza.</p></div><div class="intro-actions"><span class="today-label">${I('calendar',14)}${esc(day.charAt(0).toUpperCase()+day.slice(1))}</span><button class="btn" data-act="new-opp" aria-label="Nueva oposición">${I('plus',15)}Nueva oposición</button></div></section><div class="desk-grid"><div class="desk-main"><section class="opposition-panel"><div><button class="active-opp" data-act="switch-opp"><i class="dot"></i> OPOSICIÓN ACTIVA ${I('down',11)}</button><h2 class="opp-name">${esc(o.name)}</h2><div class="opp-meta"><span>${I('folder',13)}${esc(o.short||'Grupo '+o.group)}</span><span>${I('layers',13)}${o.blocks.length} bloques</span><span>${I('file',13)}${o.topics.length} temas</span></div><div class="opp-actions"><button class="btn primary" data-act="continue">Continuar estudio ${I('arrow',14)}</button><button class="text-btn" data-act="open-bases">Bases oficiales ${I('external',12)}</button></div></div>${notebookArt()}<div class="hero-progress"><div class="progress-info"><span>Progreso del temario</span><span><b>${pct}%</b> <span style="opacity:.65">·</span> ${studied} de ${o.topics.length} temas</span></div><div class="progress-track"><i style="width:${pct}%"></i></div></div></section><section><div class="section-heading"><h2>Herramientas de estudio</h2><span class="section-note">Tu mesa de trabajo</span></div><div class="tool-grid">${tools.map(([k,l,d,c])=>`<button class="tool-tile ${c}" data-go="${k}"><span class="tile-arrow">${I('upRight',15)}</span>${toolArt(artKey(k))}<h3>${l}</h3><p>${d}</p></button>`).join('')}</div></section><section><div class="section-heading"><h2>Últimos apuntes</h2><button class="text-btn" data-go="library">Ver temario ${I('arrow',13)}</button></div><div class="recent-list surface">${recent.length?recent.map(r=>{const t=topic(r.topic);return `<button class="recent-row" data-act="read" data-id="${esc(t.id)}"><span class="file-icon">${I('file',19)}</span><span class="spacer"><span class="recent-title">${esc(t.title)}</span><span class="recent-meta" style="display:block">Bloque ${t.b+1} · ${esc(o.blocks[t.b])}</span></span>${stateLabel(t)}${I('right',14)}</button>`}).join(''):`<button class="recent-row" data-act="import"><span class="file-icon">${I('upload')}</span>Importa tus primeros apuntes ${I('arrow',14)}</button>`}</div></section></div><aside class="desk-side">${journal()}<section class="pet-panel surface"><div class="pet-header"><div><div class="eyebrow">Tu compañero de estudio</div><h2>${esc(state.pet.name)}</h2></div><button class="icon-btn" data-act="pet-settings" aria-label="Personalizar OpoPet">${I('settings',17)}</button></div>${petImage()}<p class="pet-quote">“${esc(petLine('tip'))}”</p><button class="btn" data-act="quick">${I('sparkle',15)}Pregunta rápida</button></section><button class="surface notice-link" data-go="boe"><span class="notice-art">${I('news',20)}</span><span class="spacer"><h3>Convocatorias</h3><p>BOE y boletines autonómicos</p></span>${I('right',14)}</button></aside></div></div>`}
+  function home(){const o=opp(),studied=o.topics.filter(t=>t.rounds>0).length,pct=o.topics.length?Math.round(100*studied/o.topics.length):0,recent=state.recent.filter(r=>r.opp===o.id&&topic(r.topic)).slice(0,2);const day=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});return `<div class="page"><section class="page-intro home-head"><div><div class="eyebrow intro-kicker">Tu espacio de estudio</div><h1>Mi escritorio${titleDoodle}</h1><p>Un tema, un repaso y un paso más hacia tu plaza.</p></div><div class="intro-actions"><span class="today-label">${I('calendar',14)}${esc(day.charAt(0).toUpperCase()+day.slice(1))}</span><button class="btn" data-act="new-opp" aria-label="Nueva oposición">${I('plus',15)}Nueva oposición</button></div></section><div class="desk-grid"><div class="desk-main"><section class="opposition-panel"><div><button class="active-opp" data-act="switch-opp"><i class="dot"></i> OPOSICIÓN ACTIVA ${I('down',11)}</button><h2 class="opp-name">${esc(o.name)}</h2><div class="opp-meta"><span>${I('folder',13)}${esc(o.short||'Grupo '+o.group)}</span><span>${I('layers',13)}${o.blocks.length} bloques</span><span>${I('file',13)}${o.topics.length} temas oficiales</span></div><div class="opp-actions"><button class="btn primary" data-act="continue">Continuar estudio ${I('arrow',14)}</button><button class="text-btn" data-act="open-bases">Bases oficiales ${I('external',12)}</button><button class="btn sm" data-act="${o.id==='gace-a2'?'switch-to-c1':'switch-to-gace'}" style="margin-left:8px;background:#f0eef9;color:#6e48aa;border:1px solid #d9d1f0">${o.id==='gace-a2'?'🏢 Ver Admin C1':'🎯 Activar GACE A2 (58 temas)'}</button></div></div>${notebookArt()}<div class="hero-progress"><div class="progress-info"><span>Progreso del temario</span><span><b>${pct}%</b> <span style="opacity:.65">·</span> ${studied} de ${o.topics.length} temas</span></div><div class="progress-track"><i style="width:${pct}%"></i></div></div></section><section><div class="section-heading"><h2>Herramientas de estudio</h2><span class="section-note">Tu mesa de trabajo</span></div><div class="tool-grid">${tools.map(([k,l,d,c])=>`<button class="tool-tile ${c}" data-go="${k}"><span class="tile-arrow">${I('upRight',15)}</span>${toolArt(artKey(k))}<h3>${l}</h3><p>${d}</p></button>`).join('')}</div></section><section><div class="section-heading"><h2>Últimos apuntes</h2><button class="text-btn" data-go="library">Ver temario ${I('arrow',13)}</button></div><div class="recent-list surface">${recent.length?recent.map(r=>{const t=topic(r.topic);return `<button class="recent-row" data-act="read" data-id="${esc(t.id)}"><span class="file-icon">${I('file',19)}</span><span class="spacer"><span class="recent-title">${esc(t.title)}</span><span class="recent-meta" style="display:block">Bloque ${t.b+1} · ${esc(o.blocks[t.b])}</span></span>${stateLabel(t)}${I('right',14)}</button>`}).join(''):`<button class="recent-row" data-act="import"><span class="file-icon">${I('upload')}</span>Importa tus primeros apuntes ${I('arrow',14)}</button>`}</div></section></div><aside class="desk-side">${journal()}<section class="pet-panel surface"><div class="pet-header"><div><div class="eyebrow">Tu compañero de estudio</div><h2>${esc(state.pet.name)}</h2></div><button class="icon-btn" data-act="pet-settings" aria-label="Personalizar OpoPet">${I('settings',17)}</button></div>${petImage()}<p class="pet-quote">“${esc(petLine('tip'))}”</p><button class="btn" data-act="quick">${I('sparkle',15)}Pregunta rápida</button></section><button class="surface notice-link" data-go="boe"><span class="notice-art">${I('news',20)}</span><span class="spacer"><h3>Convocatorias</h3><p>BOE y boletines autonómicos</p></span>${I('right',14)}</button></aside></div></div>`}
   function petLine(type){const dict={Motivadora:{tip:'Poquito a poco, cada repaso te acerca a tu plaza.',good:'¡Bien hecho! Ese concepto ya es un poco más tuyo.',bad:'Un fallo también enseña. Repasa la explicación y vuelve a intentarlo.'},Estricta:{tip:'Primero comprende el artículo. Después, memoriza el plazo.',good:'Respuesta correcta. Mantén el ritmo.',bad:'Revisa el artículo y distingue el plazo de su cómputo.'},'Sarcástica con los plazos':{tip:'Los plazos no se estudian solos. Ya se lo he preguntado.',good:'¡Exacto! Hoy el calendario está de tu parte.',bad:'El BOE no acepta un «casi». Vamos a repasar esa regla.'}};return (dict[state.pet.personality]||dict.Motivadora)[type]}
   function petReact(ok){clearTimeout(petTimer);$('.pet-bubble')?.remove();const n=document.createElement('div');n.className='pet-bubble '+(ok?'celebrate':'missed');n.setAttribute('role','status');n.innerHTML=petImage()+`<div><b>${esc(state.pet.name)}</b><p>${esc(petLine(ok?'good':'bad'))}</p></div>`;($('#modal').open?$('#modal'):document.body).append(n);n.onclick=()=>n.remove();petTimer=setTimeout(()=>n.remove(),4400)}
   function heading(title,sub,actions='',kicker='Mi espacio de estudio'){return `<div class="page-intro module-head"><div><div class="eyebrow intro-kicker">${esc(kicker)}</div><h1>${esc(title)}</h1><p>${esc(sub)}</p></div>${actions?`<div class="intro-actions">${actions}</div>`:''}</div>`}
   const btn=(label,act,ico='',cl='')=>`<button type="button" class="btn ${cl}" data-act="${act}">${ico?I(ico,15):''}${label}</button>`;
-  function switchOpp(){modal('Mis oposiciones',`<p>Cada oposición tiene su propio temario, preguntas y repasos.</p><div class="set-list">${state.opps.map(o=>`<button data-act="choose-opp" data-id="${esc(o.id)}" class="${o.id===opp().id?'is-active':''}">${I('book',22)}<span class="spacer"><b>${esc(o.name)}</b><small>${esc(o.group)} · ${o.topics.length} temas</small></span>${o.id===opp().id?I('check'):''}</button>`).join('')}</div><div class="modal-actions">${btn('Nueva oposición','new-opp','plus','primary')}</div>`)}
-  function newOpp(){modal('Nueva oposición',`<p>Un cuaderno a tu medida. Puedes añadir o importar temas más adelante.</p><form id="new-opp-form" class="stack"><label class="field"><span>Nombre de la oposición</span><input name="name" required maxlength="100" placeholder="Ej. Administrativo del Estado"></label><div class="form-grid compact"><label class="field"><span>Subgrupo</span><select name="group">${['A1','A2','B','C1','C2','AP','Otro'].map(x=>`<option ${x==='C1'?'selected':''}>${x}</option>`).join('')}</select></label><label class="field"><span>Nombre corto</span><input name="short" maxlength="20" placeholder="Ej. Administrativo C1"></label></div><label class="field"><span>Plantilla inicial</span><select name="template"><option value="empty">Temario personalizado</option><option value="gace">GACE A2 · 58 temas en 6 bloques</option></select></label><label class="field"><span>Importar temas <small>(opcional)</small></span><textarea name="topics" placeholder="# Bloque 1\nLa Constitución Española\nEl procedimiento administrativo común"></textarea><small>Un tema por línea. Usa # para separar bloques, o pega un array JSON de títulos u objetos {titulo, bloque, texto}.</small></label><label class="field"><span>O elige un archivo TXT / JSON</span><input type="file" name="syllabusFile" accept=".txt,.json,text/plain,application/json"></label><div class="modal-error" id="modal-error"></div><div class="row" style="justify-content:flex-end">${btn('Cancelar','close')}<button class="btn primary" type="submit">${I('plus',15)}Crear oposición</button></div></form>`)}
+  function switchOpp(){modal('Mis oposiciones',`<p>Cada oposición tiene su propio temario oficial, preguntas y repasos:</p><div class="set-list">${state.opps.map(o=>`<button data-act="choose-opp" data-id="${esc(o.id)}" class="${o.id===opp().id?'is-active':''}">${I('book',22)}<span class="spacer"><b>${esc(o.name)}</b><small>${esc(o.group)} · ${o.blocks.length} bloques · ${o.topics.length} temas oficiales</small></span>${o.id===opp().id?I('check'):''}</button>`).join('')}</div><div class="modal-actions">${btn('Nueva oposición','new-opp','plus','primary')}</div>`)}
+  function newOpp(){modal('Nueva oposición',`<p>Configura tu cuaderno de oposición o utiliza las plantillas oficiales del Estado:</p><form id="new-opp-form" class="stack"><label class="field"><span>Nombre de la oposición</span><input name="name" required maxlength="100" placeholder="Ej. Gestión de la Administración Civil del Estado (GACE A2)" value="Gestión de la Administración Civil del Estado (GACE A2)"></label><div class="form-grid compact"><label class="field"><span>Subgrupo</span><select name="group">${['A1','A2','B','C1','C2','AP','Otro'].map(x=>`<option ${x==='A2'?'selected':''}>${x}</option>`).join('')}</select></label><label class="field"><span>Nombre corto</span><input name="short" maxlength="20" placeholder="Ej. GACE A2" value="GACE A2"></label></div><label class="field"><span>Plantilla oficial inicial</span><select name="template"><option value="gace" selected>GACE A2 · 58 temas oficiales en 6 bloques (INAP)</option><option value="c1">Administrativo del Estado C1 · 43 temas oficiales</option><option value="empty">Temario en blanco / personalizado</option></select></label><label class="field"><span>Importar temas <small>(opcional)</small></span><textarea name="topics" placeholder="# Bloque I. Organización del Estado\nTema 1. La Constitución Española\nTema 4. La Corona..."></textarea><small>Un tema por línea. Usa # para bloques o pega JSON.</small></label><label class="field"><span>O elige un archivo TXT / JSON</span><input type="file" name="syllabusFile" accept=".txt,.json,text/plain,application/json"></label><div class="modal-error" id="modal-error"></div><div class="row" style="justify-content:flex-end">${btn('Cancelar','close')}<button class="btn primary" type="submit">${I('plus',15)}Crear oposición</button></div></form>`)}
   function parseSyllabus(text){const bs=[],ts=[];let b='Temario general';function add(title,block,content=''){if(typeof title!=='string'||!title.trim())return;const bn=String(block||b).trim();if(!bs.includes(bn))bs.push(bn);ts.push({id:uid(),title:title.trim().slice(0,200),b:bs.indexOf(bn),text:String(content||'').slice(0,200000),rounds:0,errors:0,source:'',assets:[],updated:0})}if(text.trim().startsWith('[')||text.trim().startsWith('{')){let js;try{js=JSON.parse(text)}catch{throw Error('El JSON no es válido. Comprueba las comillas y las comas.')}const arr=Array.isArray(js)?js:js.temas||js.topics;if(!Array.isArray(arr))throw Error('El JSON debe contener una lista de temas.');arr.slice(0,500).forEach(t=>typeof t==='string'?add(t,b):add(t?.titulo||t?.title,t?.bloque||t?.block,t?.texto||t?.text))}else{for(const line of text.split('\n').slice(0,600)){if(line.trim().startsWith('#'))b=line.replace(/^\s*#+\s*/,'').trim()||b;else add(line.replace(/^\s*[-*]\s*/,''),b)}}return {blocks:bs.length?bs:['Temario general'],topics:ts}}
   function planModal(){const ds=daysOfWeek(),sum=ds.reduce((v,d)=>v+(dateKey(d)===dateKey()?elapsedToday():state.days[dateKey(d)]||0),0);modal('Mi planificador',`<p>Un objetivo sostenible para los siete días de la semana.</p><div class="between"><b>Esta semana</b><span class="tag">${humanMins(sum/60)} de ${humanMins(state.goal*7)}</span></div><div class="stack" style="gap:0;margin:10px 0 19px">${ds.map(d=>{const s=dateKey(d)===dateKey()?elapsedToday():(state.days[dateKey(d)]||0);return `<div class="history-row"><span>${esc(d.toLocaleDateString('es-ES',{weekday:'long',day:'numeric'}))}</span><span>${humanMins(s/60)} / ${humanMins(state.goal)}</span></div>`}).join('')}</div><form id="goal-form" class="stack"><label class="field"><span>Objetivo diario en minutos</span><input required name="goal" type="number" min="5" max="720" value="${state.goal}"></label><button class="btn primary">Guardar planificación</button></form>`)}
   function toggleSession(){if(state.session){let start=state.session;const now=Date.now();while(start<now){const end=new Date(start);end.setHours(24,0,0,0);const until=Math.min(now,+end),k=dateKey(new Date(start));state.days[k]=(state.days[k]||0)+Math.floor((until-start)/1000);start=until}state.session=0;toast('Sesión guardada en tu jornada.')}else{state.session=Date.now();toast('Sesión iniciada. Puedes seguir usando tu escritorio.')}save();renderRoute(false)}
@@ -743,72 +891,174 @@
   }
 
   function renderLawsLibrary() {
-    const officialLawsList = [
+    const isGACE = opp().group === 'A2' || opp().id === 'gace-a2';
+    const gaceLaws = [
       {
         short: 'CE 1978',
         name: 'Constitución Española de 1978',
         boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229',
-        desc: 'Norma suprema del ordenamiento jurídico español. Dogmática (Título Preliminar y Título I) y Orgánica (Corona, Cortes, Gobierno, Poder Judicial, CCAA).',
-        topicsCovered: 'Temas 1, 2, 3, 4, 5, 6, 7, 8, 9',
-        keyArticles: 'Art. 1.2 (Soberanía), Art. 14 (Igualdad), Art. 53 (Garantías), Art. 68 (Congreso), Art. 99 (Investidura), Art. 103 (Administración).'
+        desc: 'Norma suprema. Dogmática (Título Preliminar y Título I) y Orgánica (La Corona, Cortes Generales, Gobierno y Administración, Poder Judicial, Organización Territorial).',
+        topicsCovered: 'Bloque I · Temas 1 al 11 (Tema 4: La Corona · Tema 10: CCAA · Tema 11: Adm. Local)',
+        keyArticles: 'Art. 1.2 (Soberanía), Art. 14 (Igualdad), Art. 53 (Garantías de libertades), Arts. 56-65 (Corona y refrendo), Arts. 68 y 99 (Cortes e investidura), Art. 103 (AGE).'
+      },
+      {
+        short: 'Tratados UE',
+        name: 'Tratado de la Unión Europea (TUE) y Tratado de Funcionamiento (TFUE)',
+        boe: 'https://www.boe.es/buscar/doc.php?id=DOUE-Z-2010-70001',
+        desc: 'Estructura institucional de la UE: Consejo Europeo, Comisión, Consejo, Parlamento Europeo, TJUE y Banco Central Europeo. Fuentes del Derecho comunitario y políticas comunes.',
+        topicsCovered: 'Bloque II · Temas 12 al 17 (Temas 1 al 6 de la Unión Europea)',
+        keyArticles: 'Art. 14 TUE (Parlamento), Art. 15 TUE (Consejo Europeo), Art. 16 TUE (Consejo), Art. 17 TUE (Comisión), Art. 19 TUE (TJUE), Art. 288 TFUE (Reglamentos, directivas y decisiones).'
+      },
+      {
+        short: 'Ley 19/2013',
+        name: 'Ley de Transparencia, Acceso a la Información y Buen Gobierno',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2013-12887',
+        desc: 'Publicidad activa de las administraciones, régimen del derecho de acceso a la información pública, límites, causas de inadmisión y Consejo de Transparencia y Buen Gobierno.',
+        topicsCovered: 'Bloque III · Tema 24 (Políticas Públicas / Gobierno Abierto)',
+        keyArticles: 'Arts. 5-8 (Publicidad activa), Arts. 12-16 (Derecho de acceso y límites), Art. 20 (Resolución en 1 mes), Art. 24 (Reclamación potestativa).'
+      },
+      {
+        short: 'RGPD / LOPDGDD',
+        name: 'Reglamento UE 2016/679 y Ley Orgánica 3/2018 de Protección de Datos',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2018-16673',
+        desc: 'Principios de protección de datos (licitud, lealtad, minimización), derechos de los interesados (acceso, rectificación, supresión), delegado de protección de datos y AEPD.',
+        topicsCovered: 'Bloque III · Tema 25 (Protección de Datos y Derechos Digitales)',
+        keyArticles: 'Art. 5 RGPD (Principios), Art. 6 RGPD (Bases de licitud), Arts. 15-22 RGPD (Derechos), Título X LOPDGDD (Garantía de los derechos digitales).'
+      },
+      {
+        short: 'LGSS (RDL 8/2015)',
+        name: 'Texto Refundido de la Ley General de la Seguridad Social',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-12156',
+        desc: 'Estructura y financiación del sistema, Régimen General y regímenes especiales, cotización, acción protectora y clases de prestaciones contributivas y no contributivas.',
+        topicsCovered: 'Bloque III · Tema 21 y Bloque V · Tema 49 (MUFACE y Clases Pasivas)',
+        keyArticles: 'Art. 136 (Campo de aplicación Régimen General), Art. 144 (Cotización), Art. 169 (Incapacidad temporal), Art. 204 (Jubilación ordinaria).'
       },
       {
         short: 'Ley 39/2015',
-        name: 'LPACAP · Ley del Procedimiento Administrativo Común',
+        name: 'LPACAP · Procedimiento Administrativo Común de las AAPP',
         boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-10565',
-        desc: 'Regulación del acto administrativo, términos y plazos, silencio administrativo positivo/negativo, fases del procedimiento y recursos administrativos.',
-        topicsCovered: 'Temas 28, 29, 30, 31, 32, 33, 34',
-        keyArticles: 'Art. 21 (Obligación de resolver), Art. 24 (Silencio), Art. 30 (Cómputo plazos), Art. 47 (Nulidad), Art. 68 (Subsanación 10 días), Art. 122 (Alzada 1 mes).'
+        desc: 'Capacidad de obrar, interesados, acto administrativo, eficacia, nulidad de pleno derecho, cómputo de plazos, iniciación, ordenación, instrucción, terminación y recursos.',
+        topicsCovered: 'Bloque IV · Temas 28, 30, 37, 38 y 39',
+        keyArticles: 'Art. 21 (Deber de resolver), Art. 24 (Silencio administrativo), Art. 30 (Días hábiles), Art. 47 (Nulidad), Art. 68 (Subsanación 10 días), Art. 122 (Alzada: 1 mes interposición, 3 meses resolver).'
       },
       {
         short: 'Ley 40/2015',
-        name: 'LRJSP · Ley de Régimen Jurídico del Sector Público',
+        name: 'LRJSP · Régimen Jurídico del Sector Público',
         boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-10566',
-        desc: 'Organización y funcionamiento de la Administración General del Estado, órganos colegiados, delegación, avocación, abstención y recusación.',
-        topicsCovered: 'Temas 6, 7',
-        keyArticles: 'Art. 3 (Principios generales), Art. 9 (Delegación), Art. 23 (Abstención), Art. 24 (Recusación), Art. 54 (Estructura AGE).'
+        desc: 'Principios de actuación, órganos colegiados, delegación de competencias, avocación, encomienda de gestión, abstención y recusación, y responsabilidad patrimonial.',
+        topicsCovered: 'Bloque I · Temas 8 y 9 y Bloque IV · Temas 35 y 36',
+        keyArticles: 'Art. 3 (Principios generales), Art. 9 (Delegación), Art. 23 (Abstención), Art. 24 (Recusación), Arts. 32-35 (Responsabilidad patrimonial), Arts. 54-68 (Estructura de la AGE).'
       },
       {
         short: 'Ley 9/2017',
         name: 'LCSP · Ley de Contratos del Sector Público',
         boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2017-12902',
-        desc: 'Tipos contractuales (obras, servicios, suministros), contratos menores, pliegos de cláusulas, procedimiento de licitación y adjudicación.',
-        topicsCovered: 'Temas 35, 36, 37, 38',
-        keyArticles: 'Art. 101 (Valor estimado sin IVA), Art. 118 (Contratos menores: <40.000€ obras, <15.000€ servicios), Art. 159 (Procedimiento simplificado).'
+        desc: 'Contratos de obras, suministros, servicios y concesión. Contratos menores, valor estimado sin IVA, solvencia, pliegos, adjudicación y formalización.',
+        topicsCovered: 'Bloque IV · Temas 31 y 32',
+        keyArticles: 'Art. 101 (Valor estimado sin IVA), Art. 118 (Contrato menor: <40.000€ obras, <15.000€ servicios/suministros), Art. 159 (Procedimiento abierto simplificado).'
+      },
+      {
+        short: 'Ley 29/1998',
+        name: 'LJCA · Reguladora de la Jurisdicción Contencioso-Administrativa',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-1998-17509',
+        desc: 'Órganos judiciales contencioso-administrativos, partes procesales, legitimación, actividad administrativa impugnable, procedimiento ordinario y abreviado, y recursos.',
+        topicsCovered: 'Bloque IV · Tema 40 (Jurisdicción Contencioso-Administrativa)',
+        keyArticles: 'Art. 19 (Legitimación activa), Art. 25 (Actos y disposiciones impugnables), Art. 46 (Plazo de 2 meses contra actos expresos y 6 meses si es presunto).'
+      },
+      {
+        short: 'LEF 1954',
+        name: 'Ley de Expropiación Forzosa de 16 de diciembre de 1954',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-1954-15431',
+        desc: 'Causa de utilidad pública o interés social, declaración de necesidad de ocupación, fijación del justiprecio (Jurado Provincial de Expropiación), pago y procedimiento de urgencia.',
+        topicsCovered: 'Bloque IV · Tema 34 (La Expropiación Forzosa)',
+        keyArticles: 'Art. 1 (Objeto y causa), Art. 21 (Declaración de necesidad de ocupación), Arts. 32-35 (Jurado Provincial de Expropiación), Art. 52 (Procedimiento de urgencia).'
       },
       {
         short: 'TREBEP (RDL 5/2015)',
-        name: 'Estatuto Básico del Empleado Público',
+        name: 'Texto Refundido del Estatuto Básico del Empleado Público',
         boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-11719',
-        desc: 'Clases de personal (funcionario de carrera, interino, laboral), adquisición y pérdida de condición, situaciones administrativas y faltas disciplinarias.',
-        topicsCovered: 'Temas 40, 41, 42, 43, 44, 45, 46, 47',
-        keyArticles: 'Art. 8 (Clases de empleados), Art. 16 (Carrera profesional), Art. 85 (Situaciones administrativas), Art. 95 (Faltas muy graves).'
+        desc: 'Clases de empleados públicos (carrera, interinos, laborales, eventuales), derechos y deberes, código de conducta, situaciones administrativas, evaluación y régimen disciplinario.',
+        topicsCovered: 'Bloque V · Temas 41 al 50 (Administración de Recursos Humanos)',
+        keyArticles: 'Art. 8 (Clases de empleados), Art. 16 (Carrera profesional horizontal y vertical), Arts. 52-54 (Código de conducta), Art. 85 (Situaciones administrativas), Art. 95 (Faltas muy graves).'
+      },
+      {
+        short: 'Ley 53/1984',
+        name: 'Ley de Incompatibilidades del Personal al Servicio de las AAPP',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-1985-50',
+        desc: 'Prohibición de doble puesto o pensión en el sector público, actividades privadas compatibles e incompatibles, reconocimiento de compatibilidad y régimen sancionador.',
+        topicsCovered: 'Bloque V · Tema 45 (Situaciones Administrativas e Incompatibilidades)',
+        keyArticles: 'Art. 1 (Principio de dedicación a un solo puesto público), Arts. 11-13 (Actividades privadas incompatibles), Art. 19 (Falta muy grave el incumplimiento).'
       },
       {
         short: 'Ley 47/2003',
         name: 'LGP · Ley General Presupuestaria',
         boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2003-21614',
-        desc: 'Presupuestos Generales del Estado, créditos presupuestarios, fases del gasto (autorización, disposición, reconocimiento de la obligación) y pagos.',
-        topicsCovered: 'Temas 50, 51, 52, 53, 54, 55, 56',
-        keyArticles: 'Art. 26 (Principios presupuestarios), Art. 73 (Fases del gasto), Art. 140 (Control interno - IGAE).'
+        desc: 'Presupuestos Generales del Estado, principios de especialidad crediticia, modificaciones de crédito, fases de ejecución del gasto (A, D, O, P), control interno (IGAE) y contabilidad.',
+        topicsCovered: 'Bloque VI · Temas 51 al 58 (Gestión Financiera y Seguridad Social)',
+        keyArticles: 'Arts. 26-31 (Principios presupuestarios), Arts. 48-59 (Modificaciones presupuestarias), Art. 73 (Fases del gasto), Art. 140 (Función interventora de la IGAE).'
       }
     ];
+
+    const c1Laws = [
+      {
+        short: 'CE 1978',
+        name: 'Constitución Española de 1978',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229',
+        desc: 'Norma suprema: Corona (Tema 4), Cortes, Gobierno, Poder Judicial, CCAA y Adm. Local.',
+        topicsCovered: 'Bloque I · Temas 1 al 11',
+        keyArticles: 'Art. 1.2 (Soberanía), Art. 14 (Igualdad), Art. 53 (Garantías), Art. 68 (Congreso), Art. 99 (Investidura).'
+      },
+      {
+        short: 'Ley 39/2015',
+        name: 'LPACAP · Ley del Procedimiento Administrativo Común',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-10565',
+        desc: 'Actos administrativos, plazos hábiles, silencio administrativo y recursos.',
+        topicsCovered: 'Bloque III · Temas 19 al 24',
+        keyArticles: 'Art. 21 (Deber de resolver), Art. 24 (Silencio), Art. 30 (Plazos), Art. 47 (Nulidad), Art. 68 (Subsanación).'
+      },
+      {
+        short: 'Ley 9/2017',
+        name: 'LCSP · Ley de Contratos del Sector Público',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2017-12902',
+        desc: 'Tipos de contratos, preparación, adjudicación y contratos menores.',
+        topicsCovered: 'Bloque III · Temas 25 y 26',
+        keyArticles: 'Art. 101 (Valor estimado sin IVA), Art. 118 (Menores: <40.000€ obras, <15.000€ servicios).'
+      },
+      {
+        short: 'TREBEP',
+        name: 'Estatuto Básico del Empleado Público',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-11719',
+        desc: 'Clases de empleados, carrera profesional, situaciones administrativas y deberes.',
+        topicsCovered: 'Bloque IV · Temas 28 al 36',
+        keyArticles: 'Art. 8 (Clases), Art. 16 (Carrera), Art. 85 (Situaciones), Art. 95 (Faltas).'
+      },
+      {
+        short: 'Ley 47/2003',
+        name: 'LGP · Ley General Presupuestaria',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2003-21614',
+        desc: 'Presupuestos del Estado, modificaciones de créditos y fases de ejecución del gasto.',
+        topicsCovered: 'Bloque V · Temas 37 al 43',
+        keyArticles: 'Art. 26 (Principios), Art. 73 (Fases del gasto), Art. 140 (IGAE).'
+      }
+    ];
+
+    const officialLawsList = isGACE ? gaceLaws : c1Laws;
 
     return `
       <section class="surface workspace stack" style="gap:16px">
         <div class="row between" style="border-bottom:1px solid var(--line);padding-bottom:12px">
           <div>
-            <h3 class="panel-title" style="margin:0">${I('book',17)} Biblioteca Legislativa Oficial</h3>
-            <p class="small muted" style="margin:4px 0 0">Acceso directo al texto oficial y consolidado del BOE para cada norma de tu temario.</p>
+            <h3 class="panel-title" style="margin:0">${I('book',17)} Código de Leyes Oficiales · ${esc(opp().name)}</h3>
+            <p class="small muted" style="margin:4px 0 0">Acceso directo al texto oficial y consolidado del BOE para las leyes de tu oposición.</p>
           </div>
-          <span class="tag" style="background:#f0eef9;color:#553396;border-color:#d9d1f0">Leyes consolidadas</span>
+          <span class="tag" style="background:#f0eef9;color:#553396;border-color:#d9d1f0">${officialLawsList.length} leyes oficiales</span>
         </div>
 
         <div class="stack" style="gap:12px">
           ${officialLawsList.map(law => `
             <div class="surface" style="padding:16px;border:1.5px solid #eae5dc;border-radius:12px;background:#faf8f5">
               <div class="row between wrap" style="margin-bottom:6px">
-                <div class="row">
+                <div class="row" style="gap:8px">
                   <span class="tag" style="background:#6e48aa;color:white;font-weight:700">${esc(law.short)}</span>
                   <strong style="font-size:15px;color:#2e1e14">${esc(law.name)}</strong>
                 </div>
@@ -817,8 +1067,8 @@
                 </a>
               </div>
               <p class="small" style="color:#554c46;margin:6px 0 10px">${esc(law.desc)}</p>
-              <div class="row wrap between small" style="background:white;padding:8px 12px;border-radius:8px;border:1px solid var(--line)">
-                <div><strong>Temas vinculados:</strong> <span class="muted">${esc(law.topicsCovered)}</span></div>
+              <div class="row wrap between small" style="background:white;padding:8px 12px;border-radius:8px;border:1px solid var(--line);gap:8px">
+                <div><strong>Temas oficiales:</strong> <span class="muted">${esc(law.topicsCovered)}</span></div>
                 <div><strong style="color:#8c3c3c">Artículos clave de examen:</strong> <span class="font-mono text-xs">${esc(law.keyArticles)}</span></div>
               </div>
             </div>
@@ -835,11 +1085,14 @@
         <!-- Barra de herramientas del temario -->
         <div class="row between wrap" style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line);gap:10px">
           <div class="row wrap small" style="gap:8px">
-            <button class="btn sm" data-act="reset-to-c1" title="Cargar temario oficial real de Administrativo C1 con 11 temas en Bloque I">
-              🔄 Restaurar Temario Oficial C1 (Limpio)
+            <button class="btn sm ${o.id==='gace-a2'?'primary':''}" data-act="switch-to-gace" title="Activar temario oficial de Gestión de la Administración Civil del Estado (58 temas)">
+              🎯 ${o.id==='gace-a2'?'Restaurar GACE A2 (58 temas)':'Activar GACE A2 (58 temas)'}
             </button>
-            <button class="btn sm" data-act="paste-syllabus">
-              📋 Pegar temario desde convocatoria
+            <button class="btn sm ${o.id==='c1-age'?'primary':''}" data-act="switch-to-c1" title="Cambiar a Administrativo del Estado C1 (43 temas)">
+              🏢 Cambiar a Admin C1
+            </button>
+            <button class="btn sm" data-act="paste-syllabus" title="Importar temario pegando texto de la convocatoria">
+              📋 Pegar temario
             </button>
           </div>
           <span class="small muted">Haz clic en cualquier tema para abrir su lector, esquemas de llaves o subir PDFs</span>
@@ -1535,37 +1788,52 @@
   function matchTopicForFile(filename) {
     const normName = norm(filename);
     const o = opp();
-    const m = normName.match(/(?:tema|t|leccion|lecc|capitulo)[\s_-]*(\d+)/i);
-    if (m) {
-      const num = parseInt(m[1], 10);
+    
+    // 1. Check for explicit "Bloque X Tema Y" e.g. "Bloque 1 Tema 4" or "B1 T4"
+    const mBlockTopic = normName.match(/(?:bloque|b)[\s_-]*([1-6]|i{1,3}|iv|v|vi)[\s._-]*(?:tema|t)[\s._-]*(\d+)/i);
+    if (mBlockTopic) {
+      const romanMap = { i: 0, ii: 1, iii: 2, iv: 3, v: 4, vi: 5 };
+      const bRaw = mBlockTopic[1].toLowerCase();
+      const bIdx = romanMap[bRaw] !== undefined ? romanMap[bRaw] : (parseInt(bRaw, 10) - 1);
+      const tNumInBlock = parseInt(mBlockTopic[2], 10);
+      const blockTopics = o.topics.filter(t => t.b === bIdx);
+      if (blockTopics[tNumInBlock - 1]) return blockTopics[tNumInBlock - 1];
+    }
+
+    // 2. Check for explicit "Tema X" or "Tema 04" or "T4"
+    const mTopic = normName.match(/(?:tema|t|leccion|capitulo)[\s._-]*(\d+)/i);
+    if (mTopic) {
+      const num = parseInt(mTopic[1], 10);
       const byId = o.topics.find(t => t.id === 't' + num);
       if (byId) return byId;
       if (num > 0 && num <= o.topics.length) return o.topics[num - 1];
     }
 
-    const kwMap = [
-      { k: ['constitucion', 'ce', 'derechos', 'deberes'], id: 't1' },
-      { k: ['corona', 'rey'], id: 't3' },
-      { k: ['cortes', 'congreso', 'senado'], id: 't4' },
-      { k: ['gobierno', 'administracion general', 'ministros', 'ley 50'], id: 't5' },
-      { k: ['judicial', 'cgpj', 'jueces', 'tribunal supremo'], id: 't6' },
-      { k: ['territorial', 'comunidades autonomas', 'estatuto'], id: 't8' },
-      { k: ['local', 'municipio', 'provincia', 'alcalde', 'ayuntamiento'], id: 't9' },
-      { k: ['union europea', 'ue', 'tratado', 'comision europea', 'parlamento'], id: 't11' },
-      { k: ['igualdad', 'genero', 'violencia', 'politicas publicas'], id: 't18' },
-      { k: ['procedimiento', 'lpac', 'ley 39', 'acto administrativo', 'nulidad'], id: 't28' },
-      { k: ['silencio', 'plazos', 'computo'], id: 't30' },
-      { k: ['recurso', 'alzada', 'reposicion', 'extraordinario'], id: 't31' },
-      { k: ['contrato', 'lcsp', 'ley 9/2017', 'menores', 'licitacion'], id: 't34' },
-      { k: ['trebep', 'empleado publico', 'funcionario', 'personal'], id: 't41' },
-      { k: ['presupuesto', 'gasto', 'deuda', 'lgp', 'ley 47/2003', 'hacienda'], id: 't51' }
-    ];
-
-    for (const item of kwMap) {
-      if (item.k.some(w => normName.includes(w))) {
-        const found = o.topics.find(t => t.id === item.id);
-        if (found) return found;
+    // 3. Keyword / Concept matching with highest overlap against topic titles
+    let bestTopic = null;
+    let bestScore = 0;
+    for (const t of o.topics) {
+      const tNorm = norm(t.title);
+      const words = tNorm.split(/[\s,.:;()\/]+/).filter(w => w.length > 3 && !['para','como','este','esta','sobre','entre','del','las','los'].includes(w));
+      let score = 0;
+      for (const w of words) {
+        if (normName.includes(w)) score += w.length;
       }
+      if (score > bestScore) {
+        bestScore = score;
+        bestTopic = t;
+      }
+    }
+    if (bestTopic && bestScore >= 4) return bestTopic;
+
+    // 4. Fallback based on block mentions (e.g. "Bloque 1", "Bloque I")
+    const mBlockOnly = normName.match(/(?:bloque|b)[\s_-]*([1-6]|i{1,3}|iv|v|vi)\b/i);
+    if (mBlockOnly) {
+      const romanMap = { i: 0, ii: 1, iii: 2, iv: 3, v: 4, vi: 5 };
+      const bRaw = mBlockOnly[1].toLowerCase();
+      const bIdx = romanMap[bRaw] !== undefined ? romanMap[bRaw] : (parseInt(bRaw, 10) - 1);
+      const blockTopics = o.topics.filter(t => t.b === bIdx);
+      if (blockTopics.length) return blockTopics[0];
     }
 
     return currentTopic() || o.topics[0];
@@ -1639,15 +1907,37 @@
       case 'topic-flash':flashTopic=currentTopic()?.id||'';flashCurrent=null;flashFlipped=false;go('flash');break;
       case 'open-flash':go('flash');break;
       case 'topic-game':gameSource=currentTopic()?.id||'';go('arcade');break;
-      case 'reset-to-c1': {
-        const fresh = makeTemplate();
-        state.opps = [fresh];
-        state.active = fresh.id;
-        state.mistakes = {};
-        state.records = {};
+      case 'switch-to-gace': {
+        let g = state.opps.find(o => o.id === 'gace-a2');
+        if (!g) {
+          g = makeTemplateGACE();
+          state.opps.unshift(g);
+        } else {
+          const fresh = makeTemplateGACE();
+          Object.assign(g, fresh);
+        }
+        state.active = 'gace-a2';
+        resetContext();
         save();
         renderRoute(false);
-        toast('¡Temario oficial restaurado! 11 temas en Bloque I (Corona en Tema 4) con 0 vueltas artificiales.');
+        toast('¡Oposición activa: Gestión Civil del Estado (GACE A2) con 58 temas oficiales!');
+        petReact(true);
+        break;
+      }
+      case 'switch-to-c1': case 'reset-to-c1': {
+        let c = state.opps.find(o => o.id === 'c1-age');
+        if (!c) {
+          c = makeTemplateC1();
+          state.opps.push(c);
+        } else {
+          const fresh = makeTemplateC1();
+          Object.assign(c, fresh);
+        }
+        state.active = 'c1-age';
+        resetContext();
+        save();
+        renderRoute(false);
+        toast('Oposición activa: Administrativo del Estado (C1 / AGE).');
         petReact(true);
         break;
       }
@@ -1733,42 +2023,67 @@
     try{
       switch(form.id){
         case 'new-opp-form':{
-          const f=fd.get('syllabusFile');if(f?.size>3*1024*1024)throw Error('La lista de temas debe ocupar menos de 3 MB.');const raw=f?.size?await f.text():String(fd.get('topics')||'');let o;
-          if(fd.get('template')==='gace'&&!raw.trim()){o=makeTemplate();o.topics.forEach(t=>t.rounds=0)}else{o={...parseSyllabus(raw),template:false,questions:[],cards:[],baseURL:'',basePdf:'',lastTopic:''}}
-          o.id=uid();o.name=String(fd.get('name')).trim();if(!o.name)throw Error('Escribe el nombre de la oposición.');o.group=String(fd.get('group'));o.short=String(fd.get('short')||'').trim()||o.group;state.opps.push(o);state.active=o.id;resetContext();save();go('home');toast('Tu nueva oposición está lista.');break
+          const f=fd.get('syllabusFile');if(f?.size>3*1024*1024)throw Error('La lista de temas debe ocupar menos de 3 MB.');const raw=f?.size?await f.text():String(fd.get('topics')||'');
+          const tmpl = fd.get('template');
+          let o;
+          if(tmpl==='gace'&&!raw.trim()){
+            o=makeTemplateGACE();
+            o.id=uid();
+          } else if(tmpl==='c1'&&!raw.trim()){
+            o=makeTemplateC1();
+            o.id=uid();
+          } else {
+            const parsed = parseSyllabus(raw);
+            o={blocks:parsed.blocks,topics:parsed.topics,template:false,questions:[],cards:[],baseURL:'',basePdf:'',lastTopic:parsed.topics[0]?.id||''};
+          }
+          o.id=o.id||uid();
+          o.name=String(fd.get('name')).trim();
+          if(!o.name)throw Error('Escribe el nombre de la oposición.');
+          o.group=String(fd.get('group'));
+          o.short=String(fd.get('short')||'').trim()||o.group;
+          state.opps.push(o);
+          state.active=o.id;
+          resetContext();
+          save();
+          closeModal();
+          go('home');
+          toast('¡Oposición «'+o.name+'» lista con '+o.topics.length+' temas!');
+          petReact(true);
+          break;
         }
         case 'topic-form':{
           const b=String(fd.get('block')).trim(),name=String(fd.get('title')).trim();if(!b||!name)throw Error('Completa el título y el bloque.');const o=opp();if(!o.blocks.includes(b))o.blocks.push(b);const t={id:uid(),title:name,b:o.blocks.indexOf(b),text:String(fd.get('text')||'').trim(),source:'',rounds:0,errors:0,assets:[],updated:Date.now()};o.topics.push(t);remember(t);go('reader',t.id);toast('Tema añadido a tu cuaderno.');break
         }
         case 'paste-syllabus-form': {
-        const text = String(fd.get('syllabusText') || '').trim();
-        const oppName = String(fd.get('name') || 'Mi Oposición').trim();
-        if (!text) throw Error('Pega el texto del temario antes de guardar.');
-        const parsed = parseSyllabus(text);
-        if (!parsed.ts.length) throw Error('No se detectaron temas en el texto. Asegúrate de incluir líneas tipo «Tema 1...».');
-        const newOppObj = {
-          id: uid(),
-          name: oppName,
-          short: oppName.slice(0, 15),
-          group: 'C1',
-          blocks: parsed.bs.length ? parsed.bs : ['Temario General'],
-          topics: parsed.ts,
-          baseURL: '',
-          basePdf: '',
-          template: false,
-          questions: [],
-          cards: [],
-          lastTopic: parsed.ts[0]?.id || ''
-        };
-        state.opps.push(newOppObj);
-        state.active = newOppObj.id;
-        save();
-        closeModal();
-        renderRoute(false);
-        toast(`¡Oposición «${oppName}» creada con ${parsed.ts.length} temas!`);
-        petReact(true);
-        break;
-      }
+          const text = String(fd.get('syllabusText') || '').trim();
+          const oppName = String(fd.get('name') || 'Mi Oposición').trim();
+          if (!text) throw Error('Pega el texto del temario antes de guardar.');
+          const parsed = parseSyllabus(text);
+          if (!parsed.topics || !parsed.topics.length) throw Error('No se detectaron temas en el texto. Asegúrate de incluir líneas tipo «Tema 1...».');
+          const newOppObj = {
+            id: uid(),
+            name: oppName,
+            short: oppName.slice(0, 15),
+            group: 'A2',
+            blocks: parsed.blocks.length ? parsed.blocks : ['Temario General'],
+            topics: parsed.topics,
+            baseURL: '',
+            basePdf: '',
+            template: false,
+            questions: [],
+            cards: [],
+            lastTopic: parsed.topics[0]?.id || ''
+          };
+          state.opps.push(newOppObj);
+          state.active = newOppObj.id;
+          resetContext();
+          save();
+          closeModal();
+          go('library');
+          toast(`¡Oposición «${oppName}» creada con ${parsed.topics.length} temas!`);
+          petReact(true);
+          break;
+        }
       case 'import-form':await doImport(form);break;
         case 'edit-topic-form':{const t=topic(form.dataset.id);if(!t)throw Error('No se encuentra el tema.');const title=String(fd.get('title')).trim();if(!title)throw Error('El título no puede estar vacío.');t.title=title;t.text=String(fd.get('text')||'').trim();t.b=Number(fd.get('block'));t.source=safeURL(fd.get('source'));t.updated=Date.now();remember(t);closeModal();renderRoute(false);toast('Cambios guardados.');break}
         case 'goal-form':state.goal=Number(fd.get('goal'));save();closeModal();renderRoute(false);toast('Objetivo actualizado: '+humanMins(state.goal*7)+' semanales.');break;
