@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#faf7f2">
   <meta name="description" content="Tu escritorio personal de oposiciones: temario, esquemas, tests, flashcards y juegos, en un solo cuaderno.">
-  <title>OpoNexus — Plataforma Integral de Estudio y OpoArcade (GACE A2)</title>
+  <title>Mi Cuaderno de Oposiciones — GACE A2 y Estado</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
     @media(max-width:1000px){.header-pin{display:none}}
     @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
   
-    /* === Enhanced OpoNexus Studio Styles === */
+    /* === Enhanced Mi Cuaderno de Oposiciones Styles === */
     .pdf-host {
       width: 100%;
       height: 75vh;
@@ -406,7 +406,7 @@
     }
 
 
-    /* === OpoNexus Enhanced 3D Flashcards === */
+    /* === Mi Cuaderno Enhanced 3D Flashcards === */
     .flashcard-stage {
       perspective: 1200px;
       max-width: 620px;
@@ -648,7 +648,7 @@
   <footer class="footer shell"><span id="footer-brand"></span><span><i class="dot green"></i> Datos en este dispositivo <span aria-hidden="true">·</span> <button data-act="settings">Preferencias</button></span></footer>
   <dialog id="modal" aria-labelledby="modal-title"><div class="modal-head"><h2 id="modal-title"></h2><button class="icon-btn" data-act="close" aria-label="Cerrar ventana" id="close-icon"></button></div><div class="modal-content" id="modal-body"></div></dialog>
   <div id="announcer" aria-live="polite" role="status"></div>
-  <noscript>Activa JavaScript para abrir tu escritorio de OpoNexus Studio.</noscript>
+  <noscript>Activa JavaScript para abrir tu escritorio de Mi Cuaderno de Oposiciones.</noscript>
   <script>
   'use strict';
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
@@ -997,7 +997,7 @@
   $('#modal').addEventListener('click',e=>{if(e.target===$('#modal')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeModal()}});
   function modalError(msg){let e=$('#modal-error');if(!e){e=document.createElement('p');e.id='modal-error';e.className='modal-error';$('#modal-body').append(e)}e.textContent=msg}
   function download(blob,name){const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),30000)}
-  async function database(){return new Promise((resolve,reject)=>{const r=indexedDB.open('OpoNexusFiles',1);r.onupgradeneeded=()=>r.result.createObjectStore('files');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
+  async function database(){return new Promise((resolve,reject)=>{const r=indexedDB.open('Mi CuadernoFiles',1);r.onupgradeneeded=()=>r.result.createObjectStore('files');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
   async function fileStore(mode,key,value){const db=await database();return new Promise((res,rej)=>{const tx=db.transaction('files',mode==='get'?'readonly':'readwrite'),s=tx.objectStore('files'),r=mode==='get'?s.get(key):mode==='remove'?s.delete(key):s.put(value,key);tx.oncomplete=()=>{res(r.result);db.close()};tx.onerror=()=>{rej(tx.error);db.close()};tx.onabort=()=>{rej(tx.error||new Error('No se ha guardado el archivo.'));db.close()}})}
   function topicState(t){return t.errors>1?['bad','Crítico']:t.rounds>2?['good','Dominado']:t.rounds>0?['','En repaso']:['new','Sin empezar']}
   function stateLabel(t){const [c,l]=topicState(t);return `<span class="state-label ${c}"><i></i>${l}</span>`}
@@ -1011,9 +1011,9 @@
     const practicing=['tests','cases','flash','quiz'].includes(currentPage);
     const o = opp();
     $('#header').innerHTML=`<div class="nav-shell">
-      <button class="brand" data-go="home" aria-label="OpoNexus Studio, mi escritorio">
+      <button class="brand" data-go="home" aria-label="Mi Cuaderno de Oposiciones, mi escritorio">
         ${logo}
-        <span class="brand-name" style="font-weight:700;letter-spacing:-0.5px">OpoNexus</span><span class="studio-label" style="background:#553396;color:#fff;border-radius:6px;padding:1px 6px">PRO</span>
+        <span class="brand-name" style="font-weight:700;letter-spacing:-0.5px">Mi Cuaderno</span><span class="studio-label" style="background:#553396;color:#fff;border-radius:6px;padding:1px 6px">OPOSICIONES</span>
       </button>
       <button class="pill active-opp-header" data-act="switch-opp" title="Cambiar de oposición activa" style="display:inline-flex;align-items:center;gap:6px;background:#f8f6f0;border:1.5px solid #d9d1f0;border-radius:20px;padding:3px 11px;font-size:12px;font-weight:600;color:#553396;cursor:pointer">
         <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#38a169"></span>
@@ -1062,7 +1062,12 @@
   function daysOfWeek(){const dif=(new Date().getDay()+6)%7;return Array.from({length:7},(_,i)=>relDay(i-dif))}
   function petImage(){return state.pet.image?`<img class="pet-photo" src="${esc(state.pet.image)}" alt="Mi mascota de estudio">`:avatarSVG(state.pet.prompt)}
   function journal(){const secs=elapsedToday(),goal=state.goal,ds=daysOfWeek();return `<section class="journal surface"><div class="journal-head between"><h2 class="side-title">${I('clock',19)}Mi jornada</h2><button class="status-today" data-act="planner" title="Abrir el planificador">Hoy</button></div><div class="between"><span class="daily-goal">Objetivo diario</span><button data-act="planner" aria-label="Editar objetivo diario" class="icon-btn" style="width:21px;height:20px">${I('settings',13)}</button></div><div class="daily-total" id="daily-total">${humanMins(secs/60)} <small>/ ${humanMins(goal)}</small></div><div class="progress-track daily-track"><i id="daily-progress" style="width:${Math.min(100,secs/(goal*60)*100)}%"></i></div><div class="week">${ds.map((d,i)=>{const k=dateKey(d),today=k===dateKey(),done=(state.days[k]||0)>=goal*60;return `<button class="week-day ${today?'today':''} ${done?'done':''}" data-act="planner" title="${esc(d.toLocaleDateString('es-ES',{weekday:'long'}))}: ${humanMins((state.days[k]||0)/60)}"><span>${'LMXJVSD'[i]}</span><span class="day-circle">${done?I('check',13):today?'<span style="width:7px;height:7px;background:#a08ab2;border-radius:50%"></span>':'<span style="width:3px;height:3px;background:#c4bdc4;border-radius:50%"></span>'}</span></button>`}).join('')}</div><button class="btn session-btn ${state.session?'running':''}" data-act="session">${I(state.session?'pause':'play',11)}${state.session?'Pausar sesión':'Iniciar sesión de estudio'}${state.session?'<span class="timer-readout" id="live-timer"></span>':''}</button></section>`}
-  function home(){const o=opp(),studied=o.topics.filter(t=>t.rounds>0).length,pct=o.topics.length?Math.round(100*studied/o.topics.length):0,recent=state.recent.filter(r=>r.opp===o.id&&topic(r.topic)).slice(0,2);const day=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});return `<div class="page"><section class="page-intro home-head"><div><div class="eyebrow intro-kicker">Tu espacio de estudio</div><h1>Mi escritorio${titleDoodle}</h1><p>Un tema, un repaso y un paso más hacia tu plaza.</p></div><div class="intro-actions"><span class="today-label">${I('calendar',14)}${esc(day.charAt(0).toUpperCase()+day.slice(1))}</span><button class="btn" data-act="new-opp" aria-label="Nueva oposición">${I('plus',15)}Nueva oposición</button></div></section><div class="desk-grid"><div class="desk-main"><section class="opposition-panel"><div><button class="active-opp" data-act="switch-opp"><i class="dot"></i> OPOSICIÓN ACTIVA ${I('down',11)}</button><h2 class="opp-name">${esc(o.name)}</h2><div class="opp-meta"><span>${I('folder',13)}${esc(o.short||'Grupo '+o.group)}</span><span>${I('layers',13)}${o.blocks.length} bloques</span><span>${I('file',13)}${o.topics.length} temas oficiales</span></div><div class="opp-actions"><button class="btn primary" data-act="continue">Continuar estudio ${I('arrow',14)}</button><button class="text-btn" data-act="open-bases">Bases oficiales ${I('external',12)}</button><button class="btn sm" data-act="${o.id==='gace-a2'?'switch-to-c1':'switch-to-gace'}" style="margin-left:8px;background:#f0eef9;color:#6e48aa;border:1px solid #d9d1f0">${o.id==='gace-a2'?'🏢 Ver Admin C1':'🎯 Activar GACE A2 (58 temas)'}</button></div></div>${notebookArt()}<div class="hero-progress"><div class="progress-info"><span>Progreso del temario</span><span><b>${pct}%</b> <span style="opacity:.65">·</span> ${studied} de ${o.topics.length} temas</span></div><div class="progress-track"><i style="width:${pct}%"></i></div></div></section><section><div class="section-heading"><h2>Herramientas de estudio</h2><span class="section-note">Tu mesa de trabajo</span></div><div class="tool-grid">${tools.map(([k,l,d,c])=>`<button class="tool-tile ${c}" data-go="${k}"><span class="tile-arrow">${I('upRight',15)}</span>${toolArt(artKey(k))}<h3>${l}</h3><p>${d}</p></button>`).join('')}</div></section><section><div class="section-heading"><h2>Últimos apuntes</h2><button class="text-btn" data-go="library">Ver temario ${I('arrow',13)}</button></div><div class="recent-list surface">${recent.length?recent.map(r=>{const t=topic(r.topic);return `<button class="recent-row" data-act="read" data-id="${esc(t.id)}"><span class="file-icon">${I('file',19)}</span><span class="spacer"><span class="recent-title">${esc(t.title)}</span><span class="recent-meta" style="display:block">Bloque ${t.b+1} · ${esc(o.blocks[t.b])}</span></span>${stateLabel(t)}${I('right',14)}</button>`}).join(''):`<button class="recent-row" data-act="import"><span class="file-icon">${I('upload')}</span>Importa tus primeros apuntes ${I('arrow',14)}</button>`}</div></section></div><aside class="desk-side">${journal()}<section class="pet-panel surface"><div class="pet-header"><div><div class="eyebrow">Tu compañero de estudio</div><h2>${esc(state.pet.name)}</h2></div><button class="icon-btn" data-act="pet-settings" aria-label="Personalizar OpoPet">${I('settings',17)}</button></div>${petImage()}<p class="pet-quote">“${esc(petLine('tip'))}”</p><button class="btn" data-act="quick">${I('sparkle',15)}Pregunta rápida</button></section><button class="surface notice-link" data-go="boe"><span class="notice-art">${I('news',20)}</span><span class="spacer"><h3>Convocatorias</h3><p>BOE y boletines autonómicos</p></span>${I('right',14)}</button></aside></div></div>`}
+  function home(){const o=opp(),studied=o.topics.filter(t=>t.rounds>0).length,pct=o.topics.length?Math.round(100*studied/o.topics.length):0,recent=state.recent.filter(r=>r.opp===o.id&&topic(r.topic)).slice(0,2);const day=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});return `<div class="page"><section class="page-intro home-head"><div><div class="eyebrow intro-kicker">Tu espacio de estudio</div><h1>Mi escritorio${titleDoodle}</h1><p>Un tema, un repaso y un paso más hacia tu plaza.</p></div><div class="intro-actions"><span class="today-label">${I('calendar',14)}${esc(day.charAt(0).toUpperCase()+day.slice(1))}</span><button class="btn" data-act="new-opp" aria-label="Nueva oposición">${I('plus',15)}Nueva oposición</button></div></section><div class="desk-grid"><div class="desk-main"><section class="opposition-panel"><div><button class="active-opp" data-act="switch-opp"><i class="dot"></i> OPOSICIÓN ACTIVA ${I('down',11)}</button><h2 class="opp-name">${esc(o.name)}</h2><div class="opp-meta"><span>${I('folder',13)}${esc(o.short||'Grupo '+o.group)}</span><span>${I('layers',13)}${o.blocks.length} bloques</span><span>${I('file',13)}${o.topics.length} temas oficiales</span></div><div class="opp-actions"><button class="btn primary" data-act="continue">Continuar estudio ${I('arrow',14)}</button><button class="btn sm" onclick="studyAgendaModal()" style="background:#fff;border:1.5px solid #d9d1f0;color:#553396;font-weight:600">📅 Mi Agenda y Calendario</button><button class="text-btn" data-act="open-bases">Bases oficiales ${I('external',12)}</button><button class="btn sm" data-act="${o.id==='gace-a2'?'switch-to-c1':'switch-to-gace'}" style="margin-left:8px;background:#f0eef9;color:#6e48aa;border:1px solid #d9d1f0">${o.id==='gace-a2'?'🏢 Ver Admin C1':'🎯 Activar GACE A2 (58 temas)'}</button></div></div><div onclick="studyAgendaModal()" style="cursor:pointer;position:relative" title="Haz clic en la libreta para abrir tu Agenda y Calendario de Estudio" role="button">
+  ${notebookArt()}
+  <div style="position:absolute;bottom:10px;right:14px;background:#553396;color:#fff;border-radius:18px;padding:3px 10px;font-size:11px;font-weight:600;box-shadow:0 3px 8px rgba(0,0,0,0.15)">
+    📅 Ver Agenda
+  </div>
+</div><div class="hero-progress"><div class="progress-info"><span>Progreso del temario</span><span><b>${pct}%</b> <span style="opacity:.65">·</span> ${studied} de ${o.topics.length} temas</span></div><div class="progress-track"><i style="width:${pct}%"></i></div></div></section><section><div class="section-heading"><h2>Herramientas de estudio</h2><span class="section-note">Tu mesa de trabajo</span></div><div class="tool-grid">${tools.map(([k,l,d,c])=>`<button class="tool-tile ${c}" data-go="${k}"><span class="tile-arrow">${I('upRight',15)}</span>${toolArt(artKey(k))}<h3>${l}</h3><p>${d}</p></button>`).join('')}</div></section><section><div class="section-heading"><h2>Últimos apuntes</h2><button class="text-btn" data-go="library">Ver temario ${I('arrow',13)}</button></div><div class="recent-list surface">${recent.length?recent.map(r=>{const t=topic(r.topic);return `<button class="recent-row" data-act="read" data-id="${esc(t.id)}"><span class="file-icon">${I('file',19)}</span><span class="spacer"><span class="recent-title">${esc(t.title)}</span><span class="recent-meta" style="display:block">Bloque ${t.b+1} · ${esc(o.blocks[t.b])}</span></span>${stateLabel(t)}${I('right',14)}</button>`}).join(''):`<button class="recent-row" data-act="import"><span class="file-icon">${I('upload')}</span>Importa tus primeros apuntes ${I('arrow',14)}</button>`}</div></section></div><aside class="desk-side">${journal()}<section class="pet-panel surface"><div class="pet-header"><div><div class="eyebrow">Tu compañero de estudio</div><h2>${esc(state.pet.name)}</h2></div><button class="icon-btn" data-act="pet-settings" aria-label="Personalizar OpoPet">${I('settings',17)}</button></div>${petImage()}<p class="pet-quote">“${esc(petLine('tip'))}”</p><button class="btn" data-act="quick">${I('sparkle',15)}Pregunta rápida</button></section><button class="surface notice-link" data-go="boe"><span class="notice-art">${I('news',20)}</span><span class="spacer"><h3>Convocatorias</h3><p>BOE y boletines autonómicos</p></span>${I('right',14)}</button></aside></div></div>`}
   function petLine(type){const dict={Motivadora:{tip:'Poquito a poco, cada repaso te acerca a tu plaza.',good:'¡Bien hecho! Ese concepto ya es un poco más tuyo.',bad:'Un fallo también enseña. Repasa la explicación y vuelve a intentarlo.'},Estricta:{tip:'Primero comprende el artículo. Después, memoriza el plazo.',good:'Respuesta correcta. Mantén el ritmo.',bad:'Revisa el artículo y distingue el plazo de su cómputo.'},'Sarcástica con los plazos':{tip:'Los plazos no se estudian solos. Ya se lo he preguntado.',good:'¡Exacto! Hoy el calendario está de tu parte.',bad:'El BOE no acepta un «casi». Vamos a repasar esa regla.'}};return (dict[state.pet.personality]||dict.Motivadora)[type]}
   function petReact(ok){clearTimeout(petTimer);$('.pet-bubble')?.remove();const n=document.createElement('div');n.className='pet-bubble '+(ok?'celebrate':'missed');n.setAttribute('role','status');n.innerHTML=petImage()+`<div><b>${esc(state.pet.name)}</b><p>${esc(petLine(ok?'good':'bad'))}</p></div>`;($('#modal').open?$('#modal'):document.body).append(n);n.onclick=()=>n.remove();petTimer=setTimeout(()=>n.remove(),4400)}
   function heading(title,sub,actions='',kicker='Mi espacio de estudio'){return `<div class="page-intro module-head"><div><div class="eyebrow intro-kicker">${esc(kicker)}</div><h1>${esc(title)}</h1><p>${esc(sub)}</p></div>${actions?`<div class="intro-actions">${actions}</div>`:''}</div>`}
@@ -1072,7 +1077,7 @@
   function parseSyllabus(text){const bs=[],ts=[];let b='Temario general';function add(title,block,content=''){if(typeof title!=='string'||!title.trim())return;const bn=String(block||b).trim();if(!bs.includes(bn))bs.push(bn);ts.push({id:uid(),title:title.trim().slice(0,200),b:bs.indexOf(bn),text:String(content||'').slice(0,200000),rounds:0,errors:0,source:'',assets:[],updated:0})}if(text.trim().startsWith('[')||text.trim().startsWith('{')){let js;try{js=JSON.parse(text)}catch{throw Error('El JSON no es válido. Comprueba las comillas y las comas.')}const arr=Array.isArray(js)?js:js.temas||js.topics;if(!Array.isArray(arr))throw Error('El JSON debe contener una lista de temas.');arr.slice(0,500).forEach(t=>typeof t==='string'?add(t,b):add(t?.titulo||t?.title,t?.bloque||t?.block,t?.texto||t?.text))}else{for(const line of text.split('\n').slice(0,600)){if(line.trim().startsWith('#'))b=line.replace(/^\s*#+\s*/,'').trim()||b;else add(line.replace(/^\s*[-*]\s*/,''),b)}}return {blocks:bs.length?bs:['Temario general'],topics:ts}}
   function planModal(){const ds=daysOfWeek(),sum=ds.reduce((v,d)=>v+(dateKey(d)===dateKey()?elapsedToday():state.days[dateKey(d)]||0),0);modal('Mi planificador',`<p>Un objetivo sostenible para los siete días de la semana.</p><div class="between"><b>Esta semana</b><span class="tag">${humanMins(sum/60)} de ${humanMins(state.goal*7)}</span></div><div class="stack" style="gap:0;margin:10px 0 19px">${ds.map(d=>{const s=dateKey(d)===dateKey()?elapsedToday():(state.days[dateKey(d)]||0);return `<div class="history-row"><span>${esc(d.toLocaleDateString('es-ES',{weekday:'long',day:'numeric'}))}</span><span>${humanMins(s/60)} / ${humanMins(state.goal)}</span></div>`}).join('')}</div><form id="goal-form" class="stack"><label class="field"><span>Objetivo diario en minutos</span><input required name="goal" type="number" min="5" max="720" value="${state.goal}"></label><button class="btn primary">Guardar planificación</button></form>`)}
   function toggleSession(){if(state.session){let start=state.session;const now=Date.now();while(start<now){const end=new Date(start);end.setHours(24,0,0,0);const until=Math.min(now,+end),k=dateKey(new Date(start));state.days[k]=(state.days[k]||0)+Math.floor((until-start)/1000);start=until}state.session=0;toast('Sesión guardada en tu jornada.')}else{state.session=Date.now();toast('Sesión iniciada. Puedes seguir usando tu escritorio.')}save();renderRoute(false)}
-  function settings(){modal('Mi espacio personal',`<p>OpoNexus Studio · Ultimate Edition</p><form id="settings-form" class="stack"><label class="field"><span>Nombre de tu perfil</span><input name="name" required maxlength="35" value="${esc(state.name)}"></label><label class="field"><span>Objetivo diario (minutos)</span><input name="goal" type="number" min="5" max="720" required value="${state.goal}"></label><button class="btn primary">Guardar preferencias</button></form><div class="divider"></div><div class="stack">${btn('Gestionar oposiciones','switch-opp','layers')}${btn('Configurar inteligencia artificial','ai-settings','sparkle')}${btn('Descargar copia de mis datos','backup','download')}${btn('Restaurar una copia','restore','upload')}</div><div class="notice" style="margin-top:16px">${state.demo?'El cuaderno de muestra incluye progreso y apuntes de ejemplo. ':''}Tus datos se guardan en este navegador. Una copia incluye los documentos y el progreso, nunca la clave de IA.</div>${state.demo?`<div class="modal-actions">${btn('Empezar con el progreso a cero','clear-demo','refresh','sm')}</div>`:''}`)}
+  function settings(){modal('Mi espacio personal',`<p>Mi Cuaderno de Oposiciones · Ultimate Edition</p><form id="settings-form" class="stack"><label class="field"><span>Nombre de tu perfil</span><input name="name" required maxlength="35" value="${esc(state.name)}"></label><label class="field"><span>Objetivo diario (minutos)</span><input name="goal" type="number" min="5" max="720" required value="${state.goal}"></label><button class="btn primary">Guardar preferencias</button></form><div class="divider"></div><div class="stack">${btn('Gestionar oposiciones','switch-opp','layers')}${btn('Configurar inteligencia artificial','ai-settings','sparkle')}${btn('Descargar copia de mis datos','backup','download')}${btn('Restaurar una copia','restore','upload')}</div><div class="notice" style="margin-top:16px">${state.demo?'El cuaderno de muestra incluye progreso y apuntes de ejemplo. ':''}Tus datos se guardan en este navegador. Una copia incluye los documentos y el progreso, nunca la clave de IA.</div>${state.demo?`<div class="modal-actions">${btn('Empezar con el progreso a cero','clear-demo','refresh','sm')}</div>`:''}`)}
   
   function setLibraryLawFilter(lawQuery) {
     libraryQuery = lawQuery;
@@ -1604,7 +1609,7 @@
   </style>
       </head>
       <body>
-        <h1>${title} - OpoNexus Studio</h1>
+        <h1>${title} - Mi Cuaderno de Oposiciones</h1>
         <p><em>${opp().short || 'GACE A2'} · ${tab === 'table' ? 'Cuadro Sinóptico y Tablas' : tab === 'summary' ? 'Resumen Anti-Paja' : 'Esquema de Llaves'}</em></p>
         <hr>
         ${content}
@@ -1612,7 +1617,7 @@
       </html>
     `;
     const blob = new Blob([html], { type: 'application/msword;charset=utf-8' });
-    download(blob, `OpoNexus-${title.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '_')}.doc`);
+    download(blob, `Mi Cuaderno-${title.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '_')}.doc`);
     toast('Documento Word descargado.');
   }
 
@@ -1782,7 +1787,7 @@
                 <button class="btn sm soft" data-act="pdf1" title="Descargar PDF 1 columna con fondo de libreta">${I('download', 12)} PDF · 1 columna</button>
                 <button class="btn sm soft" data-act="pdf2" title="Descargar PDF 2 columnas / doble página">${I('download', 12)} PDF · 2 columnas</button>
                 <button class="btn sm soft" onclick="downloadWordDoc(currentTopic(), readerTab)" title="Descargar en formato Word .doc">${I('file', 12)} Descargar Word .doc</button>
-                <button class="btn sm" onclick="window.print()" title="Imprimir">${I('printer', 12) || '🖨️'} Imprimir</button>
+                <button class="btn sm" onclick="download(pdfBlob(currentTopic(), 2, readerTab), 'Esquema-DoblePagina-' + esc(currentTopic().title.slice(0,30).replace(/[^a-zA-Z0-9]/g,'_')) + '.pdf');toast('Descargando PDF a doble página...');" title="Descargar PDF a doble página">${I('download', 12)} PDF Doble Página</button>
               </div>
             ` : ''}
           </section>
@@ -1883,7 +1888,7 @@
     }
   }
   // PDF objects and the OOXML package are built locally, without an export service.
-  function pdfBlob(t,cols=1,tab=readerTab){const W=595,H=842,M=35,gap=21,cw=(W-2*M-(cols-1)*gap)/cols,pages=[];let pg='',y=0,col=0,top=0;const ctx=document.createElement('canvas').getContext('2d');const hex=s=>Array.from(String(s).replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,'-').replace(/…/g,'...')).map(c=>(c.charCodeAt(0)<256?c.charCodeAt(0):c==='€'?128:63).toString(16).padStart(2,'0')).join('');const txt=(x,yy,s,size=10,b=false,color='.18 .21 .26')=>{pg+=`${color} rg BT /F${b?2:1} ${size} Tf 1 0 0 1 ${x.toFixed(2)} ${(H-yy).toFixed(2)} Tm <${hex(s)}> Tj ET\n`};const rect=(x,yy,w,h,color)=>{pg+=`${color} rg ${x.toFixed(2)} ${(H-yy-h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re f\n`};function wrapText(s,width,size,b=false){ctx.font=(b?'bold ':'')+size+'px Arial';const out=[];let line='';for(const word of words(s)){if(ctx.measureText(line+(line?' ':'')+word).width>width&&line){out.push(line);line=''}if(ctx.measureText(word).width>width){for(const char of word){if(ctx.measureText(line+char).width>width&&line){out.push(line);line=''}line+=char}}else line+=(line?' ':'')+word}if(line)out.push(line);return out}function newPage(){if(pg)pages.push(pg);pg='';rect(0,0,W,H,'.980 .969 .949');rect(0,0,W,42,'.867 .839 .969');txt(M,26,'OpoNexus Studio / Cuaderno Oficial',11,true);const titleLines=wrapText(t.title,W-M*2,18,true);y=69;for(const l of titleLines){txt(M,y,l,18,true);y+=22}txt(M,y+5,opp().short+'  |  '+(tab==='table'?'Tabla comparativa':'Esquema esencial')+'  |  '+cols+(cols===1?' columna':' columnas'),9);top=y+25;y=top;col=0;txt(M,H-22,'OpoNexus Studio  -  '+new Date().toLocaleDateString('es-ES'),8);txt(W-M-17,H-22,String(pages.length+1),8)}function nextCol(){if(col+1<cols){col++;y=top}else newPage()}newPage();if(tab==='table'){const rows=compareRows(t),widths=[.25,.24,.22,.29].map(r=>cw*r),font=cols===2?7.1:9.3;function row(cells,head=false){const wrap=cells.map((c,i)=>wrapText(c,widths[i]-8,font,head)),height=Math.max(...wrap.map(l=>l.length))*(font+3)+10;if(y+height>H-45){nextCol();if(!head)row(tableHeads,true)}let x=M+col*(cw+gap);wrap.forEach((lines,i)=>{rect(x,y,widths[i]-.7,height-.7,head?'.867 .839 .969':i%2?'.952 .964 .930':'.988 .983 .967');lines.forEach((l,j)=>txt(x+4,y+font+4+j*(font+3),l,font,head));x+=widths[i]});y+=height}row(tableHeads,true);rows.forEach((r,i)=>{if(cols===2&&i===Math.ceil(rows.length/2)&&col===0){nextCol();row(tableHeads,true)}row(r)})}else{const groups=Object.entries(outlineGroups(summarize(t.text))),units=[];for(const [group,ls] of groups){units.push({s:group,head:true});for(const l of ls)units.push({s:l,head:false})}const mid=Math.ceil(units.length/2);units.forEach((u,idx)=>{if(cols===2&&idx===mid&&col===0)nextCol();const size=u.head?11:10,ls=wrapText(u.s,cw-(u.head?12:15),size,u.head),height=ls.length*14+11;if(y+height>H-43)nextCol();const x=M+col*(cw+gap);if(u.head){rect(x,y,cw,height-3,'.733 .941 .816');ls.forEach((l,j)=>txt(x+6,y+14+j*14,l,size,true))}else{rect(x+2,y+6,3,3,'.55 .43 .63');ls.forEach((l,j)=>txt(x+12,y+11+j*14,l,size))}y+=height})}if(t.source){if(y+47>H-40)nextCol();y+=16;txt(M+col*(cw+gap),y,'Fuente de los apuntes:',8,true);for(const l of wrapText(t.source,cw,7)){y+=10;if(y>H-40)nextCol();txt(M+col*(cw+gap),y,l,7)}}pages.push(pg);const objects=['<< /Type /Catalog /Pages 2 0 R >>',`<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_,i)=>(5+2*i)+' 0 R').join(' ')}] >>`,'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>','<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'];pages.forEach((p,i)=>{objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${6+2*i} 0 R >>`);objects.push('<< /Length '+p.length+' >>\nstream\n'+p+'endstream')});let doc='%PDF-1.4\n',offsets=[0];objects.forEach((o,i)=>{offsets.push(doc.length);doc+=(i+1)+' 0 obj\n'+o+'\nendobj\n'});const pos=doc.length;doc+='xref\n0 '+offsets.length+'\n0000000000 65535 f \n'+offsets.slice(1).map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('')+'trailer\n<< /Size '+offsets.length+' /Root 1 0 R >>\nstartxref\n'+pos+'\n%%EOF';return new Blob([doc],{type:'application/pdf'})}
+  function pdfBlob(t,cols=1,tab=readerTab){const W=595,H=842,M=35,gap=21,cw=(W-2*M-(cols-1)*gap)/cols,pages=[];let pg='',y=0,col=0,top=0;const ctx=document.createElement('canvas').getContext('2d');const hex=s=>Array.from(String(s).replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,'-').replace(/…/g,'...')).map(c=>(c.charCodeAt(0)<256?c.charCodeAt(0):c==='€'?128:63).toString(16).padStart(2,'0')).join('');const txt=(x,yy,s,size=10,b=false,color='.18 .21 .26')=>{pg+=`${color} rg BT /F${b?2:1} ${size} Tf 1 0 0 1 ${x.toFixed(2)} ${(H-yy).toFixed(2)} Tm <${hex(s)}> Tj ET\n`};const rect=(x,yy,w,h,color)=>{pg+=`${color} rg ${x.toFixed(2)} ${(H-yy-h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re f\n`};function wrapText(s,width,size,b=false){ctx.font=(b?'bold ':'')+size+'px Arial';const out=[];let line='';for(const word of words(s)){if(ctx.measureText(line+(line?' ':'')+word).width>width&&line){out.push(line);line=''}if(ctx.measureText(word).width>width){for(const char of word){if(ctx.measureText(line+char).width>width&&line){out.push(line);line=''}line+=char}}else line+=(line?' ':'')+word}if(line)out.push(line);return out}function newPage(){if(pg)pages.push(pg);pg='';rect(0,0,W,H,'.980 .969 .949');rect(0,0,W,42,'.867 .839 .969');txt(M,26,'Mi Cuaderno de Oposiciones / Cuaderno Oficial',11,true);const titleLines=wrapText(t.title,W-M*2,18,true);y=69;for(const l of titleLines){txt(M,y,l,18,true);y+=22}txt(M,y+5,opp().short+'  |  '+(tab==='table'?'Tabla comparativa':'Esquema esencial')+'  |  '+cols+(cols===1?' columna':' columnas'),9);top=y+25;y=top;col=0;txt(M,H-22,'Mi Cuaderno de Oposiciones  -  '+new Date().toLocaleDateString('es-ES'),8);txt(W-M-17,H-22,String(pages.length+1),8)}function nextCol(){if(col+1<cols){col++;y=top}else newPage()}newPage();if(tab==='table'){const rows=compareRows(t),widths=[.25,.24,.22,.29].map(r=>cw*r),font=cols===2?7.1:9.3;function row(cells,head=false){const wrap=cells.map((c,i)=>wrapText(c,widths[i]-8,font,head)),height=Math.max(...wrap.map(l=>l.length))*(font+3)+10;if(y+height>H-45){nextCol();if(!head)row(tableHeads,true)}let x=M+col*(cw+gap);wrap.forEach((lines,i)=>{rect(x,y,widths[i]-.7,height-.7,head?'.867 .839 .969':i%2?'.952 .964 .930':'.988 .983 .967');lines.forEach((l,j)=>txt(x+4,y+font+4+j*(font+3),l,font,head));x+=widths[i]});y+=height}row(tableHeads,true);rows.forEach((r,i)=>{if(cols===2&&i===Math.ceil(rows.length/2)&&col===0){nextCol();row(tableHeads,true)}row(r)})}else{const groups=Object.entries(outlineGroups(summarize(t.text))),units=[];for(const [group,ls] of groups){units.push({s:group,head:true});for(const l of ls)units.push({s:l,head:false})}const mid=Math.ceil(units.length/2);units.forEach((u,idx)=>{if(cols===2&&idx===mid&&col===0)nextCol();const size=u.head?11:10,ls=wrapText(u.s,cw-(u.head?12:15),size,u.head),height=ls.length*14+11;if(y+height>H-43)nextCol();const x=M+col*(cw+gap);if(u.head){rect(x,y,cw,height-3,'.733 .941 .816');ls.forEach((l,j)=>txt(x+6,y+14+j*14,l,size,true))}else{rect(x+2,y+6,3,3,'.55 .43 .63');ls.forEach((l,j)=>txt(x+12,y+11+j*14,l,size))}y+=height})}if(t.source){if(y+47>H-40)nextCol();y+=16;txt(M+col*(cw+gap),y,'Fuente de los apuntes:',8,true);for(const l of wrapText(t.source,cw,7)){y+=10;if(y>H-40)nextCol();txt(M+col*(cw+gap),y,l,7)}}pages.push(pg);const objects=['<< /Type /Catalog /Pages 2 0 R >>',`<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_,i)=>(5+2*i)+' 0 R').join(' ')}] >>`,'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>','<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'];pages.forEach((p,i)=>{objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${6+2*i} 0 R >>`);objects.push('<< /Length '+p.length+' >>\nstream\n'+p+'endstream')});let doc='%PDF-1.4\n',offsets=[0];objects.forEach((o,i)=>{offsets.push(doc.length);doc+=(i+1)+' 0 obj\n'+o+'\nendobj\n'});const pos=doc.length;doc+='xref\n0 '+offsets.length+'\n0000000000 65535 f \n'+offsets.slice(1).map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('')+'trailer\n<< /Size '+offsets.length+' /Root 1 0 R >>\nstartxref\n'+pos+'\n%%EOF';return new Blob([doc],{type:'application/pdf'})}
   function zipStored(files){const enc=new TextEncoder(),parts=[],central=[];let offset=0,cdSize=0;const crcTable=Array.from({length:256},(_,i)=>{let v=i;for(let j=0;j<8;j++)v=(v&1)?0xedb88320^(v>>>1):v>>>1;return v>>>0});const le=(n,size)=>Array.from({length:size},(_,i)=>(n>>>(8*i))&255);for(const [filename,content] of Object.entries(files)){const name=enc.encode(filename),data=enc.encode(content);let crc=0xffffffff;for(const byte of data)crc=crcTable[(crc^byte)&255]^(crc>>>8);crc=(crc^0xffffffff)>>>0;const common=[...le(20,2),...le(2048,2),0,0,0,0,33,0,...le(crc,4),...le(data.length,4),...le(data.length,4),...le(name.length,2),0,0];const local=Uint8Array.from([80,75,3,4,...common,...name]);parts.push(local,data);const cent=Uint8Array.from([80,75,1,2,20,0,...common,0,0,0,0,0,0,0,0,0,0,...le(offset,4),...name]);central.push(cent);cdSize+=cent.length;offset+=local.length+data.length}const n=central.length;return [...parts,...central,Uint8Array.from([80,75,5,6,0,0,0,0,...le(n,2),...le(n,2),...le(cdSize,4),...le(offset,4),0,0])]}
   function docxBlob(t,tab=readerTab){const ns='http://schemas.openxmlformats.org/wordprocessingml/2006/main',pre='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',p=(s,size=22,b=false,bg='')=>`<w:p><w:pPr>${bg?`<w:shd w:fill="${bg}"/>`:''}<w:spacing w:after="120"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>${b?'<w:b/>':''}<w:color w:val="2D3748"/><w:sz w:val="${size}"/></w:rPr><w:t xml:space="preserve">${esc(s)}</w:t></w:r></w:p>`;let body=p('OPOSAPIENS STUDIO',20,true,'DDD6FE')+p(t.title,36,true)+p(opp().short+' / '+(tab==='table'?'Tabla comparativa':'Esquema de repaso'),20);if(tab==='table'){const rows=[tableHeads,...compareRows(t)];body+='<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(x=>`<w:${x} w:val="single" w:sz="4" w:color="DDD6DE"/>`).join('')+'</w:tblBorders></w:tblPr><w:tblGrid>'+Array(4).fill('<w:gridCol w:w="2240"/>').join('')+'</w:tblGrid>'+rows.map((r,i)=>'<w:tr>'+r.map(c=>`<w:tc><w:tcPr><w:tcW w:w="2240" w:type="dxa"/><w:shd w:fill="${i===0?'DDD6FE':i%2?'FAF7F2':'E8F1E6'}"/></w:tcPr>${p(c,19,i===0)}</w:tc>`).join('')+'</w:tr>').join('')+'</w:tbl>'}else{for(const [g,ls] of Object.entries(outlineGroups(summarize(t.text)))){body+=p(g,25,true,'BBF7D0');ls.forEach(l=>body+=p('• '+l))}}if(t.source)body+=p('Fuente: '+t.source,18);const types='http://schemas.openxmlformats.org/package/2006/content-types',rels='http://schemas.openxmlformats.org/package/2006/relationships';const files={'[Content_Types].xml':pre+`<Types xmlns="${types}"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`,'_rels/.rels':pre+`<Relationships xmlns="${rels}"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`,'word/document.xml':pre+`<w:document xmlns:w="${ns}"><w:background w:color="FAF7F2"/><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1100" w:bottom="1100" w:left="1250" w:right="1250"/></w:sectPr></w:body></w:document>`};return new Blob(zipStored(files),{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})}
   function exportNotes(type){const t=currentTopic();if(!t?.text)return toast('Añade apuntes al tema antes de exportar.');const name=t.title.replace(/[^\p{L}\p{N} -]/gu,'').slice(0,80),isWord=type==='docx';download(isWord?docxBlob(t):pdfBlob(t,type==='pdf2'?2:1),name+' - '+(readerTab==='table'?'tabla':'esquema')+(isWord?'.docx':' - '+(type==='pdf2'?'2 columnas':'1 columna')+'.pdf'));toast('Documento preparado para descargar.')}
@@ -2188,19 +2193,69 @@
       const list = JSON.parse(localStorage.getItem(PROFILES_KEY));
       if (Array.isArray(list) && list.length) return list;
     } catch(e) {}
-    return ['Mi Perfil'];
+    return [{ name: 'Mi Perfil', pin: '' }];
   }
 
   function currentUserName() {
-    return localStorage.getItem(ACTIVE_USER_KEY) || getProfilesList()[0];
+    const list = getProfilesList();
+    const active = localStorage.getItem(ACTIVE_USER_KEY);
+    if (active && list.some(p => (typeof p === 'string' ? p : p.name) === active)) return active;
+    const first = typeof list[0] === 'string' ? list[0] : list[0].name;
+    return first;
   }
 
   function getUserStorageKey(name) {
-    return 'oponexus_user_' + encodeURIComponent(name);
+    return 'opocuaderno_user_' + encodeURIComponent(name);
+  }
+
+  function cleanUserState(name, pin = '', oppChoice = 'gace-a2') {
+    const s = {
+      version: 3,
+      name: name || 'Opositor',
+      pin: String(pin || '').trim(),
+      active: oppChoice,
+      opps: [makeTemplateGACE(), makeTemplateC1()],
+      goal: 120,
+      session: 0,
+      days: {},
+      pet: { name: 'OpoPet', personality: 'Motivadora', prompt: 'Un border collie con toga', image: '' },
+      savedPets: [...defaultSavedPets],
+      history: [],
+      mistakes: {},
+      srs: {},
+      records: {},
+      recent: [],
+      exam: null,
+      model: 'gpt-4o-mini',
+      demo: false
+    };
+    // Ensure all 58 topics start with exactly 0 rounds and clean notes
+    s.opps.forEach(o => {
+      o.topics.forEach(t => {
+        t.rounds = 0;
+        t.errors = 0;
+        t.text = '';
+        t.assets = [];
+      });
+    });
+    return s;
   }
 
   function switchProfile(name) {
     if (!name) return;
+    const list = getProfilesList();
+    const entry = list.find(p => (typeof p === 'string' ? p : p.name) === name);
+    const pinRequired = entry && typeof entry === 'object' && entry.pin;
+
+    if (pinRequired) {
+      const inputPin = prompt('Introduce el PIN o contraseña de acceso de «' + name + '»:');
+      if (inputPin === null) return;
+      if (String(inputPin).trim() !== String(entry.pin).trim()) {
+        toast('❌ PIN o contraseña incorrecta. Acceso denegado.');
+        return;
+      }
+    }
+
     save();
     localStorage.setItem(ACTIVE_USER_KEY, name);
     const raw = localStorage.getItem(getUserStorageKey(name));
@@ -2208,37 +2263,48 @@
       try {
         state = JSON.parse(raw);
       } catch(e) {
-        state = initialState();
+        state = cleanUserState(name);
       }
     } else {
-      state = initialState();
-      state.name = name;
+      state = cleanUserState(name, entry && typeof entry === 'object' ? entry.pin : '');
       localStorage.setItem(getUserStorageKey(name), JSON.stringify(state));
     }
     resetContext();
     save();
     renderRoute(false);
-    toast('Sesión activa: ' + name);
+    toast('Sesión iniciada con éxito: ' + name);
   }
 
-  function createNewProfile(name) {
-    const clean = String(name || '').trim();
-    if (!clean) throw Error('Introduce un nombre para el nuevo perfil.');
+  function createNewProfile(name, pin = '', oppChoice = 'gace-a2') {
+    const cleanName = String(name || '').trim();
+    if (!cleanName) throw Error('Introduce un nombre para tu perfil.');
     const list = getProfilesList();
-    if (list.includes(clean)) throw Error('Ya existe un perfil con ese nombre.');
-    list.push(clean);
+    if (list.some(p => (typeof p === 'string' ? p : p.name).toLowerCase() === cleanName.toLowerCase())) {
+      throw Error('Ya existe un perfil con ese nombre.');
+    }
+    list.push({ name: cleanName, pin: String(pin).trim() });
     localStorage.setItem(PROFILES_KEY, JSON.stringify(list));
-    switchProfile(clean);
+    
+    // Create 100% clean state for new user
+    const newState = cleanUserState(cleanName, pin, oppChoice);
+    localStorage.setItem(getUserStorageKey(cleanName), JSON.stringify(newState));
+    localStorage.setItem(ACTIVE_USER_KEY, cleanName);
+    state = newState;
+    resetContext();
+    save();
+    renderRoute(false);
+    toast('¡Perfil «' + cleanName + '» creado con éxito y 100% limpio!');
   }
 
   function deleteProfile(name) {
     const list = getProfilesList();
     if (list.length <= 1) throw Error('Debe quedar al menos un perfil activo.');
-    const filtered = list.filter(x => x !== name);
+    const filtered = list.filter(p => (typeof p === 'string' ? p : p.name) !== name);
     localStorage.setItem(PROFILES_KEY, JSON.stringify(filtered));
     localStorage.removeItem(getUserStorageKey(name));
     if (currentUserName() === name) {
-      switchProfile(filtered[0]);
+      const next = typeof filtered[0] === 'string' ? filtered[0] : filtered[0].name;
+      switchProfile(next);
     } else {
       renderRoute(false);
     }
@@ -2248,29 +2314,52 @@
   function profileManagerModal() {
     const list = getProfilesList();
     const current = currentUserName();
-    modal('Gestor de Usuarios y Perfiles', `
+    modal('Gestor de Usuarios y Cuentas', `
       <div class="stack" style="gap:14px">
-        <p class="small muted">Cada persona tiene sus propios temas, apuntes, vueltas de estudio y mascotas totalmente independientes en este navegador.</p>
+        <p class="small muted">Cada persona tiene sus propios apuntes, audios, PDFs y vueltas de estudio 100% privados protegidos en su perfil:</p>
+        
         <div class="stack" style="gap:8px">
-          ${list.map(p => `
-            <div class="surface row between" style="padding:10px 14px;border:1px solid ${p === current ? '#553396' : 'var(--line)'};border-radius:10px;background:${p === current ? '#f0eef9' : '#fff'}">
-              <div class="row">
-                <span style="font-size:18px">${p === current ? '⭐' : '👤'}</span>
-                <div>
-                  <strong style="color:${p === current ? '#553396' : 'var(--ink)'}">${esc(p)}</strong>
-                  ${p === current ? '<span class="tag" style="margin-left:6px;background:#e9d5ff;color:#553396;font-size:10px">Activo</span>' : ''}
+          ${list.map(entry => {
+            const p = typeof entry === 'string' ? entry : entry.name;
+            const hasPin = entry && typeof entry === 'object' && entry.pin;
+            const isCurrent = p === current;
+            return `
+              <div class="surface row between" style="padding:10px 14px;border:1.5px solid ${isCurrent ? '#553396' : 'var(--line)'};border-radius:10px;background:${isCurrent ? '#f0eef9' : '#fff'}">
+                <div class="row">
+                  <span style="font-size:18px">${isCurrent ? '⭐' : '👤'}</span>
+                  <div>
+                    <strong style="color:${isCurrent ? '#553396' : 'var(--ink)'}">${esc(p)}</strong>
+                    ${hasPin ? '<span class="tag" style="margin-left:5px;font-size:9px">🔒 Protegido con PIN</span>' : ''}
+                    ${isCurrent ? '<span class="tag" style="margin-left:5px;background:#e9d5ff;color:#553396;font-size:9px">Perfil Activo</span>' : ''}
+                  </div>
+                </div>
+                <div class="row" style="gap:6px">
+                  ${!isCurrent ? `<button class="btn sm primary" onclick="switchProfile('${esc(p.replace(/'/g, "\'"))}');closeModal();">Entrar</button>` : ''}
+                  ${list.length > 1 ? `<button class="icon-btn" onclick="if(confirm('¿Eliminar el perfil «${esc(p)}» y todos sus apuntes?')) { deleteProfile('${esc(p.replace(/'/g, "\'"))}'); profileManagerModal(); }" title="Eliminar perfil" style="color:#c53030">✕</button>` : ''}
                 </div>
               </div>
-              <div class="row" style="gap:6px">
-                ${p !== current ? `<button class="btn sm primary" onclick="switchProfile('${esc(p.replace(/'/g, "\'"))}');closeModal();">Activar</button>` : ''}
-                ${list.length > 1 ? `<button class="icon-btn" onclick="if(confirm('¿Eliminar el perfil «${esc(p)}»?')) { deleteProfile('${esc(p.replace(/'/g, "\'"))}'); profileManagerModal(); }" title="Eliminar perfil" style="color:#c53030">✕</button>` : ''}
-              </div>
-            </div>
-          `).join('')}
+            `;
+          }).join('')}
         </div>
-        <form id="new-profile-form" onsubmit="event.preventDefault(); try { createNewProfile(this.elements.pname.value); closeModal(); } catch(e){ modalError(e.message); }" class="row" style="gap:8px;margin-top:10px">
-          <input name="pname" required placeholder="Nombre de tu amiga (ej. Marta GACE)..." style="flex:1" maxlength="30">
-          <button class="btn primary sm">➕ Crear perfil</button>
+
+        <div class="divider"></div>
+        <h4 style="margin:0;font-size:13px;color:var(--deep)">➕ Crear nuevo perfil limpio</h4>
+        <form id="new-profile-form" onsubmit="event.preventDefault(); try { createNewProfile(this.elements.pname.value, this.elements.ppin.value, this.elements.popp.value); closeModal(); } catch(e){ modalError(e.message); }" class="stack" style="gap:10px">
+          <div class="form-grid compact">
+            <label class="field"><span>Nombre del opositor</span>
+              <input name="pname" required placeholder="Ej. Vane, Marta..." maxlength="30">
+            </label>
+            <label class="field"><span>Contraseña o PIN <small>(opcional)</small></span>
+              <input name="ppin" type="password" placeholder="Clave personal..." maxlength="20">
+            </label>
+          </div>
+          <label class="field"><span>Oposición inicial</span>
+            <select name="popp">
+              <option value="gace-a2" selected>Gestión Civil del Estado (GACE A2) · 58 temas limpios</option>
+              <option value="c1-age">Administrativo del Estado (C1) · 43 temas limpios</option>
+            </select>
+          </label>
+          <button class="btn primary sm">Crear mi perfil limpio</button>
         </form>
       </div>
     `);
@@ -2878,15 +2967,15 @@
     const ids=new Set(state.opps.flatMap(o=>[o.basePdf,...o.topics.flatMap(t=>(t.assets||[]).map(a=>a.id))]).filter(Boolean)),files=[];
     for(const id of ids){const blob=await fileStore('get',id);if(!blob)throw Error('Falta un documento referenciado. No se ha creado una copia incompleta.');files.push({id,data:await readDataURL(blob)})}
     const copy=JSON.parse(JSON.stringify(state));copy.session=0;if(state.session)copy.days[dateKey()]=elapsedToday();
-    download(new Blob([JSON.stringify({format:'oposapiens-backup/1',created:new Date().toISOString(),workspace:copy,files})],{type:'application/json'}),'OpoNexus-'+dateKey()+'.json');
+    download(new Blob([JSON.stringify({format:'oposapiens-backup/1',created:new Date().toISOString(),workspace:copy,files})],{type:'application/json'}),'Mi Cuaderno-'+dateKey()+'.json');
     toast('Copia preparada: '+state.opps.length+' oposiciones y '+files.length+' documentos.');
   }
-  function restoreModal(){modal('Restaurar mi cuaderno',`<p>Elige una copia JSON exportada por OpoNexus Studio.</p><form id="restore-form" class="stack"><label class="field"><span>Copia de seguridad</span><input type="file" name="file" accept="application/json,.json" required></label><label class="checkline"><input type="checkbox" name="confirm" required>Entiendo que la copia sustituirá los datos actuales de este navegador.</label><div id="modal-error" class="modal-error"></div><button class="btn primary">${I('upload',15)}Validar y restaurar</button></form>`)}
+  function restoreModal(){modal('Restaurar mi cuaderno',`<p>Elige una copia JSON exportada por Mi Cuaderno de Oposiciones.</p><form id="restore-form" class="stack"><label class="field"><span>Copia de seguridad</span><input type="file" name="file" accept="application/json,.json" required></label><label class="checkline"><input type="checkbox" name="confirm" required>Entiendo que la copia sustituirá los datos actuales de este navegador.</label><div id="modal-error" class="modal-error"></div><button class="btn primary">${I('upload',15)}Validar y restaurar</button></form>`)}
   async function restoreCopy(form){
     const file=new FormData(form).get('file');if(!file?.size)throw Error('Elige una copia JSON.');
     let data;try{data=JSON.parse(await file.text())}catch{throw Error('El archivo no contiene un JSON válido.')}
     const s=data.workspace,validQ=q=>q&&typeof q.q==='string'&&Array.isArray(q.a)&&q.a.length===4&&q.a.every(v=>typeof v==='string')&&Number.isInteger(q.c)&&q.c>=0&&q.c<4;
-    if(data.format!=='oposapiens-backup/1'||!s||s.version!==1||!Array.isArray(s.opps)||!s.opps.length||!Array.isArray(data.files))throw Error('Esta copia no corresponde a OpoNexus Studio.');
+    if(data.format!=='oposapiens-backup/1'||!s||s.version!==1||!Array.isArray(s.opps)||!s.opps.length||!Array.isArray(data.files))throw Error('Esta copia no corresponde a Mi Cuaderno de Oposiciones.');
     for(const o of s.opps){if(typeof o.id!=='string'||typeof o.name!=='string'||!Array.isArray(o.blocks)||!o.blocks.every(b=>typeof b==='string')||!Array.isArray(o.topics)||!o.topics.every(t=>typeof t.id==='string'&&typeof t.title==='string'&&typeof t.text==='string'&&Number.isInteger(t.b)&&t.b>=0&&t.b<o.blocks.length&&Array.isArray(t.assets)&&t.assets.every(a=>typeof a.id==='string'&&!a.id.startsWith('@')))||!(o.questions||[]).every(validQ))throw Error('El temario o las preguntas de esta copia no son válidos.');o.baseURL=safeURL(o.baseURL);o.cards=(o.cards||[]).filter(c=>typeof c.front==='string'&&typeof c.back==='string');o.cases=(o.cases||[]).filter(c=>typeof c.facts==='string'&&Array.isArray(c.questions)&&c.questions.every(validQ))}
     if(typeof s.name!=='string'||!s.pet||typeof s.pet.name!=='string'||!s.days||!Array.isArray(s.history)||!Array.isArray(s.recent))throw Error('La configuración de la copia está incompleta.');
     const assets=new Set(data.files.map(f=>f.id));for(const o of s.opps){for(const id of [o.basePdf,...o.topics.flatMap(t=>t.assets.map(a=>a.id))].filter(Boolean))if(!assets.has(id))throw Error('La copia no contiene todos los documentos referenciados.')}
@@ -3049,6 +3138,18 @@
     } catch(e) {}
   }
 
+  function resetMascotPosition() {
+    const c = document.getElementById('floating-pet-widget');
+    if (c) {
+      c.style.left = '';
+      c.style.top = '';
+      c.style.right = '24px';
+      c.style.bottom = '24px';
+      localStorage.removeItem('opocuaderno_mascot_coords');
+    }
+    toast('📍 Mascota colocada en su posición inicial (esquina inferior).');
+  }
+
   function renderFloatingPet() {
     let container = document.getElementById('floating-pet-widget');
     if (!container) {
@@ -3057,40 +3158,67 @@
       container.className = 'floating-pet-container';
       document.body.appendChild(container);
       
-      // Make Pet Draggable anywhere on the screen
-      let isDragging = false, startX, startY, origX, origY;
+      // Load saved coordinates if valid and inside viewport
+      try {
+        const saved = JSON.parse(localStorage.getItem('opocuaderno_mascot_coords'));
+        if (saved && saved.x >= 10 && saved.x <= window.innerWidth - 75 && saved.y >= 10 && saved.y <= window.innerHeight - 75) {
+          container.style.right = 'auto';
+          container.style.bottom = 'auto';
+          container.style.left = saved.x + 'px';
+          container.style.top = saved.y + 'px';
+        }
+      } catch(e) {}
+
+      // Safe, bounded dragging with distance threshold
+      let isDragging = false, startX, startY, origX, origY, moved = false;
+
       const onPointerDown = (e) => {
         if (e.target.closest('#floating-pet-dialog') || e.target.closest('.pet-pomo-badge') || e.target.closest('button')) return;
-        isDragging = true;
         startX = e.clientX;
         startY = e.clientY;
         const rect = container.getBoundingClientRect();
         origX = rect.left;
         origY = rect.top;
-        container.style.right = 'auto';
-        container.style.bottom = 'auto';
-        container.style.left = origX + 'px';
-        container.style.top = origY + 'px';
+        moved = false;
+        isDragging = true;
         window.addEventListener('pointermove', onPointerMove);
         window.addEventListener('pointerup', onPointerUp);
       };
+
       const onPointerMove = (e) => {
         if (!isDragging) return;
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;
-        container.style.left = Math.max(10, Math.min(window.innerWidth - 90, origX + dx)) + 'px';
-        container.style.top = Math.max(10, Math.min(window.innerHeight - 90, origY + dy)) + 'px';
+        if (!moved && Math.hypot(dx, dy) < 8) return; // Ignore micro-jitters
+        moved = true;
+        container.style.right = 'auto';
+        container.style.bottom = 'auto';
+        const w = window.innerWidth, h = window.innerHeight;
+        const safeX = Math.max(12, Math.min(w - 75, origX + dx));
+        const safeY = Math.max(12, Math.min(h - 75, origY + dy));
+        container.style.left = safeX + 'px';
+        container.style.top = safeY + 'px';
       };
+
       const onPointerUp = () => {
+        if (isDragging && moved) {
+          try {
+            const rect = container.getBoundingClientRect();
+            localStorage.setItem('opocuaderno_mascot_coords', JSON.stringify({ x: rect.left, y: rect.top }));
+          } catch(e) {}
+        }
         isDragging = false;
         window.removeEventListener('pointermove', onPointerMove);
         window.removeEventListener('pointerup', onPointerUp);
       };
+
       container.addEventListener('pointerdown', onPointerDown);
+      // Double click safely resets position
+      container.addEventListener('dblclick', resetMascotPosition);
     }
 
     container.innerHTML = `
-      <!-- Relojito Pomodoro flotando en la mascota -->
+      <!-- Relojito Pomodoro en la mascota -->
       <div class="pet-pomo-badge" onclick="togglePomodoro();" title="Pomodoro: Clic para Iniciar o Pausar">
         <span>🍅</span>
         <span id="pet-pomo-clock">${remaining(pomoSeconds)}</span>
@@ -3106,17 +3234,17 @@
         <div class="stack" style="gap:6px">
           <button class="btn sm primary" data-act="quick-question">${I('sparkle', 12)} Pregunta exprés de examen</button>
           <div class="row" style="gap:4px">
-            <button class="btn sm soft" style="flex:1" data-act="toggle-pomo">${I('clock', 12)} ${pomoRunning ? 'Pausar Pomodoro' : 'Iniciar Pomodoro'}</button>
-            <button class="btn sm" data-act="pomo-settings" title="Configurar tiempos y sonidos de fondo">⚙️</button>
+            <button class="btn sm soft" style="flex:1" data-act="toggle-pomo">${I('clock', 12)} ${pomoRunning ? 'Pausar' : 'Iniciar Pomodoro'}</button>
+            <button class="btn sm" data-act="pomo-settings" title="Configurar tiempos Pomodoro">⚙️</button>
           </div>
           <div class="row" style="gap:4px">
-            <button class="btn sm soft" style="flex:1" data-act="pet-wardrobe">👔 Armario de Mascotas</button>
-            <button class="btn sm" onclick="togglePetWalking()" title="Pasear o fijar mascota en pantalla">🐾</button>
+            <button class="btn sm soft" style="flex:1" data-act="pet-wardrobe">👔 Armario</button>
+            <button class="btn sm" onclick="resetMascotPosition()" title="Devolver mascota a la esquina inferior">📍 Centrar</button>
           </div>
           <button class="btn sm" data-act="pet-settings">${I('settings', 12)} Diseñar nueva mascota</button>
         </div>
       </div>
-      <div class="floating-pet-avatar" onclick="toggleFloatingPetDialog()" title="¡Hola! Soy ${esc(state.pet.name)}. Arrástrame por la pantalla o haz clic para hablar.">
+      <div class="floating-pet-avatar" onclick="if(!container.dataset.moved) toggleFloatingPetDialog()" title="¡Hola! Soy ${esc(state.pet.name)}. Arrástrame o haz doble clic para devolverme a la esquina.">
         ${petImage()}
         <div class="pet-ground-shadow"></div>
       </div>
@@ -3392,8 +3520,61 @@
     `;
   }
 
+  function isTopicConstitutional(t) {
+    const title = (t.title || '').toLowerCase();
+    const id = t.id || '';
+    return id === 't1' || /constituci|corona|cortes|derechos fundamentales|garantías/i.test(title);
+  }
+
   function generateExecutiveSummaryHTML(t) {
+    const isConst = isTopicConstitutional(t);
     const definitions = glossary(t.text || '');
+
+    // Accurately tailored summary for Constitutional Law (Tema 1)
+    if (isConst && (!t.text || t.text.length < 100)) {
+      return `
+        <div class="summary-container stack" style="gap:14px">
+          <div class="notice row between" style="background:#fdf7e7;border-color:#f5e5ba;padding:12px 16px;border-radius:10px">
+            <span>🎯 <strong>Resumen Anti-Paja Oficial · Derecho Constitucional:</strong> Datos literales que siempre caen en el examen de GACE A2 (Constitución Española de 1978).</span>
+          </div>
+
+          <div class="surface" style="padding:16px;border:1px solid var(--line);border-radius:12px;">
+            <h4 style="margin:0 0 10px 0;color:var(--deep)">1. Ideas Fuerza de Examen (CE 1978)</h4>
+            <ul style="margin:0 0 16px 0;padding-left:20px;font-size:13px;line-height:1.7;color:#3b3534">
+              <li><strong>Estructura formal:</strong> Preámbulo (sin fuerza jurídica vinculante), 169 artículos, Título Preliminar y 10 Títulos numerados, 4 Disposiciones Adicionales, 9 Transitorias, 1 Derogatoria y 1 Final.</li>
+              <li><strong>Valores superiores del ordenamiento jurídico (Art. 1.1):</strong> La libertad, la justicia, la igualdad y el pluralismo político.</li>
+              <li><strong>Soberanía nacional (Art. 1.2):</strong> Reside en el pueblo español, del que emanan los poderes del Estado. Forma política: Monarquía parlamentaria (Art. 1.3).</li>
+              <li><strong>Principios constitucionales del Art. 9.3:</strong> Legalidad, jerarquía normativa, publicidad de las normas, irretroactividad de disposiciones sancionadoras no favorables o restrictivas de derechos, seguridad jurídica, responsabilidad e interdicción de la arbitrariedad.</li>
+            </ul>
+
+            <h4 style="margin:16px 0 10px 0;color:var(--deep)">2. Artículos Clave de Cita Obligatoria en el Examen</h4>
+            <div class="stack" style="gap:8px">
+              <div style="background:#faf8f5;padding:9px 12px;border-radius:8px;border-left:3px solid #75618e;">
+                <strong style="color:#514064">Art. 14 CE (Principio de Igualdad):</strong>
+                <span style="font-size:13px">Los españoles son iguales ante la ley, sin que pueda prevalecer discriminación alguna por nacimiento, raza, sexo, religión, opinión o cualquier otra circunstancia.</span>
+              </div>
+              <div style="background:#faf8f5;padding:9px 12px;border-radius:8px;border-left:3px solid #75618e;">
+                <strong style="color:#514064">Art. 53 CE (Garantías de Derechos):</strong>
+                <span style="font-size:13px">Los arts. 14 a 29 y 30.2 vinculan a todos los poderes públicos, gozan de reserva de Ley Orgánica (art. 81) y tutela ante tribunales ordinarios por procedimiento preferente y sumario, y Recurso de Amparo ante el Tribunal Constitucional.</span>
+              </div>
+              <div style="background:#faf8f5;padding:9px 12px;border-radius:8px;border-left:3px solid #75618e;">
+                <strong style="color:#514064">Arts. 167 y 168 CE (Reforma Constitucional):</strong>
+                <span style="font-size:13px">Ordinaria (art. 167): Mayoría de 3/5 en cada Cámara + referéndum potestativo (1/10 en 15 días). Agravada (art. 168): 2/3 de cada Cámara + disolución inmediata + ratificación por 2/3 + referéndum obligatorio.</span>
+              </div>
+            </div>
+
+            <h4 style="margin:18px 0 10px 0;color:#8c3c3c">3. Preguntas Trampa Frecuentes del Tribunal Calificador</h4>
+            <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.7;color:#443d39">
+              <li><strong>¿Cabe iniciativa legislativa popular para reformar la Constitución?</strong> NO. El art. 87.3 y el art. 166 la excluyen expresamente. Solo tienen iniciativa el Gobierno, el Congreso, el Senado y las Asambleas de CCAA.</li>
+              <li><strong>¿Qué partes exigen el procedimiento agravado del art. 168?</strong> Título Preliminar, Capítulo II, Sección 1ª del Título I (arts. 15 al 29) y Título II (La Corona). ¡Trampa: el Título I completo NO, solo los arts. 15 a 29!</li>
+              <li><strong>¿Se puede iniciar una reforma constitucional bajo estado de alarma?</strong> NO. El art. 169 prohíbe taxativamente iniciar reformas en tiempo de guerra o bajo estados de alarma, excepción y sitio (art. 116).</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    }
+
+    // Default administrative summary if not constitutional
     return `
       <div class="summary-container stack" style="gap:14px">
         <div class="notice row between" style="background:#fdf7e7;border-color:#f5e5ba;padding:12px 16px;border-radius:10px">
@@ -3505,7 +3686,7 @@
       case 'boe':html=bulletin();title='Convocatorias oficiales';break;
       default:currentPage='home';html=home();title='Mi escritorio';break;
     }
-    $('#contenido').innerHTML=html;document.title=title+' | OpoNexus Studio';renderFloatingPet();loadMediaBlobs();
+    $('#contenido').innerHTML=html;document.title=title+' | Mi Cuaderno de Oposiciones';renderFloatingPet();loadMediaBlobs();
     if(page==='boe')$('.module-aside').insertAdjacentHTML('beforeend',`<a class="law-link" style="margin-top:14px" href="https://administracion.gob.es/pagFront/ofertasempleopublico/resultadosEmpleo.htm?tipoBusqueda=CONVOCATORIAS" target="_blank" rel="noopener noreferrer">Buscador estatal de empleo público ${I('external',12)}</a>`);
     if(opp().basePdf||opp().baseURL)$('.nav-right').insertAdjacentHTML('afterbegin',`<button class="header-pin" data-act="open-bases" title="Consultar las bases ancladas" aria-label="Consultar las bases ancladas">${I('pin',15)}</button>`);
     if(page==='home'&&opp().name==='Gestión de la Administración Civil del Estado')$('.opp-name').innerHTML='Gestión de la Administración<br>Civil del Estado';
@@ -3525,7 +3706,7 @@
     const id=el.dataset.id||'';
     switch(action){
       case 'practice-menu':showPracticeMenu(el);break;
-      case 'profile-menu':menu(el,`<div class="menu-title">${esc(state.name)} · Mi espacio local</div><button data-act="switch-opp">${I('layers')}Mis oposiciones</button><button data-act="open-bases">${I('pin')}Bases ancladas</button>${navLink('boe','news','Convocatorias')}<button data-act="planner">${I('calendar')}Planificador</button><button data-act="settings">${I('settings')}Preferencias</button>`);break;
+      case 'profile-menu': profileManagerModal(); break;
       case 'mobile-menu':menu(el,navLink('home','grid','Mi escritorio')+navLink('library','book','Mi temario')+navLink('schemes','layers','Esquemas')+navLink('tests','list','Tests de examen')+navLink('cases','scale','Supuestos prácticos')+navLink('flash','cards','Flashcards')+navLink('arcade','game','OpoArcade')+navLink('boe','news','Convocatorias'));break;
       case 'close':closeModal();break;
       case 'settings':settings();$('#modal-body').insertAdjacentHTML('beforeend',`<div class="modal-actions"><button class="text-btn" data-act="diagnostics">${I('check',13)}Comprobar el funcionamiento local</button></div>`);break;
@@ -3760,13 +3941,13 @@
     await check('PDF: páginas, tablas y referencias internas',async()=>{for(const cols of [1,2])for(const tab of ['outline','table']){const text=await pdfBlob(sample,cols,tab).text(),xref=Number(text.match(/startxref\n(\d+)/)?.[1]);if(!text.startsWith('%PDF-1.4')||!text.endsWith('%%EOF')||text.slice(xref,xref+4)!=='xref')return false;const entries=[...text.matchAll(/^(\d{10}) 00000 n /gm)];if(!entries.length||!entries.every((m,i)=>text.slice(+m[1]).startsWith((i+1)+' 0 obj')))return false}return true});
     await check('Word: paquete DOCX y XML válidos',async()=>{const ab=await docxBlob(sample,'table').arrayBuffer(),dv=new DataView(ab),decoder=new TextDecoder(),names=[];let p=0;while(p+30<ab.byteLength&&dv.getUint32(p,true)===0x04034b50){const size=dv.getUint32(p+18,true),nl=dv.getUint16(p+26,true),xl=dv.getUint16(p+28,true),start=p+30+nl+xl;names.push(decoder.decode(ab.slice(p+30,p+30+nl)));const xml=new DOMParser().parseFromString(decoder.decode(ab.slice(start,start+size)),'application/xml');if(xml.querySelector('parsererror'))return false;p=start+size}return names.includes('word/document.xml')&&names.includes('[Content_Types].xml')&&names.includes('_rels/.rels')&&dv.getUint32(ab.byteLength-22,true)===0x06054b50});
     await check('Rosco completo y tablero de palabras resoluble',()=>{const rosco=roscoData(),s=makeWordGrid();return rosco.length===27&&rosco.every(q=>wordKey(q.term).includes(q.letter))&&s.placements.length===6&&s.placements.every(p=>p.cells.map(i=>s.grid[i]).join('')===p.word)});
-    await check('Lectura y escritura en IndexedDB',async()=>{const k='@audit-'+uid();try{await fileStore('put',k,new Blob(['OpoNexus']));return (await (await fileStore('get',k)).text())==='OpoNexus'}finally{await fileStore('remove',k)}});
+    await check('Lectura y escritura en IndexedDB',async()=>{const k='@audit-'+uid();try{await fileStore('put',k,new Blob(['Mi Cuaderno']));return (await (await fileStore('get',k)).text())==='Mi Cuaderno'}finally{await fileStore('remove',k)}});
     await check('Preferencias persistentes en localStorage',()=>{const k=STORAGE+'.audit';try{localStorage.setItem(k,'ok');return localStorage.getItem(k)==='ok'}finally{localStorage.removeItem(k)}});
     const summary=$('#audit-summary');if(summary){summary.className='notice '+(rows.every(Boolean)?'success':'error');summary.style.marginTop='14px';summary.textContent=rows.filter(Boolean).length+' de '+rows.length+' comprobaciones correctas. Las APIs externas no se prueban con tus datos.'}
   }
   async function boot(){
     try{const s=JSON.parse(localStorage.getItem(STORAGE));if(s?.large){const large=await fileStore('get','@workspace');if(large?.version===1&&large.opps?.length)state=large}else if(!s)save()}catch{}
-    $('#close-icon').innerHTML=I('x',18);$('#footer-brand').innerHTML=I('book',13)+' OpoNexus Studio <span>·</span> Ultimate Edition';
+    $('#close-icon').innerHTML=I('x',18);$('#footer-brand').innerHTML=I('book',13)+' Mi Cuaderno de Oposiciones <span>·</span> Ultimate Edition';
     renderRoute();setInterval(updateClock,1000);
   }
   boot();
