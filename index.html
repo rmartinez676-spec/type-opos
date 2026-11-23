@@ -1889,6 +1889,32 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
   }
   async function cachedModule(url,key){let blob=await fileStore('get',key);if(!blob){const r=await fetch(url,{signal:AbortSignal.timeout(25000)});if(!r.ok)throw Error('No se pudo descargar el lector PDF.');blob=new Blob([await r.text()],{type:'text/javascript'});await fileStore('put',key,blob)}return URL.createObjectURL(blob)}
   async function extractPDF(file,progress){if(!pdfEngine){const base='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/';const [main,worker]=await Promise.all([cachedModule(base+'pdf.min.mjs','@pdf-main-4.10'),cachedModule(base+'pdf.worker.min.mjs','@pdf-worker-4.10')]);pdfEngine=await import(main);pdfEngine.GlobalWorkerOptions.workerSrc=worker}const pdf=await pdfEngine.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false,useSystemFonts:true}).promise;let out=[];try{for(let i=1;i<=pdf.numPages;i++){progress('Extrayendo texto: página '+i+' de '+pdf.numPages);const p=await pdf.getPage(i),c=await p.getTextContent();out.push(c.items.map(x=>(x.str||'')+(x.hasEOL?'\n':' ')).join(''));p.cleanup()}return out.join('\n\n')}finally{await pdf.destroy()}}
+  function getFileType(filename) {
+    if (/\.pdf$/i.test(filename)) return 'pdf';
+    if (/\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(filename)) return 'audio';
+    if (/\.(mp4|webm|mov|mkv)$/i.test(filename)) return 'video';
+    if (/\.(pptx|ppt|odp)$/i.test(filename)) return 'slides';
+    return 'doc';
+  }
+
+  async function downloadAsset(id, name) {
+    try {
+      const blob = await fileStore('get', id);
+      if (!blob) return toast('Archivo no encontrado en el almacén local.');
+      const u = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = u;
+      a.download = name || 'archivo';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(u), 3000);
+      toast('Descargando ' + (name || 'archivo'));
+    } catch(e) {
+      toast('Error al descargar el archivo.');
+    }
+  }
+
   async function doImport(form){
     const fd=new FormData(form),raw=String(fd.get('text')||'').trim(),files=[...pendingFiles];
     if(!raw&&!files.length)throw Error('Añade un archivo o pega texto antes de guardar.');
@@ -1903,25 +1929,23 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
       let importedCount = 0;
       for (const f of files) {
         const targetTopic = matchTopicForFile(f.name);
-        const key = uid(), pdf = /\.pdf$/i.test(f.name);
+        const key = uid();
+        const fType = getFileType(f.name);
         status('Clasificando '+f.name+' en «'+targetTopic.title+'»...');
         await fileStore('put', key, f);
-        const isPdf = /\.pdf$/i.test(f.name);
-        const isAudio = /\.(mp3|m4a|wav|ogg|aac)$/i.test(f.name);
-        const isVideo = /\.(mp4|webm|mov)$/i.test(f.name);
-        const isSlides = /\.(pptx|ppt|odp)$/i.test(f.name);
-        const fileType = isPdf ? 'pdf' : isAudio ? 'audio' : isVideo ? 'video' : isSlides ? 'slides' : 'doc';
-        targetTopic.assets = [...(targetTopic.assets || []), { id: key, name: f.name, pdf: isPdf, type: fileType }];
+        targetTopic.assets = [...(targetTopic.assets || []), { id: key, name: f.name, pdf: fType === 'pdf', type: fType }];
         
-        // Extract text if available
         let extracted = '';
-        if (pdf) {
+        if (fType === 'pdf') {
           try {
             extracted = await extractPDF(f, status);
           } catch(e) {}
-        } else {
-          try { extracted = await f.text(); } catch(e) {}
+        } else if (fType === 'doc') {
+          try {
+            extracted = await f.text();
+          } catch(e) {}
         }
+        // Audio, video, slides: NEVER call f.text()!
         if (extracted.trim()) {
           targetTopic.text = [targetTopic.text, extracted].filter(Boolean).join('\n\n');
         }
@@ -1943,12 +1967,16 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
     if(!t) throw Error('El tema seleccionado no está disponible.');
     const chunks = [], assets = [];
     let warning = '';
+    let hasMediaOnly = true;
+
     for (const f of files) {
-      const key = uid(), pdf = /\.pdf$/i.test(f.name);
+      const key = uid();
+      const fType = getFileType(f.name);
       status('Guardando '+f.name+'...');
       await fileStore('put', key, f);
-      assets.push({ id: key, name: f.name, pdf });
-      if (pdf) {
+      assets.push({ id: key, name: f.name, pdf: fType === 'pdf', type: fType });
+      if (fType === 'pdf') {
+        hasMediaOnly = false;
         try {
           const txt = await extractPDF(f, status);
           if (txt.trim()) chunks.push(txt);
@@ -1956,15 +1984,33 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
         } catch {
           warning = 'PDF guardado. No se pudo extraer el texto: puede ser un escaneo, estar protegido o faltar el lector sin conexión.';
         }
-      } else {
-        chunks.push(await f.text());
+      } else if (fType === 'doc') {
+        hasMediaOnly = false;
+        try {
+          const txt = await f.text();
+          if (txt.trim()) chunks.push(txt);
+        } catch(e) {}
       }
+      // Audio, video, slides: NEVER call f.text() to prevent freezes and memory bloat
     }
-    if (raw) chunks.push(raw);
-    t.text = [fd.get('replace') ? '' : t.text, ...chunks].filter(Boolean).join('\n\n');
+    if (raw) {
+      chunks.push(raw);
+      hasMediaOnly = false;
+    }
+    if (!hasMediaOnly || fd.get('replace')) {
+      t.text = [fd.get('replace') ? '' : t.text, ...chunks].filter(Boolean).join('\n\n');
+    }
     t.assets = [...(t.assets || []), ...assets];
     if (fd.get('source')) t.source = safeURL(fd.get('source'));
-    t.updated = Date.now();if(isNew)o.topics.push(t);remember(t);readerTab='outline';sourceTab=assets.some(a=>a.pdf)?'pdf':'text';go('reader',t.id);toast(warning||'Apuntes guardados en tu cuaderno.');if(warning)setTimeout(()=>modal('PDF guardado',`<div class="notice">${esc(warning)}</div><div class="modal-actions">${btn('Entendido','close','check','primary')}</div>`),150)}
+    t.updated = Date.now();
+    if (isNew) o.topics.push(t);
+    remember(t);
+    readerTab = 'outline';
+    sourceTab = assets.some(a => a.pdf) ? 'pdf' : 'text';
+    go('reader', t.id);
+    toast(warning || (hasMediaOnly ? 'Archivo multimedia guardado en el tema.' : 'Apuntes guardados en tu cuaderno.'));
+    if (warning) setTimeout(() => modal('PDF guardado', `<div class="notice">${esc(warning)}</div><div class="modal-actions">${btn('Entendido','close','check','primary')}</div>`), 150);
+  }
   function editNotes(id){const t=topic(id)||currentTopic();if(!t)return addTopic();modal('Editar tema',`<form id="edit-topic-form" class="stack" data-id="${esc(t.id)}"><label class="field"><span>Título</span><input name="title" required maxlength="200" value="${esc(t.title)}"></label><label class="field"><span>Bloque</span><select name="block">${opp().blocks.map((b,i)=>`<option value="${i}" ${i===t.b?'selected':''}>${esc(b)}</option>`).join('')}</select></label><label class="field"><span>Texto de estudio</span><textarea name="text" rows="12">${esc(t.text)}</textarea></label><label class="field"><span>Fuente de referencia</span><input type="url" name="source" value="${esc(t.source)}" placeholder="https://www.boe.es/..."></label><button class="btn primary">Guardar cambios</button></form>`,true)}
   const keyRX=/(\b(?:\d+|un|una|dos|tres|cuatro|cinco|diez|quince|veintidós)\s+(?:días?(?:\s+(?:hábiles|naturales))?|mes(?:es)?|años?|horas?)\b|mayoría\s+(?:absoluta|simple|cualificada)|silencio\s+(?:administrativo|positivo|negativo|desestimatorio|estimatorio)|(?:superior jerárquico|órgano competente|Consejo de Ministros|órgano de contratación)|recurso\s+(?:potestativo de reposición|de alzada|de reposición)|\d[\d.]*\s*euros)/gi;
   const highlight=s=>esc(s).replace(keyRX,'<strong>$1</strong>');
@@ -1976,6 +2022,7 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
     const id = t.id || '';
     return id === 't1' || /constituci|corona|cortes|derechos fundamentales|garantías/i.test(title);
   }
+
   function compareRows(t){
     if (isTopicConstitutional(t)) {
       return [
@@ -1992,6 +2039,263 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
   const tableHeads=['Figura / trámite','Órgano competente','Plazo / quórum','Efecto / excepción'];
   const tableHTML=rows=>`<div class="table-scroll"><table class="comp-table"><thead><tr>${tableHeads.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   function outlineHTML(t){const lines=summarize(t.text),n=words(lines.join(' ')).length,w=words(t.text).length;return `<div class="row wrap" style="margin-bottom:16px"><span class="tag">Síntesis local</span><span class="tiny muted">${n} de ${w} palabras · ${w?Math.round(100*n/w):0}% del original</span></div>${Object.entries(outlineGroups(lines)).map(([g,arr])=>`<div class="outline-group"><h4>${g}</h4><ul class="outline">${arr.map(s=>`<li>${highlight(s)}</li>`).join('')}</ul></div>`).join('')||'<p class="muted">Añade más texto para obtener una síntesis útil.</p>'}`}
+
+  function getTopicTables(t) {
+    if (isTopicConstitutional(t)) {
+      return [
+        {
+          title: 'Cuadro 1: Comparativa de Reforma Constitucional: Ordinario (167) vs Agravado (168)',
+          heads: ['Aspecto / Criterio', 'Procedimiento Ordinario (Art. 167 CE)', 'Procedimiento Agravado (Art. 168 CE)', 'Ojo al Tribunal / Trampa'],
+          widths: [0.22, 0.27, 0.27, 0.24],
+          rows: [
+            ['Ámbito de Aplicación', 'Cualquier reforma parcial fuera de materias agravadas.', 'Revisión Total o Tít. Preliminar, Cap II Sec 1ª Tít I (15-29), Tít II (Corona).', '¡Art. 14 y Sec. 2ª van por el 167!'],
+            ['Iniciativa de Reforma', 'Gobierno, Congreso, Senado, Asambleas CCAA (Art. 166 remite a 87.1-2).', 'Mismos órganos legitimados (Art. 166).', '¡PROHIBIDA Iniciativa Legislativa Popular!'],
+            ['Mayoría Inicial', '3/5 de cada Cámara (Congreso y Senado).', '2/3 de cada Cámara para aprobar principio de reforma.', 'Ordinario exige 3/5; Agravado exige 2/3.'],
+            ['Desacuerdo Cámaras', 'Comisión Mixta paritaria de Diputados y Senadores consensúa a 3/5.', 'No hay Comisión Mixta; decae la reforma si no hay 2/3.', 'Comisión Mixta paritaria solo existe en Art. 167.'],
+            ['Fórmula Desbloqueo', 'Mayoría Absoluta en Senado + 2/3 en el Congreso.', 'No existe fórmula de desbloqueo.', 'Exige mayoría absoluta de Senado y 2/3 de Congreso.'],
+            ['Disolución Cortes', 'NO se disuelven las Cortes Generales.', 'SÍ, DISOLUCIÓN INMEDIATA de ambas Cámaras.', 'Disolución automática obligatoria de Cortes.'],
+            ['Nuevas Cortes Electas', 'No aplica (mismas Cámaras concluyen tramitación).', 'Ratifican decisión y aprueban texto por 2/3 ambas Cámaras.', 'Doble votación de 2/3: salientes y entrantes.'],
+            ['Referéndum Popular', 'POTESTATIVO: si solicita 1/10 diputados o senadores en 15 días.', 'PRECEPTIVO Y VINCULANTE en todo caso para su ratificación.', 'En 167 es facultativo; en 168 obligatorio.'],
+            ['Límites Temporales', 'Prohibido iniciar en tiempo de guerra o bajo estados del Art. 116.', 'Prohibido iniciar en tiempo de guerra o bajo estados del Art. 116.', 'Prohibición es para INICIAR la reforma.']
+          ]
+        },
+        {
+          title: 'Cuadro 2: Niveles de Protección y Garantías de los Derechos (Art. 53 CE)',
+          heads: ['Nivel de Protección', 'Preceptos Constitucionales', 'Garantías Normativas / Reserva', 'Garantías Jurisdiccionales / Protección'],
+          widths: [0.20, 0.22, 0.29, 0.29],
+          rows: [
+            ['Nivel 1: Máximo / Superprotegido', 'Art. 14 + Sección 1ª Cap. II Tít. I (Arts. 15-29) + Art. 30.2 (solo amparo).', 'Reserva Ley Orgánica (Art. 81) + Respeto contenido esencial + Recurso inconstitucionalidad + Ref. 168.', 'Procedimiento preferente y sumario (Art. 53.2) + Recurso de Amparo TC + Defensor del Pueblo.'],
+            ['Nivel 2: Ordinario / General', 'Sección 2ª Cap. II Tít. I (Arts. 30 al 38, salvo 30.2 en amparo).', 'Reserva de Ley ordinaria (Art. 53.1) + Veto a Decreto-Ley (86.1) + Contenido esencial + Ref. 167.', 'Tutela judicial ordinaria ante tribunales ordinarios (Art. 24). ¡NO amparo ni sumario preferente!'],
+            ['Nivel 3: Principios Rectores', 'Capítulo III Tít. I (Arts. 39 al 52: familia, salud, trabajo, vivienda).', 'Informan legislación positiva, práctica judicial y actuación de poderes públicos (53.3).', 'Solo alegables ante tribunales ordinarios según leyes que los desarrollen. ¡NO amparo directo!']
+          ]
+        },
+        {
+          title: 'Cuadro 3: Mayorías Parlamentarias y Plazos Críticos de la Constitución',
+          heads: ['Institución / Trámite', 'Quórum / Mayoría Exigida', 'Plazo Crítico de Examen', 'Precepto Constitucional'],
+          widths: [0.26, 0.28, 0.28, 0.18],
+          rows: [
+            ['Investidura Pte. Gobierno', '1ª votación: Mayoría Absoluta / 2ª votación: Mayoría Simple', '48 horas entre votaciones. 2 meses tope antes de disolución Cortes.', 'Art. 99 CE'],
+            ['Moción de Censura', 'Mayoría Absoluta del Congreso de los Diputados', 'Propuesta por 1/10 diputados (35). No se vota hasta 5 días. Alternativas en 2 días.', 'Arts. 113 y 114.2 CE'],
+            ['Cuestión de Confianza', 'Mayoría Simple del Congreso de los Diputados', 'A iniciativa del Presidente previa deliberación en Consejo de Ministros.', 'Arts. 112 y 114.1 CE'],
+            ['Convalidación Decretos-Leyes', 'Mayoría Simple del Congreso en debate de totalidad', 'Plazo perentorio de 30 días naturales desde su promulgación.', 'Art. 86 CE'],
+            ['Aprobación Leyes Orgánicas', 'Mayoría Absoluta del Congreso en votación final de conjunto', 'Senado: tramitación ordinaria por mayoría simple.', 'Art. 81 CE'],
+            ['Estados Alarma, Excep., Sitio', 'Alarma: Consejo Ministros (prórroga Congreso) / Excep: Autoriz. Congreso / Sitio: Absoluta Congreso', 'Alarma: máx 15 días. Excepción: máx 30 días (prórroga 30 días).', 'Art. 116 CE']
+          ]
+        }
+      ];
+    }
+    return [
+      {
+        title: 'Tabla Comparativa de Estudio: ' + (t.title || 'Conceptos Clave'),
+        heads: tableHeads,
+        widths: [0.25, 0.25, 0.25, 0.25],
+        rows: compareRows(t)
+      }
+    ];
+  }
+
+  function getTopicLawSource(t) {
+    if (!t) return {
+      url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229',
+      title: 'Constitución Española de 1978 (BOE-A-1978-31229)',
+      code: 'BOE-A-1978-31229',
+      laws: [{ title: 'Constitución Española de 1978', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229', articles: 'Arts. 1 a 29, 53, 166 a 169' }]
+    };
+    const title = (t.title || '').toLowerCase();
+    const id = t.id || '';
+
+    if (t.source && t.source.includes('boe.es')) {
+      return {
+        url: t.source,
+        title: t.title || 'Normativa oficial del tema (BOE)',
+        code: t.source.split('id=')[1] || 'BOE',
+        laws: [{ title: t.title || 'Normativa oficial', url: t.source, articles: 'Texto consolidado de referencia en el BOE' }]
+      };
+    }
+
+    if (id === 't1' || /constituci[oó]n/i.test(title)) {
+      return {
+        url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229',
+        title: 'Constitución Española de 1978 (BOE-A-1978-31229)',
+        code: 'BOE-A-1978-31229',
+        laws: [
+          { title: 'Constitución Española de 1978 (Texto Consolidado BOE)', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229', articles: 'Título Preliminar (Arts. 1-9), Título I (Arts. 10-55, Derechos y Deberes), Art. 53 (Niveles de Garantía), Título X (Arts. 166-169, Reforma Constitucional)' },
+          { title: 'Ley Orgánica 2/1979 del Tribunal Constitucional (LOTC)', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1979-23709', articles: 'Arts. 27-34 (Recurso de Inconstitucionalidad), Arts. 41-58 (Recurso de Amparo Constitucional)' },
+          { title: 'Ley Orgánica 3/1981 del Defensor del Pueblo', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1981-10325', articles: 'Arts. 1-15 (Estatuto, quejas y legitimación procesal ante el Tribunal Constitucional)' }
+        ]
+      };
+    }
+
+    if (/corona|rey|monarqu/i.test(title)) {
+      return {
+        url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#tii',
+        title: 'Constitución Española: Título II - De la Corona (Arts. 56 a 65)',
+        code: 'BOE-A-1978-31229',
+        laws: [
+          { title: 'Constitución Española: Título II De la Corona', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#tii', articles: 'Arts. 56 (Funciones del Rey), 57 (Sucesión hereditaria), 59 (Regencia), 60 (Tutela), 64 (Refrendo)' }
+        ]
+      };
+    }
+
+    if (/cortes|congreso|senado/i.test(title)) {
+      return {
+        url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#tiii',
+        title: 'Constitución Española: Título III - De las Cortes Generales',
+        code: 'BOE-A-1978-31229',
+        laws: [
+          { title: 'Constitución Española: Título III De las Cortes Generales', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#tiii', articles: 'Arts. 66 a 80 (Cámaras), Arts. 81 a 92 (Elaboración de las leyes)' },
+          { title: 'Reglamento del Congreso de los Diputados', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1982-5156', articles: 'Grupos parlamentarios, Pleno y Comisiones' },
+          { title: 'Reglamento del Senado', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1994-10041', articles: 'Composición y procedimiento legislativo' }
+        ]
+      };
+    }
+
+    if (/gobierno|administraci[oó]n general|ministr/i.test(title)) {
+      return {
+        url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1997-25336',
+        title: 'Ley 50/1997, de 27 de noviembre, del Gobierno (BOE-A-1997-25336)',
+        code: 'BOE-A-1997-25336',
+        laws: [
+          { title: 'Ley 50/1997 del Gobierno', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1997-25336', articles: 'Arts. 1-10 (Miembros y funciones), Arts. 21 (Gobierno en funciones), Arts. 26 (Procedimiento de elaboración de normas)' },
+          { title: 'Ley 40/2015 de Régimen Jurídico del Sector Público (LRJSP)', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-10566', articles: 'Título I: Organización y funcionamiento de la Administración General del Estado (Arts. 54 a 80)' }
+        ]
+      };
+    }
+
+    if (/judicial|cgpj|tribunal supremo|jueces/i.test(title)) {
+      return {
+        url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1985-12666',
+        title: 'Ley Orgánica 6/1985 del Poder Judicial (LOPJ) (BOE-A-1985-12666)',
+        code: 'BOE-A-1985-12666',
+        laws: [
+          { title: 'Ley Orgánica 6/1985 del Poder Judicial (LOPJ)', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1985-12666', articles: 'Arts. 1-25 (Principios de la potestad jurisdiccional), Arts. 560 y ss. (Consejo General del Poder Judicial)' }
+        ]
+      };
+    }
+
+    if (/procedimiento|administrativo com[uú]n|lpac/i.test(title)) {
+      return {
+        url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-10565',
+        title: 'Ley 39/2015 del Procedimiento Administrativo Común (LPAC) (BOE-A-2015-10565)',
+        code: 'BOE-A-2015-10565',
+        laws: [
+          { title: 'Ley 39/2015 (LPACAP)', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-10565', articles: 'Arts. 13-14 (Derechos y medios electrónicos), Arts. 21-25 (Obligación de resolver y Silencio), Arts. 30-32 (Cómputo de plazos), Arts. 39-49 (Eficacia y Nulidad/Anulabilidad), Arts. 68 (Subsanación), Arts. 112-126 (Recursos de Alzada y Reposición)' }
+        ]
+      };
+    }
+
+    if (/r[eé]gimen jur[ií]dico|lrjsp|sector p[uú]blico/i.test(title)) {
+      return {
+        url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-10566',
+        title: 'Ley 40/2015 de Régimen Jurídico del Sector Público (LRJSP) (BOE-A-2015-10566)',
+        code: 'BOE-A-2015-10566',
+        laws: [
+          { title: 'Ley 40/2015 (LRJSP)', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-10566', articles: 'Arts. 3-4 (Principios generales), Arts. 8-14 (Competencia, delegación, avocación), Arts. 15-22 (Órganos colegiados), Arts. 32-37 (Responsabilidad patrimonial)' }
+        ]
+      };
+    }
+
+    if (/contrat|lcsp|menor|licitaci[oó]n/i.test(title)) {
+      return {
+        url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2017-12902',
+        title: 'Ley 9/2017 de Contratos del Sector Público (LCSP) (BOE-A-2017-12902)',
+        code: 'BOE-A-2017-12902',
+        laws: [
+          { title: 'Ley 9/2017 (LCSP)', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2017-12902', articles: 'Arts. 28-33 (Necesidad e idoneidad), Art. 118 (Contrato menor), Arts. 131-155 (Procedimientos de adjudicación), Arts. 44-60 (Recurso especial en materia de contratación)' }
+        ]
+      };
+    }
+
+    if (/personal|funcionario|trebep|empleo p[uú]blico/i.test(title)) {
+      return {
+        url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-11719',
+        title: 'Real Decreto Legislativo 5/2015 del Estatuto Básico del Empleado Público (TREBEP) (BOE-A-2015-11719)',
+        code: 'BOE-A-2015-11719',
+        laws: [
+          { title: 'RDL 5/2015 (TREBEP)', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-11719', articles: 'Arts. 8-13 (Clases de personal), Arts. 14-15 (Derechos), Arts. 16-20 (Carrera administrativa), Arts. 48-51 (Permisos y vacaciones), Arts. 52-54 (Código de conducta), Arts. 85-92 (Situaciones administrativas)' },
+          { title: 'Ley 53/1984 de Incompatibilidades del Personal de las AAPP', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1985-30', articles: 'Actividades públicas y privadas compatibles e incompatibles' }
+        ]
+      };
+    }
+
+    if (/financier|presupuest|lgp|gasto/i.test(title)) {
+      return {
+        url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2003-21614',
+        title: 'Ley 47/2003, de 26 de noviembre, General Presupuestaria (LGP) (BOE-A-2003-21614)',
+        code: 'BOE-A-2003-21614',
+        laws: [
+          { title: 'Ley 47/2003 (LGP)', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2003-21614', articles: 'Arts. 32-41 (Principios presupuestarios), Arts. 42-57 (Créditos y modificaciones presupuestarias), Arts. 73-80 (Procedimiento de gestión del gasto: ADOP)' },
+          { title: 'Ley Orgánica 2/2012 de Estabilidad Presupuestaria', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2012-5730', articles: 'Regla de gasto y sostenibilidad financiera' }
+        ]
+      };
+    }
+
+    if (/igualdad|violencia de g[eé]nero/i.test(title)) {
+      return {
+        url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2007-6115',
+        title: 'Ley Orgánica 3/2007 para la igualdad efectiva de mujeres y hombres (BOE-A-2007-6115)',
+        code: 'BOE-A-2007-6115',
+        laws: [
+          { title: 'Ley Orgánica 3/2007 para la igualdad efectiva', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2007-6115', articles: 'Arts. 3 a 13 (Principio de igualdad y tutela contra la discriminación), Arts. 51 a 68 (Igualdad en el empleo público)' },
+          { title: 'Ley Orgánica 1/2004 de Protección Integral contra la Violencia de Género', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2004-21760', articles: 'Derechos laborales y de Seguridad Social' }
+        ]
+      };
+    }
+
+    if (/transparencia|buen gobierno|acceso a la informaci[oó]n|datos|rgpd/i.test(title)) {
+      return {
+        url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2013-12887',
+        title: 'Ley 19/2013 de Transparencia y Buen Gobierno (BOE-A-2013-12887)',
+        code: 'BOE-A-2013-12887',
+        laws: [
+          { title: 'Ley 19/2013 de Transparencia', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2013-12887', articles: 'Arts. 12-24 (Derecho de acceso a la información y límites)' },
+          { title: 'Ley Orgánica 3/2018 (LOPDGDD)', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2018-16673', articles: 'Principios de protección de datos y derechos digitales' }
+        ]
+      };
+    }
+
+    return {
+      url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229',
+      title: 'Constitución Española y Normativa Oficial (BOE Consolidado)',
+      code: 'BOE-A-1978-31229',
+      laws: [
+        { title: 'Constitución Española de 1978', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229', articles: 'Norma fundamental del ordenamiento jurídico español' },
+        { title: 'Ley 39/2015 del Procedimiento Administrativo Común', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-10565', articles: 'Régimen estatutario y procedimental general' }
+      ]
+    };
+  }
+
+  function openTopicLawsModal(topicId) {
+    const t = topic(topicId) || currentTopic();
+    const info = getTopicLawSource(t);
+    modal('Normativa y Leyes Oficiales BOE: ' + (t?.title || 'Tema'), `
+      <div class="stack" style="gap:14px">
+        <div class="notice" style="background:#f0eef9;border-color:#d9d1f0">
+          🏛️ <strong>Fuentes Oficiales Directas del BOE Consolidado:</strong> En las oposiciones de la AGE (GACE A2 y C1), las preguntas de examen se redactan a partir de los textos consolidados del BOE.
+        </div>
+        <div class="stack" style="gap:10px">
+          ${info.laws.map((l, i) => `
+            <div style="background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:12px">
+              <div class="row between wrap" style="margin-bottom:6px;gap:6px">
+                <strong style="color:#553396;font-size:13.5px">Ley ${i+1}: ${esc(l.title)}</strong>
+                <a class="btn sm" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer" style="background:#553396;color:#fff;text-decoration:none">
+                  Abrir BOE Consolidado ${I('external', 11)}
+                </a>
+              </div>
+              <div class="small" style="color:var(--deep);line-height:1.6">
+                <strong>Preceptos clave de examen:</strong> ${esc(l.articles)}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="row between wrap" style="margin-top:8px">
+          <button class="btn soft sm" onclick="editNotes('${esc(t.id)}')">✏️ Editar fuente del tema</button>
+          <button class="btn primary sm" onclick="closeModal()">Cerrar</button>
+        </div>
+      </div>
+    `, true);
+  }
+
   function downloadWordDoc(t, tab) {
     const title = t.title || 'Tema';
     const content = tab === 'table' ? generateCuadrosHTML(t) : tab === 'summary' ? generateExecutiveSummaryHTML(t) : generateBracketTreeHTML(t);
@@ -1999,171 +2303,36 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
       <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
       <head><meta charset='utf-8'><title>${title}</title>
       <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; color: #222; }
-        h1 { color: #553396; }
-        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
-        th, td { border: 1px solid #ccc; padding: 8px 12px; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 30px; color: #222; }
+        h1 { color: #553396; font-size: 20pt; }
+        h2, h3 { color: #3b2a59; }
+        table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+        th, td { border: 1px solid #ccc; padding: 8px 12px; font-size: 10pt; }
         th { background: #f0eef9; color: #553396; }
-      
-    /* === SVG Elastic Braces for Esquemas de Llaves === */
-    .bracket-tree-container {
-      display: flex;
-      align-items: stretch;
-      gap: 12px;
-      margin: 18px 0;
-      overflow-x: auto;
-      padding: 10px 4px;
-    }
-    .bracket-root-card {
-      background: linear-gradient(135deg, #6e48aa, #553396);
-      color: white;
-      font-weight: 700;
-      padding: 16px 20px;
-      border-radius: 12px;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      box-shadow: 0 4px 15px rgba(85,51,150,0.25);
-      max-width: 200px;
-      flex-shrink: 0;
-    }
-    .svg-brace {
-      width: 26px;
-      flex-shrink: 0;
-      align-self: stretch;
-    }
-    .bracket-branches-col {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      justify-content: space-around;
-      flex: 1;
-      min-width: 260px;
-    }
-    .bracket-branch-card {
-      background: #ffffff;
-      border: 1.5px solid #dcd5ee;
-      border-radius: 10px;
-      padding: 10px 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-      display: flex;
-      align-items: stretch;
-      gap: 10px;
-    }
-    .bracket-sub-col {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      flex: 1;
-    }
-    .bracket-leaf {
-      font-size: 12.5px;
-      color: #3b3534;
-      line-height: 1.5;
-      padding: 3px 0;
-      border-bottom: 1px dashed #ede8f5;
-    }
-    .bracket-leaf:last-child {
-      border-bottom: none;
-    }
-
-    /* === Draggable Pet & Mascot Pomodoro Clock === */
-    .floating-pet-container {
-      position: fixed;
-      bottom: 24px;
-      right: 28px;
-      z-index: 9999;
-      touch-action: none;
-      user-select: none;
-      cursor: grab;
-    }
-    .floating-pet-container:active {
-      cursor: grabbing;
-    }
-    .pet-pomo-badge {
-      background: #8c3c3c;
-      color: white;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 9px;
-      border-radius: 20px;
-      box-shadow: 0 2px 8px rgba(140,60,60,0.3);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      position: absolute;
-      top: -24px;
-      left: 50%;
-      transform: translateX(-50%);
-      white-space: nowrap;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .pet-pomo-badge:hover {
-      transform: translateX(-50%) scale(1.05);
-    }
-
-    /* === Agenda / Calendario Opositor === */
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-      margin-top: 10px;
-      text-align: center;
-    }
-    .calendar-day-head {
-      font-weight: 700;
-      font-size: 11px;
-      color: var(--muted);
-      padding: 4px 0;
-    }
-    .calendar-day {
-      background: #faf8f5;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 8px 4px;
-      font-size: 12px;
-      min-height: 48px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
-    }
-    .calendar-day:hover {
-      background: #f0eef9;
-      border-color: #553396;
-    }
-    .calendar-day.today {
-      border: 2px solid #553396;
-      font-weight: bold;
-    }
-    .calendar-day.studied {
-      background: #e2edde;
-      border-color: #a4cca0;
-    }
-
-  </style>
+        .tag, .badge { background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 9pt; }
+        .badge-trampa { background: #fee2e2; color: #991b1b; }
+        .badge-mayoria { background: #f3e8ff; color: #6b21a8; }
+        .badge-plazo { background: #fef3c7; color: #92400e; }
+        .badge-norma { background: #e0f2fe; color: #075985; }
+      </style>
       </head>
       <body>
-        <h1>${title} - Mi Cuaderno de Oposiciones</h1>
-        <p><em>${opp().short || 'GACE A2'} · ${tab === 'table' ? 'Cuadro Sinóptico y Tablas' : tab === 'summary' ? 'Resumen Anti-Paja' : 'Esquema de Llaves'}</em></p>
+        <h1>${esc(title)} - Mi Cuaderno de Oposiciones</h1>
+        <p><em>${esc(opp().short || 'GACE A2')} · ${tab === 'table' ? 'Cuadros y Tablas Oficiales' : tab === 'summary' ? 'Resumen Anti-Paja' : 'Esquema de Repaso'}</em></p>
         <hr>
         ${content}
       </body>
       </html>
     `;
     const blob = new Blob([html], { type: 'application/msword;charset=utf-8' });
-    download(blob, `Mi Cuaderno-${title.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '_')}.doc`);
+    download(blob, `Mi_Cuaderno-${title.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '_')}_${tab}.doc`);
     toast('Documento Word descargado.');
   }
 
   function renderMediaBar(t) {
     const assets = t.assets || [];
-    const audios = assets.filter(a => a.type === 'audio' || /\.(mp3|m4a|wav|ogg)$/i.test(a.name));
-    const videos = assets.filter(a => a.type === 'video' || /\.(mp4|webm|mov)$/i.test(a.name));
+    const audios = assets.filter(a => a.type === 'audio' || /\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(a.name));
+    const videos = assets.filter(a => a.type === 'video' || /\.(mp4|webm|mov|mkv)$/i.test(a.name));
     const slides = assets.filter(a => a.type === 'slides' || /\.(pptx|ppt|odp)$/i.test(a.name));
 
     if (!audios.length && !videos.length && !slides.length) return '';
@@ -2176,23 +2345,29 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
         </div>
         ${audios.map(a => `
           <div style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid var(--line)">
-            <div class="row between small" style="margin-bottom:4px">
+            <div class="row between small" style="margin-bottom:6px">
               <span>🎧 <strong>Audio de clase / voz:</strong> ${esc(a.name)}</span>
-              <label class="row tiny muted">Velocidad <select onchange="this.closest('div').parentElement.querySelector('audio').playbackRate = +this.value" style="padding:1px 4px;font-size:10px"><option value="1">1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option></select></label>
+              <div class="row" style="gap:6px">
+                <label class="row tiny muted">Velocidad <select onchange="this.closest('div').parentElement.parentElement.querySelector('audio').playbackRate = +this.value" style="padding:1px 4px;font-size:10px"><option value="1">1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></label>
+                <button class="btn sm soft" onclick="downloadAsset('${esc(a.id)}', '${esc(a.name)}')" title="Descargar archivo de audio" style="padding:1px 6px;font-size:10px">${I('download', 10)} Guardar</button>
+              </div>
             </div>
-            <audio controls style="width:100%;height:32px" id="audio-${esc(a.id)}"></audio>
+            <audio controls preload="metadata" style="width:100%;height:32px" id="audio-${esc(a.id)}"></audio>
           </div>
         `).join('')}
         ${videos.map(v => `
           <div style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid var(--line)">
-            <div class="small" style="margin-bottom:4px">🎬 <strong>Vídeo explicativo:</strong> ${esc(v.name)}</div>
-            <video controls style="width:100%;max-height:220px;border-radius:6px;background:#000" id="video-${esc(v.id)}"></video>
+            <div class="row between small" style="margin-bottom:6px">
+              <span>🎬 <strong>Vídeo explicativo:</strong> ${esc(v.name)}</span>
+              <button class="btn sm soft" onclick="downloadAsset('${esc(v.id)}', '${esc(v.name)}')" style="padding:1px 6px;font-size:10px">${I('download', 10)} Descargar Vídeo</button>
+            </div>
+            <video controls preload="metadata" style="width:100%;max-height:220px;border-radius:6px;background:#000" id="video-${esc(v.id)}"></video>
           </div>
         `).join('')}
         ${slides.map(s => `
           <div class="row between" style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid var(--line);font-size:12px">
             <span>📊 <strong>Diapositivas PowerPoint:</strong> ${esc(s.name)}</span>
-            <button class="btn sm soft" onclick="toast('Descargando presentación...');">Descargar PPTX</button>
+            <button class="btn sm soft" onclick="downloadAsset('${esc(s.id)}', '${esc(s.name)}')">${I('download', 12)} Descargar PPTX</button>
           </div>
         `).join('')}
       </div>
@@ -2265,9 +2440,15 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
               ` : t.text ? t.text.split(/\n\s*\n|\n/).filter(Boolean).map(s => `<p>${highlight(s)}</p>`).join('') : empty}
             </div>
 
-            ${t.source ? `
-              <div class="export-bar"><a class="law-link" href="${esc(safeURL(t.source))}" target="_blank" rel="noopener noreferrer">Consultar fuente oficial BOE / INAP ${I('external', 12)}</a></div>
-            ` : ''}
+            <!-- FUENTE OFICIAL BOE Y NORMATIVA -->
+            <div class="export-bar row wrap between" style="gap:8px;padding:8px 12px;background:#f5f2eb;border-top:1px solid var(--line);border-radius:0 0 12px 12px">
+              <a class="law-link" href="${esc(getTopicLawSource(t).url)}" target="_blank" rel="noopener noreferrer">
+                🏛️ ${esc(getTopicLawSource(t).title)} ${I('external', 12)}
+              </a>
+              <button class="btn sm soft" onclick="openTopicLawsModal('${esc(t.id)}')">
+                📚 Normativa y Artículos del Tema
+              </button>
+            </div>
           </section>
 
           <!-- COLUMNA DERECHA: ESQUEMAS, CUADROS, RESUMEN ANTIPAJA -->
@@ -2505,9 +2686,9 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
     ];
   }
 
-  function pdfBlob(t,cols=1,tab=readerTab){const W=595,H=842,M=35,gap=21,cw=(W-2*M-(cols-1)*gap)/cols,pages=[];let pg='',y=0,col=0,top=0;const ctx=document.createElement('canvas').getContext('2d');const hex=s=>Array.from(String(s).replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,'-').replace(/…/g,'...')).map(c=>(c.charCodeAt(0)<256?c.charCodeAt(0):c==='€'?128:63).toString(16).padStart(2,'0')).join('');const txt=(x,yy,s,size=10,b=false,color='.18 .21 .26')=>{pg+=`${color} rg BT /F${b?2:1} ${size} Tf 1 0 0 1 ${x.toFixed(2)} ${(H-yy).toFixed(2)} Tm <${hex(s)}> Tj ET\n`};const rect=(x,yy,w,h,color)=>{pg+=`${color} rg ${x.toFixed(2)} ${(H-yy-h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re f\n`};function wrapText(s,width,size,b=false){ctx.font=(b?'bold ':'')+size+'px Arial';const out=[];let line='';for(const word of words(s)){if(ctx.measureText(line+(line?' ':'')+word).width>width&&line){out.push(line);line=''}if(ctx.measureText(word).width>width){for(const char of word){if(ctx.measureText(line+char).width>width&&line){out.push(line);line=''}line+=char}}else line+=(line?' ':'')+word}if(line)out.push(line);return out}function newPage(){if(pg)pages.push(pg);pg='';rect(0,0,W,H,'.980 .969 .949');rect(0,0,W,42,'.867 .839 .969');txt(M,26,'Mi Cuaderno de Oposiciones / Cuaderno Oficial',11,true);const titleLines=wrapText(t.title,W-M*2,18,true);y=69;for(const l of titleLines){txt(M,y,l,18,true);y+=22}txt(M,y+5,opp().short+'  |  '+(tab==='table'?'Tabla comparativa':'Esquema esencial')+'  |  '+cols+(cols===1?' columna':' columnas'),9);top=y+25;y=top;col=0;txt(M,H-22,'Mi Cuaderno de Oposiciones  -  '+new Date().toLocaleDateString('es-ES'),8);txt(W-M-17,H-22,String(pages.length+1),8)}function nextCol(){if(col+1<cols){col++;y=top}else newPage()}newPage();if(tab==='table'){const rows=compareRows(t),widths=[.25,.24,.22,.29].map(r=>cw*r),font=cols===2?7.1:9.3;function row(cells,head=false){const wrap=cells.map((c,i)=>wrapText(c,widths[i]-8,font,head)),height=Math.max(...wrap.map(l=>l.length))*(font+3)+10;if(y+height>H-45){nextCol();if(!head)row(tableHeads,true)}let x=M+col*(cw+gap);wrap.forEach((lines,i)=>{rect(x,y,widths[i]-.7,height-.7,head?'.867 .839 .969':i%2?'.952 .964 .930':'.988 .983 .967');lines.forEach((l,j)=>txt(x+4,y+font+4+j*(font+3),l,font,head));x+=widths[i]});y+=height}row(tableHeads,true);rows.forEach((r,i)=>{if(cols===2&&i===Math.ceil(rows.length/2)&&col===0){nextCol();row(tableHeads,true)}row(r)})}else{const units = getTopicPdfUnits(t);const mid=Math.ceil(units.length/2);units.forEach((u,idx)=>{if(cols===2&&idx===mid&&col===0)nextCol();const size=u.head?11:10,ls=wrapText(u.s,cw-(u.head?12:15),size,u.head),height=ls.length*14+11;if(y+height>H-43)nextCol();const x=M+col*(cw+gap);if(u.head){rect(x,y,cw,height-3,'.733 .941 .816');ls.forEach((l,j)=>txt(x+6,y+14+j*14,l,size,true))}else{rect(x+2,y+6,3,3,'.55 .43 .63');ls.forEach((l,j)=>txt(x+12,y+11+j*14,l,size))}y+=height})}if(t.source){if(y+47>H-40)nextCol();y+=16;txt(M+col*(cw+gap),y,'Fuente de los apuntes:',8,true);for(const l of wrapText(t.source,cw,7)){y+=10;if(y>H-40)nextCol();txt(M+col*(cw+gap),y,l,7)}}pages.push(pg);const objects=['<< /Type /Catalog /Pages 2 0 R >>',`<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_,i)=>(5+2*i)+' 0 R').join(' ')}] >>`,'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>','<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'];pages.forEach((p,i)=>{objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${6+2*i} 0 R >>`);objects.push('<< /Length '+p.length+' >>\nstream\n'+p+'endstream')});let doc='%PDF-1.4\n',offsets=[0];objects.forEach((o,i)=>{offsets.push(doc.length);doc+=(i+1)+' 0 obj\n'+o+'\nendobj\n'});const pos=doc.length;doc+='xref\n0 '+offsets.length+'\n0000000000 65535 f \n'+offsets.slice(1).map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('')+'trailer\n<< /Size '+offsets.length+' /Root 1 0 R >>\nstartxref\n'+pos+'\n%%EOF';return new Blob([doc],{type:'application/pdf'})}
+  function pdfBlob(t,cols=1,tab=readerTab){const W=595,H=842,M=35,gap=21,cw=(W-2*M-(cols-1)*gap)/cols,pages=[];let pg='',y=0,col=0,top=0;const ctx=document.createElement('canvas').getContext('2d');const hex=s=>Array.from(String(s).replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,'-').replace(/…/g,'...')).map(c=>(c.charCodeAt(0)<256?c.charCodeAt(0):c==='€'?128:63).toString(16).padStart(2,'0')).join('');const txt=(x,yy,s,size=10,b=false,color='.18 .21 .26')=>{pg+=`${color} rg BT /F${b?2:1} ${size} Tf 1 0 0 1 ${x.toFixed(2)} ${(H-yy).toFixed(2)} Tm <${hex(s)}> Tj ET\n`};const rect=(x,yy,w,h,color)=>{pg+=`${color} rg ${x.toFixed(2)} ${(H-yy-h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re f\n`};function wrapText(s,width,size,b=false){ctx.font=(b?'bold ':'')+size+'px Arial';const out=[];let line='';for(const word of words(s)){if(ctx.measureText(line+(line?' ':'')+word).width>width&&line){out.push(line);line=''}if(ctx.measureText(word).width>width){for(const char of word){if(ctx.measureText(line+char).width>width&&line){out.push(line);line=''}line+=char}}else line+=(line?' ':'')+word}if(line)out.push(line);return out}function newPage(){if(pg)pages.push(pg);pg='';rect(0,0,W,H,'.980 .969 .949');rect(0,0,W,42,'.867 .839 .969');txt(M,26,'Mi Cuaderno de Oposiciones / Cuaderno Oficial',11,true);const titleLines=wrapText(t.title,W-M*2,18,true);y=69;for(const l of titleLines){txt(M,y,l,18,true);y+=22}txt(M,y+5,opp().short+'  |  '+(tab==='table'?'Tablas y Cuadros Comparativos':'Esquema esencial')+'  |  '+cols+(cols===1?' columna':' columnas'),9);top=y+25;y=top;col=0;txt(M,H-22,'Mi Cuaderno de Oposiciones  -  '+new Date().toLocaleDateString('es-ES'),8);txt(W-M-17,H-22,String(pages.length+1),8)}function nextCol(){if(col+1<cols){col++;y=top}else newPage()}newPage();if(tab==='table'){const tables=getTopicTables(t);tables.forEach((tbl,tIdx)=>{if(tIdx>0){if(y+110>H-45){nextCol()}else{y+=16}}const tW=cols===2?cw:(W-2*M);rect(M+col*(cw+gap),y,tW,18,'.867 .839 .969');txt(M+col*(cw+gap)+6,y+13,tbl.title,cols===2?8:9.5,true,'.33 .20 .59');y+=22;const widths=(tbl.widths||[.25,.25,.25,.25]).map(r=>cw*r),font=cols===2?6.8:8.5;function row(cells,head=false){const wrap=cells.map((c,i)=>wrapText(c,widths[i]-8,font,head)),height=Math.max(...wrap.map(l=>l.length))*(font+3)+9;if(y+height>H-45){nextCol();if(!head)row(tbl.heads,true)}let x=M+col*(cw+gap);wrap.forEach((lines,i)=>{rect(x,y,widths[i]-.7,height-.7,head?'.867 .839 .969':i%2?'.952 .964 .930':'.988 .983 .967');lines.forEach((l,j)=>txt(x+4,y+font+3+j*(font+3),l,font,head));x+=widths[i]});y+=height}row(tbl.heads,true);tbl.rows.forEach(r=>row(r))})}else{const units = getTopicPdfUnits(t);const mid=Math.ceil(units.length/2);units.forEach((u,idx)=>{if(cols===2&&idx===mid&&col===0)nextCol();const size=u.head?11:10,ls=wrapText(u.s,cw-(u.head?12:15),size,u.head),height=ls.length*14+11;if(y+height>H-43)nextCol();const x=M+col*(cw+gap);if(u.head){rect(x,y,cw,height-3,'.733 .941 .816');ls.forEach((l,j)=>txt(x+6,y+14+j*14,l,size,true))}else{rect(x+2,y+6,3,3,'.55 .43 .63');ls.forEach((l,j)=>txt(x+12,y+11+j*14,l,size))}y+=height})}if(t.source){if(y+47>H-40)nextCol();y+=16;txt(M+col*(cw+gap),y,'Fuente de los apuntes:',8,true);for(const l of wrapText(t.source,cw,7)){y+=10;if(y>H-40)nextCol();txt(M+col*(cw+gap),y,l,7)}}pages.push(pg);const objects=['<< /Type /Catalog /Pages 2 0 R >>',`<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_,i)=>(5+2*i)+' 0 R').join(' ')}] >>`,'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>','<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'];pages.forEach((p,i)=>{objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${6+2*i} 0 R >>`);objects.push('<< /Length '+p.length+' >>\nstream\n'+p+'endstream')});let doc='%PDF-1.4\n',offsets=[0];objects.forEach((o,i)=>{offsets.push(doc.length);doc+=(i+1)+' 0 obj\n'+o+'\nendobj\n'});const pos=doc.length;doc+='xref\n0 '+offsets.length+'\n0000000000 65535 f \n'+offsets.slice(1).map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('')+'trailer\n<< /Size '+offsets.length+' /Root 1 0 R >>\nstartxref\n'+pos+'\n%%EOF';return new Blob([doc],{type:'application/pdf'})}
   function zipStored(files){const enc=new TextEncoder(),parts=[],central=[];let offset=0,cdSize=0;const crcTable=Array.from({length:256},(_,i)=>{let v=i;for(let j=0;j<8;j++)v=(v&1)?0xedb88320^(v>>>1):v>>>1;return v>>>0});const le=(n,size)=>Array.from({length:size},(_,i)=>(n>>>(8*i))&255);for(const [filename,content] of Object.entries(files)){const name=enc.encode(filename),data=enc.encode(content);let crc=0xffffffff;for(const byte of data)crc=crcTable[(crc^byte)&255]^(crc>>>8);crc=(crc^0xffffffff)>>>0;const common=[...le(20,2),...le(2048,2),0,0,0,0,33,0,...le(crc,4),...le(data.length,4),...le(data.length,4),...le(name.length,2),0,0];const local=Uint8Array.from([80,75,3,4,...common,...name]);parts.push(local,data);const cent=Uint8Array.from([80,75,1,2,20,0,...common,0,0,0,0,0,0,0,0,0,0,...le(offset,4),...name]);central.push(cent);cdSize+=cent.length;offset+=local.length+data.length}const n=central.length;return [...parts,...central,Uint8Array.from([80,75,5,6,0,0,0,0,...le(n,2),...le(n,2),...le(cdSize,4),...le(offset,4),0,0])]}
-  function docxBlob(t,tab=readerTab){const ns='http://schemas.openxmlformats.org/wordprocessingml/2006/main',pre='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',p=(s,size=22,b=false,bg='')=>`<w:p><w:pPr>${bg?`<w:shd w:fill="${bg}"/>`:''}<w:spacing w:after="120"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>${b?'<w:b/>':''}<w:color w:val="2D3748"/><w:sz w:val="${size}"/></w:rPr><w:t xml:space="preserve">${esc(s)}</w:t></w:r></w:p>`;let body=p('OPOSAPIENS STUDIO',20,true,'DDD6FE')+p(t.title,36,true)+p(opp().short+' / '+(tab==='table'?'Tabla comparativa':'Esquema de repaso'),20);if(tab==='table'){const rows=[tableHeads,...compareRows(t)];body+='<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(x=>`<w:${x} w:val="single" w:sz="4" w:color="DDD6DE"/>`).join('')+'</w:tblBorders></w:tblPr><w:tblGrid>'+Array(4).fill('<w:gridCol w:w="2240"/>').join('')+'</w:tblGrid>'+rows.map((r,i)=>'<w:tr>'+r.map(c=>`<w:tc><w:tcPr><w:tcW w:w="2240" w:type="dxa"/><w:shd w:fill="${i===0?'DDD6FE':i%2?'FAF7F2':'E8F1E6'}"/></w:tcPr>${p(c,19,i===0)}</w:tc>`).join('')+'</w:tr>').join('')+'</w:tbl>'}else{const units=getTopicPdfUnits(t);units.forEach(u=>{if(u.head)body+=p(u.s,24,true,'BBF7D0');else body+=p('• '+u.s,20)});}if(t.source)body+=p('Fuente: '+t.source,18);const types='http://schemas.openxmlformats.org/package/2006/content-types',rels='http://schemas.openxmlformats.org/package/2006/relationships';const files={'[Content_Types].xml':pre+`<Types xmlns="${types}"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`,'_rels/.rels':pre+`<Relationships xmlns="${rels}"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`,'word/document.xml':pre+`<w:document xmlns:w="${ns}"><w:background w:color="FAF7F2"/><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1100" w:bottom="1100" w:left="1250" w:right="1250"/></w:sectPr></w:body></w:document>`};return new Blob(zipStored(files),{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})}
+  function docxBlob(t,tab=readerTab){const ns='http://schemas.openxmlformats.org/wordprocessingml/2006/main',pre='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',p=(s,size=22,b=false,bg='')=>`<w:p><w:pPr>${bg?`<w:shd w:fill="${bg}"/>`:''}<w:spacing w:after="120"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>${b?'<w:b/>':''}<w:color w:val="2D3748"/><w:sz w:val="${size}"/></w:rPr><w:t xml:space="preserve">${esc(s)}</w:t></w:r></w:p>`;let body=p('OPOSAPIENS STUDIO',20,true,'DDD6FE')+p(t.title,36,true)+p(opp().short+' / '+(tab==='table'?'Tablas Comparativas Oficiales':'Esquema de repaso'),20);if(tab==='table'){const tables=getTopicTables(t);tables.forEach(tbl=>{body+=p(tbl.title,22,true,'DDD6FE');const rows=[tbl.heads,...tbl.rows];const colCount=tbl.heads.length;const colWidth=Math.floor(8960/colCount);body+='<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(x=>`<w:${x} w:val="single" w:sz="4" w:color="DDD6DE"/>`).join('')+'</w:tblBorders></w:tblPr><w:tblGrid>'+Array(colCount).fill(`<w:gridCol w:w="${colWidth}"/>`).join('')+'</w:tblGrid>'+rows.map((r,i)=>'<w:tr>'+r.map(c=>`<w:tc><w:tcPr><w:tcW w:w="${colWidth}" w:type="dxa"/><w:shd w:fill="${i===0?'DDD6FE':i%2?'FAF7F2':'E8F1E6'}"/></w:tcPr>${p(c,18,i===0)}</w:tc>`).join('')+'</w:tr>').join('')+'</w:tbl>'+p('',12);});}else{const units=getTopicPdfUnits(t);units.forEach(u=>{if(u.head)body+=p(u.s,24,true,'BBF7D0');else body+=p('• '+u.s,20)});}if(t.source)body+=p('Fuente: '+t.source,18);const types='http://schemas.openxmlformats.org/package/2006/content-types',rels='http://schemas.openxmlformats.org/package/2006/relationships';const files={'[Content_Types].xml':pre+`<Types xmlns="${types}"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`,'_rels/.rels':pre+`<Relationships xmlns="${rels}"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`,'word/document.xml':pre+`<w:document xmlns:w="${ns}"><w:background w:color="FAF7F2"/><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1100" w:bottom="1100" w:left="1250" w:right="1250"/></w:sectPr></w:body></w:document>`};return new Blob(zipStored(files),{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})}
   function exportNotes(type){const t=currentTopic();if(!t?.text)return toast('Añade apuntes al tema antes de exportar.');const name=t.title.replace(/[^\p{L}\p{N} -]/gu,'').slice(0,80),isWord=type==='docx';download(isWord?docxBlob(t):pdfBlob(t,type==='pdf2'?2:1),name+' - '+(readerTab==='table'?'tabla':'esquema')+(isWord?'.docx':' - '+(type==='pdf2'?'2 columnas':'1 columna')+'.pdf'));toast('Documento preparado para descargar.')}
   const glossary=text=>sentences(text).map(s=>s.match(/^([\p{L}\d][\p{L}\d \-\/]{1,45})\s*[:=]\s*(.{6,600})$/u)).filter(Boolean).map(m=>({term:m[1].trim(),def:m[2].trim()}));
   function clozeQuestions(t){if(!t?.text)return [];const ls=sentences(t.text).filter(s=>words(s).length>=6&&s.length<620),qs=[],pool=[...new Set(ls.flatMap(s=>s.match(keyRX)||[]))],vocab=glossary(t.text);vocab.forEach((v,i)=>{const other=shuffle(vocab.filter(x=>norm(x.term)!==norm(v.term)).map(x=>x.term));const a=[...new Set([v.term,...other,'Resolución','Subsanación','Prescripción','Competencia'])].slice(0,4);qs.push({id:'g'+t.id+i,t:t.id,q:'¿Qué concepto de tus apuntes corresponde a esta definición? '+v.def,a,c:0,ref:t.title,url:t.source,why:v.term+': '+v.def})});ls.forEach((s,i)=>{const matches=s.match(keyRX)||[];const terms=matches.length?[...new Set(matches)]:[...new Set(words(s).map(v=>v.replace(/[^\p{L}]/gu,'')).filter(v=>v.length>=7&&!/^(artículo|artículos|durante|mediante|siempre|siguiente|presente|establece|conforme)$/i.test(v)))].slice(0,2);terms.slice(0,2).forEach((term,j)=>{let others=pool.filter(x=>norm(x)!==norm(term));if(/d[ií]as|mes|años|horas/i.test(term))others=shuffle(['5 días','10 días','15 días','un mes','tres meses','seis meses','un año'].filter(x=>norm(x)!==norm(term)));else others=[...others,...shuffle(ls.filter(x=>x!==s).flatMap(x=>words(x).map(w=>w.replace(/[^\p{L}]/gu,'')).filter(w=>w.length>=8)))];const a=[...new Map([term,...others,'competencia','resolución','procedimiento','presupuesto'].map(x=>[norm(x),x])).values()].slice(0,4);if(a.length===4)qs.push({id:'c'+t.id+'-'+i+'-'+j,t:t.id,q:'Completa el fragmento de tus apuntes: «'+s.replace(term,'_____')+'»',a,c:0,ref:t.title,url:t.source,why:'Texto original: «'+s+'»',origin:'local'})})});return qs.slice(0,160)}
@@ -2532,6 +2713,24 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
   let speechRecognizer = null;
   let isListeningOral = false;
   let oralTranscript = '';
+
+  function speakCaseFacts(text) {
+    if (!('speechSynthesis' in window)) return toast('Síntesis de voz no disponible en este navegador.');
+    window.speechSynthesis.cancel();
+    if (!text) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'es-ES';
+    u.rate = 0.95;
+    window.speechSynthesis.speak(u);
+    toast('🔊 Leyendo en voz alta...');
+  }
+
+  function stopSpeechSynthesis() {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      toast('Audio detenido.');
+    }
+  }
 
   function toggleOralRecognition() {
     const SpeechAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -2582,29 +2781,51 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
   function casesView() {
     const all = caseOptions(), c = all[chosenCase] || all[0];
     const qCount = (c.ids || c.questions || []).length;
+    const foundArticles = citedArticles(oralTranscript);
     
     return `<div class="page">${heading('Supuestos Prácticos GACE A2', 'Tres modalidades de preparación: test oficial, redacción jurídica de dictamen y exposición oral.', btn('Generar supuesto con IA', 'ai-case', 'sparkle'), 'Segundo Ejercicio / Casos Oficiales')}
       <div class="content-grid">
         <section class="surface workspace">
-          <div class="row between wrap" style="margin-bottom:12px">
+          <!-- SELECTOR DE EXPEDIENTE -->
+          <div class="row between wrap" style="margin-bottom:14px">
             <label class="field" style="flex:1;min-width:240px"><span>Expediente / Caso Práctico</span>
               <select id="case-select">
                 ${all.map((x,i) => `<option value="${i}" ${i===chosenCase?'selected':''}>${esc(x.block||'Bloque IV')} · ${esc(x.title)}</option>`).join('')}
               </select>
             </label>
-            <div class="tabs" style="align-self:flex-end">
-              <button class="tab ${caseMode==='test'?'selected':''}" onclick="caseMode='test';renderRoute(false);">${I('list',13)} Modo Test</button>
-              <button class="tab ${caseMode==='write'?'selected':''}" onclick="caseMode='write';renderRoute(false);">${I('pen',13)} Redacción Jurídica</button>
-              <button class="tab ${caseMode==='oral'?'selected':''}" onclick="caseMode='oral';renderRoute(false);">${I('sparkle',13)} 🎙️ Hablar en Alto</button>
-            </div>
+          </div>
+
+          <!-- TRES MODALIDADES DE PREPARACIÓN DESTACADAS -->
+          <div class="row wrap" style="gap:10px;margin-bottom:16px">
+            <button type="button" class="btn ${caseMode==='test'?'primary':'soft'}" onclick="caseMode='test';renderRoute(false);" style="flex:1;min-width:180px;text-align:left;padding:12px 14px;border-radius:10px;display:flex;flex-direction:column;gap:3px">
+              <div style="font-weight:700;font-size:13.5px">📝 1. Modo Test Oficial</div>
+              <div class="tiny" style="opacity:0.85">Preguntas oficiales tipo test con penalización (-1/3)</div>
+            </button>
+            <button type="button" class="btn ${caseMode==='write'?'primary':'soft'}" onclick="caseMode='write';renderRoute(false);" style="flex:1;min-width:180px;text-align:left;padding:12px 14px;border-radius:10px;display:flex;flex-direction:column;gap:3px">
+              <div style="font-weight:700;font-size:13.5px">✍️ 2. Redacción Jurídica</div>
+              <div class="tiny" style="opacity:0.85">Dictamen oficial estructurado y rúbrica del tribunal</div>
+            </button>
+            <button type="button" class="btn ${caseMode==='oral'?'primary':'soft'}" onclick="caseMode='oral';renderRoute(false);" style="flex:1;min-width:180px;text-align:left;padding:12px 14px;border-radius:10px;display:flex;flex-direction:column;gap:3px">
+              <div style="font-weight:700;font-size:13.5px">🎙️ 3. Hablar en Alto / Oral</div>
+              <div class="tiny" style="opacity:0.85">Defensa ante tribunal con micrófono y transcripción</div>
+            </button>
           </div>
 
           <div class="divider"></div>
           <div class="row wrap"><span class="tag">Expediente ${esc(c.file||'Oficial')}</span><span class="tiny muted">${c.generated?'Borrador generado por IA':'Caso Oficial GACE Subgrupo A2'}</span></div>
           <h2 class="panel-title" style="margin-top:12px">${esc(c.title)}</h2>
           <p class="case-facts" style="line-height:1.75;font-size:13.5px">${esc(c.facts)}</p>
+
+          <!-- CONTROLES DE LECTURA EN VOZ ALTA DEL EXPEDIENTE -->
+          <div class="row between wrap" style="margin:10px 0 14px;gap:8px">
+            <div class="row wrap" style="gap:6px">
+              <button class="btn sm soft" onclick="speakCaseFacts(caseOptions()[chosenCase]?.facts)">🔊 Escuchar hechos en voz alta</button>
+              <button class="btn sm soft" onclick="stopSpeechSynthesis()">⏹️ Detener audio</button>
+            </div>
+            <button class="btn sm soft" onclick="speakCaseFacts(caseOptions()[chosenCase]?.solution)">⚖️ Escuchar resolución oficial</button>
+          </div>
           
-          <h4 class="field-label" style="margin:16px 0 8px">Documentos unidos al expediente</h4>
+          <h4 class="field-label" style="margin:14px 0 8px">Documentos unidos al expediente</h4>
           <div style="background:#fdfbf7;padding:10px 14px;border-radius:10px;border:1px solid var(--line);margin-bottom:16px">
             ${(c.docs||[]).map((d,i) => `<div class="row" style="padding:4px 0;font-size:12px">${I('file',14)}<strong>Doc. ${String(i+1).padStart(2,'0')}:</strong> ${esc(d)}</div>`).join('')}
           </div>
@@ -2612,8 +2833,8 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
           <!-- MODO TEST -->
           ${caseMode === 'test' ? `
             <div class="stack" style="margin-top:14px">
-              <div class="notice" style="background:#f0eef9;border-color:#d9d1f0;padding:10px 14px">
-                📝 <strong>Modo Test del Supuesto:</strong> Resuelve las ${qCount} preguntas oficiales asociadas al expediente con penalización por fallo (1/3).
+              <div class="notice" style="background:#f0eef9;border-color:#d9d1f0;padding:12px 14px">
+                📝 <strong>Modo Test Oficial:</strong> Resuelve las ${qCount} preguntas oficiales asociadas al expediente con penalización por fallo (1/3).
               </div>
               <button class="btn primary" data-act="start-case" style="margin-top:8px">${I('play',14)} Iniciar resolución del caso (${qCount} preguntas tipo test)</button>
             </div>
@@ -2622,11 +2843,15 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
           <!-- MODO REDACCIÓN JURÍDICA -->
           ${caseMode === 'write' ? `
             <div class="stack" style="margin-top:14px">
-              <div class="notice row between" style="background:#fdf7e7;border-color:#f5e5ba;padding:10px 14px">
+              <div class="notice row between wrap" style="background:#fdf7e7;border-color:#f5e5ba;padding:10px 14px;gap:8px">
                 <span>✍️ <strong>Redacción de Propuesta de Resolución / Dictamen:</strong> Estructura tu respuesta con Antecedentes, Fundamentos de Derecho y Fallo motivado.</span>
                 <span class="tiny font-mono" id="word-count-badge">Palabras: 0</span>
               </div>
-              <textarea id="case-write-area" rows="12" style="font-family:var(--sans);font-size:13px;line-height:1.7;padding:12px;border:1.5px solid var(--line);border-radius:10px;width:100%" placeholder="I. HECHOS Y ANTECEDENTES DE DERECHO...&#10;II. FUNDAMENTOS JURÍDICOS (Citar artículos aplicables de la LPAC / LCSP / TREBEP)...&#10;III. PROPUESTA DE RESOLUCIÓN..." oninput="document.getElementById('word-count-badge').textContent = 'Palabras: ' + this.value.trim().split(/\s+/).filter(Boolean).length;"></textarea>
+              <div class="row wrap" style="gap:6px;margin:4px 0">
+                <button class="btn sm soft" onclick="const a=document.getElementById('case-write-area');if(a){a.value='I. ANTECEDENTES DE HECHO:\n1. Con fecha... se registra formalmente...\n2. El órgano instructor comprueba la falta del documento preceptivo...\n\nII. FUNDAMENTOS DE DERECHO:\n1. Conforme al Art. 68.1 de la Ley 39/2015 (LPAC), el plazo de subsanación es de 10 días hábiles.\n2. Según el Art. 30.2 de la LPAC, el cómputo de plazos por días hábiles excluye sábados, domingos y festivos, iniciándose a partir del día siguiente a la notificación.\n3. De conformidad con el Art. 21 y 68.1 de la LPAC, si no se subsana procede el desistimiento previa resolución expresa, nunca la caducidad automática.\n\nIII. PROPUESTA DE RESOLUCIÓN:\n- Declarar el desistimiento y ordenar el archivo de las actuaciones si transcurre el plazo sin subsanación, o continuar con la tramitación en caso de subsanación en plazo.\n';document.getElementById('word-count-badge').textContent='Palabras: '+a.value.trim().split(/\\s+/).filter(Boolean).length;}">📄 Cargar plantilla oficial de examen</button>
+                <button class="btn sm soft" onclick="const a=document.getElementById('case-write-area');if(a){a.value='';document.getElementById('word-count-badge').textContent='Palabras: 0';}">Limpiar borrador</button>
+              </div>
+              <textarea id="case-write-area" rows="12" style="font-family:var(--sans);font-size:13px;line-height:1.7;padding:12px;border:1.5px solid var(--line);border-radius:10px;width:100%" placeholder="I. HECHOS Y ANTECEDENTES DE DERECHO...&#10;II. FUNDAMENTOS JURÍDICOS (Citar artículos aplicables de la LPAC / LCSP / TREBEP)...&#10;III. PROPUESTA DE RESOLUCIÓN..." oninput="document.getElementById('word-count-badge').textContent = 'Palabras: ' + this.value.trim().split(/\\s+/).filter(Boolean).length;"></textarea>
               <div class="row between wrap">
                 <button class="btn soft sm" onclick="modal('Rúbrica Oficial de Corrección', '<div class=\'stack\'><h4>Criterios del Tribunal Calificador (GACE A2):</h4><ul><li>1. Identificación correcta del régimen legal aplicable.</li><li>2. Precisión en la cita de artículos (LPAC, LRJSP, LCSP).</li><li>3. Claridad expositiva y rigor formal.</li><li>4. Sentido correcto de la resolución o recurso procedente.</li></ul></div>')">📋 Ver rúbrica del tribunal</button>
                 <button class="btn primary sm" onclick="modal('Resolución Oficial en Paralelo', '<div class=\'stack\'><h4>Resolución Motivada del Expediente:</h4><p style=\'line-height:1.7;white-space:pre-wrap\'>${esc(c.solution)}</p></div>', true)">⚖️ Comparar con Resolución Oficial</button>
@@ -2637,17 +2862,21 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
           <!-- MODO HABLAR EN ALTO -->
           ${caseMode === 'oral' ? `
             <div class="stack" style="margin-top:14px">
-              <div class="notice" style="background:#e2edde;border-color:#c8dfc1;padding:10px 14px">
+              <div class="notice" style="background:#e2edde;border-color:#c8dfc1;padding:12px 14px">
                 🎙️ <strong>Exposición Oral / Hablar en Alto:</strong> Entrena la exposición del dictamen dictando en voz alta al micrófono. La app transcribirá tu respuesta y comprobará los artículos que has mencionado.
               </div>
-              <div class="row" style="gap:10px;margin-top:4px">
+              <div class="row wrap" style="gap:10px;margin-top:6px">
                 <button class="btn ${isListeningOral ? 'bad' : 'primary'}" onclick="toggleOralRecognition()">
                   ${isListeningOral ? '⏹️ Detener micrófono' : '🎙️ Hablar en alto / Dictar al tribunal'}
                 </button>
-                <button class="btn soft sm" onclick="oralTranscript = ''; document.getElementById('oral-transcription-live').innerHTML = '<i>Transcripción vacía.</i>';">Limpiar</button>
+                <button class="btn soft sm" onclick="oralTranscript = ''; document.getElementById('oral-transcription-live').innerHTML = '<i>Transcripción vacía.</i>'; renderRoute(false);">Limpiar transcripción</button>
               </div>
               <div id="oral-transcription-live" style="min-height:90px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:13px;line-height:1.6">
                 ${oralTranscript ? '<strong>Transcripción acumulada:</strong> ' + esc(oralTranscript) : '<i>Haz clic en «Hablar en alto» y expón los fundamentos jurídicos del caso...</i>'}
+              </div>
+              <div class="row wrap" style="gap:6px;align-items:center;background:#f8f9fa;padding:8px 12px;border-radius:8px">
+                <span class="tiny muted">Preceptos legales detectados en tu voz:</span>
+                ${foundArticles.length ? foundArticles.map(a => `<span class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:600">Art. ${esc(a)}</span>`).join('') : '<span class="tiny muted">Menciona leyes y artículos (ej: «artículo 68», «artículo 121»)...</span>'}
               </div>
             </div>
           ` : ''}
@@ -2711,6 +2940,24 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
   }
   let flashTopic='',petDraft=null,gameSource='',wordDrag=null;
   const srsKey=c=>opp().id+':'+c.id;
+
+  function nextInterval(c, rate) {
+    if (!c) return 1;
+    const s = state.srs[srsKey(c)];
+    const cur = (s && s.interval) ? s.interval : 1;
+    if (rate === 'again') return 0;
+    if (rate === 'hard') return Math.max(1, Math.round(cur * 1.2));
+    if (rate === 'good') return Math.max(2, Math.round(cur * 2.2));
+    if (rate === 'easy') return Math.max(4, Math.round(cur * 3.5));
+    return 1;
+  }
+
+  function toggleFlashFlip() {
+    flashFlipped = !flashFlipped;
+    renderRoute(false);
+    try { playRetroSound('beep'); } catch(e) {}
+  }
+
   function flashDeck(){const qs=questionPool({scope:flashTopic?'topic':'all',tid:flashTopic,count:16});return [...qs.map(q=>({id:q.id,t:q.t,front:q.q,back:q.a[q.c],why:q.why,ref:q.ref,url:q.url})),...(opp().cards||[])].filter(c=>!flashTopic||c.t===flashTopic)}
   function flashView(){
     const deck = flashDeck();
@@ -2731,16 +2978,17 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
             </label>
           </div>
           ${c ? `
-            <div class="flashcard-stage">
-              <div class="flashcard-flipper ${flashFlipped ? 'flipped' : ''}" onclick="flashFlipped = !flashFlipped; renderRoute(false); playRetroSound('beep');" role="button" aria-label="Voltear tarjeta al centro">
+            <div class="flashcard-stage" onclick="toggleFlashFlip()">
+              <div class="flashcard-flipper ${flashFlipped ? 'flipped' : ''}" role="button" aria-label="Voltear tarjeta al centro">
                 <!-- Anverso -->
                 <div class="flashcard-face flashcard-face-front">
                   <div class="between">
                     <span class="eyebrow ink-purple">Anverso · Recuerdo Activo</span>
                     <span class="tag" style="background:#f0eef9;color:#553396">Toca el centro para voltear ↷</span>
                   </div>
-                  <div style="flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px 0">
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px 0;cursor:pointer">
                     <h2 style="font-size:22px;line-height:1.45;color:var(--deep)">${esc(c.front)}</h2>
+                    <span class="tag" style="background:#f0eef9;color:#553396;margin-top:16px;pointer-events:none">Toca para voltear en el centro ↷</span>
                   </div>
                   <div class="small muted" style="text-align:center">
                     💡 Responde mentalmente o en voz alta antes de girar la tarjeta
@@ -2752,18 +3000,19 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
                     <span class="eyebrow ink-purple">Reverso · Respuesta Oficial</span>
                     <span class="tag" style="background:#e2edde;color:#2b6e34">Comprobación ↶</span>
                   </div>
-                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px 0">
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px 0;cursor:pointer">
                     <div class="flash-answer" style="font-size:19px;line-height:1.55;font-weight:600;color:#22543d;margin-bottom:10px">${esc(c.back)}</div>
                     ${c.why ? `<p class="small muted" style="max-width:500px">${esc(c.why)}</p>` : ''}
+                    <span class="tag" style="background:#e2edde;color:#2b6e34;margin-top:12px;pointer-events:none">Voltear al anverso ↶</span>
                   </div>
-                  <div style="text-align:center;margin-top:auto">${sourceLink(c)}</div>
+                  <div style="text-align:center;margin-top:auto" onclick="event.stopPropagation()">${sourceLink(c)}</div>
                 </div>
               </div>
             </div>
             ${flashFlipped ? `
               <div class="row wrap" style="justify-content:center;margin:18px 0;gap:8px">
                 <button class="btn sm" onclick="flashFlipped = false; renderRoute(false);">↺ Volver al anverso</button>
-                ${[['again','Otra vez · 10 min'], ['hard','Difícil · 1 d'], ['good','Bien · ' + nextInterval(c,'good') + ' d'], ['easy','Fácil · ' + nextInterval(c,'easy') + ' d']].map(([k,l]) => `
+                ${[['again','Otra vez · 10 min'], ['hard','Difícil · 1 día'], ['good','Bien · ' + nextInterval(c,'good') + ' días'], ['easy','Fácil · ' + nextInterval(c,'easy') + ' días']].map(([k,l]) => `
                   <button class="btn ${k==='good'?'primary':''}" data-act="rate-card" data-id="${k}">${l}</button>
                 `).join('')}
               </div>
@@ -2789,7 +3038,7 @@ No podrá iniciarse la reforma constitucional en tiempo de guerra o bajo la vige
           <div class="between small"><span>Pendientes hoy</span><b>${due.length}</b></div>
           <div class="between small" style="margin-top:10px"><span>Total en el mazo</span><b>${deck.length}</b></div>
           <div class="divider"></div>
-          <button class="btn sm soft w-full" onclick="flashFlipped = !flashFlipped; renderRoute(false);">Girar tarjeta en el centro</button>
+          <button class="btn sm soft w-full" onclick="toggleFlashFlip()">Girar tarjeta en el centro</button>
         </aside>
       </div>
     </div>`;
