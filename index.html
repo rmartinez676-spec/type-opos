@@ -4242,8 +4242,257 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
   function docxBlob(t,tab=readerTab){const ns='http://schemas.openxmlformats.org/wordprocessingml/2006/main',pre='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',p=(s,size=22,b=false,bg='')=>`<w:p><w:pPr>${bg?`<w:shd w:fill="${bg}"/>`:''}<w:spacing w:after="120"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>${b?'<w:b/>':''}<w:color w:val="2D3748"/><w:sz w:val="${size}"/></w:rPr><w:t xml:space="preserve">${esc(s)}</w:t></w:r></w:p>`;let body=p('OPOSAPIENS STUDIO',20,true,'DDD6FE')+p(t.title,36,true)+p(opp().short+' / '+(tab==='table'?'Tablas Comparativas Oficiales':'Esquema de repaso'),20);if(tab==='table'){const tables=getTopicTables(t);tables.forEach(tbl=>{body+=p(tbl.title,22,true,'DDD6FE');const rows=[tbl.heads,...tbl.rows];const colCount=tbl.heads.length;const colWidth=Math.floor(8960/colCount);body+='<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(x=>`<w:${x} w:val="single" w:sz="4" w:color="DDD6DE"/>`).join('')+'</w:tblBorders></w:tblPr><w:tblGrid>'+Array(colCount).fill(`<w:gridCol w:w="${colWidth}"/>`).join('')+'</w:tblGrid>'+rows.map((r,i)=>'<w:tr>'+r.map(c=>`<w:tc><w:tcPr><w:tcW w:w="${colWidth}" w:type="dxa"/><w:shd w:fill="${i===0?'DDD6FE':i%2?'FAF7F2':'E8F1E6'}"/></w:tcPr>${p(c,18,i===0)}</w:tc>`).join('')+'</w:tr>').join('')+'</w:tbl>'+p('',12);});}else{const units=getTopicPdfUnits(t);units.forEach(u=>{if(u.head)body+=p(u.s,24,true,'BBF7D0');else body+=p('• '+u.s,20)});}if(t.source)body+=p('Fuente: '+t.source,18);const types='http://schemas.openxmlformats.org/package/2006/content-types',rels='http://schemas.openxmlformats.org/package/2006/relationships';const files={'[Content_Types].xml':pre+`<Types xmlns="${types}"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`,'_rels/.rels':pre+`<Relationships xmlns="${rels}"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`,'word/document.xml':pre+`<w:document xmlns:w="${ns}"><w:background w:color="FAF7F2"/><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1100" w:bottom="1100" w:left="1250" w:right="1250"/></w:sectPr></w:body></w:document>`};return new Blob(zipStored(files),{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})}
   function exportNotes(type){const t=currentTopic();if(!t?.text)return toast('Añade apuntes al tema antes de exportar.');const name=t.title.replace(/[^\p{L}\p{N} -]/gu,'').slice(0,80),isWord=type==='docx';download(isWord?docxBlob(t):pdfBlob(t,type==='pdf2'?2:1),name+' - '+(readerTab==='table'?'tabla':'esquema')+(isWord?'.docx':' - '+(type==='pdf2'?'2 columnas':'1 columna')+'.pdf'));toast('Documento preparado para descargar.')}
   const glossary=text=>sentences(text).map(s=>s.match(/^([\p{L}\d][\p{L}\d \-\/]{1,45})\s*[:=]\s*(.{6,600})$/u)).filter(Boolean).map(m=>({term:m[1].trim(),def:m[2].trim()}));
+    /* =================================================================
+     MOTOR DE GENERACIÓN DINÁMICA DE PREGUNTAS DEL TEMARIO
+     ================================================================= */
+  function generateDynamicTopicQuestions(t) {
+    if (!t) return [];
+    const qs = [];
+    const titleNorm = norm(t.title || '');
+
+    // 1. Text-driven questions (if topic has user notes or text)
+    if (t.text && t.text.length > 40) {
+      const sens = sentences(t.text).filter(s => s.length >= 25 && s.length <= 420);
+      
+      // Look for plazos
+      for (const s of sens) {
+        const mPlazo = s.match(/(?:plazo(?:\s+máximo|\s+ordinario)?(?:\s+es|\s+será)?\s+(?:de\s+)?|en\s+(?:el\s+plazo\s+de\s+|un\s+plazo\s+de\s+))(\d+|un|una|dos|tres|cuatro|cinco|diez|quince|veinte|veintidós|treinta|tres\s+meses|seis\s+meses|un\s+año)\s+(días?(?:\s+(?:hábiles|naturales))?|mes(?:es)?|años?|horas?)/i);
+        if (mPlazo) {
+          const correct = mPlazo[1] + ' ' + mPlazo[2];
+          const isDays = /día/i.test(mPlazo[2]);
+          const isNatural = /natural/i.test(mPlazo[2]);
+          let distractors = [];
+          if (isDays) {
+            distractors = isNatural 
+              ? ['3 días hábiles', '10 días hábiles', '15 días naturales', '1 mes']
+              : ['10 días naturales', '15 días hábiles', '1 mes', '5 días hábiles'];
+          } else if (/mes/i.test(mPlazo[2])) {
+            distractors = ['10 días hábiles', '1 mes', '3 meses', '6 meses'].filter(x => norm(x) !== norm(correct));
+          } else {
+            distractors = ['1 año', '2 años', '3 años', '4 años'].filter(x => norm(x) !== norm(correct));
+          }
+          const options = [correct, ...distractors.slice(0, 3)];
+          if (options.length === 4) {
+            const cleanAction = s.replace(mPlazo[0], '...').replace(/^(?:En|Por|Asimismo|Sin embargo|No obstante|El|La),?\s+/i, '').slice(0, 110);
+            qs.push({
+              id: 'dyn-p-' + t.id + '-' + qs.length,
+              t: t.id,
+              q: `Según el temario sobre ${t.title.split('.')[1] || t.title}, ¿cuál es el plazo correspondiente en el siguiente supuesto: «${cleanAction.trim()}»?`,
+              a: options,
+              c: 0,
+              ref: t.title,
+              url: t.source || '',
+              why: `Fundamentación del apunte: «${s.trim()}»`
+            });
+          }
+        }
+        if (qs.length >= 4) break;
+      }
+
+      // Look for majorities
+      for (const s of sens) {
+        const mMayoria = s.match(/(mayoría\s+(?:absoluta|simple|cualificada|de\s+dos\s+tercios|de\s+tres\s+quintos))/i);
+        if (mMayoria) {
+          const correct = mMayoria[1].charAt(0).toUpperCase() + mMayoria[1].slice(1).toLowerCase();
+          const allM = ['Mayoría absoluta', 'Mayoría simple', 'Mayoría de tres quintos', 'Mayoría de dos tercios'];
+          const options = [correct, ...allM.filter(x => norm(x) !== norm(correct)).slice(0, 3)];
+          const cleanSent = s.replace(mMayoria[0], '_____').slice(0, 120);
+          qs.push({
+            id: 'dyn-m-' + t.id + '-' + qs.length,
+            t: t.id,
+            q: `¿Qué tipo de mayoría se exige en el siguiente supuesto del tema: «${cleanSent.trim()}»?`,
+            a: options,
+            c: 0,
+            ref: t.title,
+            url: t.source || '',
+            why: `Texto de estudio: «${s.trim()}»`
+          });
+        }
+        if (qs.length >= 7) break;
+      }
+    }
+
+    // Helper to add question
+    const addQ = (q, options, why, ref = t.title) => {
+      qs.push({
+        id: 'dyn-k-' + t.id + '-' + qs.length,
+        t: t.id,
+        q,
+        a: options,
+        c: 0,
+        ref,
+        url: t.source || 'https://www.boe.es',
+        why
+      });
+    };
+
+    // 2. High-yield legal bank matching topic keywords & syllabus scope
+    if (titleNorm.includes('constitucion') || titleNorm.includes('corona') || titleNorm.includes('cortes') || titleNorm.includes('gobierno') || titleNorm.includes('poder judicial') || titleNorm.includes('tribunal constitucional') || titleNorm.includes('defensor del pueblo')) {
+      if (titleNorm.includes('constitucion') || titleNorm.includes('principios') || titleNorm.includes('derechos')) {
+        addQ('¿Cuáles son los cuatro valores superiores del ordenamiento jurídico español según el art. 1.1 de la Constitución?',
+          ['Libertad, la justicia, la igualdad y el pluralismo político', 'Libertad, igualdad, fraternidad y democracia', 'Justicia, seguridad jurídica, solidaridad y legalidad', 'Democracia, monarquía parlamentaria, igualdad y pluralismo'],
+          'El artículo 1.1 de la CE propugna como valores superiores de su ordenamiento jurídico la libertad, la justicia, la igualdad y el pluralismo político.');
+        addQ('¿En quién reside la soberanía nacional según el art. 1.2 de la Constitución Española?',
+          ['En el pueblo español, del que emanan los poderes del Estado', 'En las Cortes Generales en representación de la Nación', 'En el Rey como Jefe del Estado', 'En el Gobierno de la Nación'],
+          'El artículo 1.2 CE establece textualmente que la soberanía nacional reside en el pueblo español, del que emanan los poderes del Estado.');
+        addQ('¿Qué derechos gozan del nivel máximo de protección (recurso de amparo ante el Tribunal Constitucional y procedimiento preferente y sumario)?',
+          ['Los reconocidos en la Sección 1ª del Capítulo II del Título I (arts. 15 a 29) y el art. 14 y 30.2', 'Todos los derechos del Título I de la Constitución', 'Únicamente el derecho a la vida y a la libertad personal', 'Los derechos de contenido laboral y sindical del Capítulo III'],
+          'Conforme al art. 53.2 CE, gozan de amparo ante el TC el principio de igualdad (art. 14), los derechos fundamentales y libertades públicas (arts. 15 a 29) y la objeción de conciencia (art. 30.2).');
+        addQ('¿Cuál es la naturaleza constitucional del Defensor del Pueblo según el artículo 54 CE?',
+          ['Alto comisionado de las Cortes Generales designado para la defensa del Título I', 'Órgano jurisdiccional adscrito al Tribunal Constitucional', 'Comisionado del Gobierno para supervisar a las Comunidades Autónomas', 'Tribunal de garantías de los derechos fundamentales'],
+          'El artículo 54 CE define al Defensor del Pueblo como alto comisionado de las Cortes Generales, designado por éstas para la defensa de los derechos del Título I.');
+      }
+      if (titleNorm.includes('corona') || titleNorm.includes('rey')) {
+        addQ('¿Quién responde de los actos del Rey según el artículo 64 de la Constitución?',
+          ['Las personas que los refrenden (Presidente del Gobierno y, en su caso, los Ministros competentes)', 'El propio Rey en el ejercicio de sus funciones constitucionales', 'El Consejo de Estado', 'El Presidente del Tribunal Constitucional'],
+          'La persona del Rey es inviolable y no está sujeta a responsabilidad. De sus actos serán responsables las personas que los refrenden (art. 64 CE).');
+      }
+      if (titleNorm.includes('cortes') || titleNorm.includes('congreso') || titleNorm.includes('senado')) {
+        addQ('¿Cuál es la duración del mandato ordinario del Congreso de los Diputados y del Senado?',
+          ['Cuatro años', 'Cinco años', 'Tres años', 'Seis años'],
+          'Tanto el Congreso de los Diputados (art. 68.4 CE) como el Senado (art. 69.6 CE) son elegidos por cuatro años.');
+        addQ('¿Qué mayoría se requiere en el Congreso para investir al Presidente del Gobierno en primera votación?',
+          ['Mayoría absoluta de sus miembros', 'Mayoría simple de los presentes', 'Tres quintos de la Cámara', 'Dos tercios de los Diputados'],
+          'Conforme al art. 99.3 CE, se requiere mayoría absoluta en la primera votación y mayoría simple en la que se celebre 48 horas después.');
+      }
+      if (titleNorm.includes('judicial') || titleNorm.includes('cgpj')) {
+        addQ('¿Cuántos miembros componen el Consejo General del Poder Judicial y por cuánto tiempo son nombrados?',
+          ['Veinte miembros (más el Presidente), nombrados por un periodo de cinco años', 'Doce miembros por un periodo de nueve años', 'Veinticuatro miembros por un periodo de cuatro años', 'Dieciséis miembros por un periodo de seis años'],
+          'El CGPJ se compone del Presidente del Tribunal Supremo (que lo preside) y de veinte vocales nombrados por el Rey por un período de cinco años (art. 122.3 CE).');
+      }
+      if (titleNorm.includes('constitucional')) {
+        addQ('¿Por cuánto tiempo son nombrados los Magistrados del Tribunal Constitucional y cómo se renuevan?',
+          ['Por un periodo de nueve años, renovándose por terceras partes cada tres años', 'Por un periodo de cinco años sin renovación parcial', 'Por un periodo de doce años con renovación por mitades', 'Con carácter vitalicio e inamovible'],
+          'El artículo 159.3 CE dispone que los miembros del Tribunal Constitucional son designados por un período de nueve años y se renuevan por terceras partes cada tres años.');
+      }
+    }
+
+    if (titleNorm.includes('administrativ') || titleNorm.includes('procedimiento') || titleNorm.includes('acto') || titleNorm.includes('recurso') || titleNorm.includes('plazo') || titleNorm.includes('silencio')) {
+      addQ('Una solicitud no reúne los requisitos exigidos. ¿Cuál es el plazo ordinario concedido para subsanar la falta o aportar documentos preceptivos?',
+        ['Diez días hábiles', 'Diez días naturales', 'Quince días hábiles', 'Un mes'],
+        'El artículo 68.1 de la Ley 39/2015 establece un plazo de diez días para que la persona interesada subsane la falta o acompañe los documentos preceptivos.');
+      addQ('Si la persona interesada no atiende el requerimiento de subsanación en plazo, ¿cuál es la consecuencia jurídica?',
+        ['Se le tendrá por desistida de su petición, previa resolución expresa dictada al efecto', 'Se producirá la caducidad automática del procedimiento sin resolución', 'Se entenderá desestimada por silencio administrativo negativo', 'Se le impondrá una sanción pecuniaria por obstrucción'],
+        'Conforme al art. 68.1 LPAC, si no se subsana en plazo se tiene a la persona por desistida previa resolución que deberá ser dictada en los términos del art. 21.');
+      addQ('¿Cuál es la regla general para el cómputo de plazos señalados por días en el procedimiento administrativo?',
+        ['Son días hábiles, excluyéndose del cómputo sábados, domingos y festivos', 'Son días naturales sin exclusión de fines de semana', 'Se excluyen únicamente los domingos y los festivos nacionales', 'Se computan todos los días salvo el mes de agosto'],
+        'El artículo 30.2 de la Ley 39/2015 dispone que siempre que por ley o Derecho de la UE no se exprese otra cosa, los plazos por días se entienden hábiles, excluyendo sábados, domingos y festivos.');
+      addQ('En una notificación electrónica, ¿cuándo se entiende rechazada por la persona interesada?',
+        ['Cuando transcurran diez días naturales desde su puesta a disposición sin acceder a su contenido', 'A los diez días hábiles desde su depósito en la sede electrónica', 'A los tres días naturales sin acuse de recibo', 'A los quince días hábiles'],
+        'El artículo 43.2 LPAC establece que la notificación se entenderá rechazada cuando hayan transcurrido diez días naturales desde la puesta a disposición sin que se acceda a su contenido.');
+      addQ('¿Cuál es el plazo de interposición del recurso de alzada frente a un acto expreso y qué órgano lo resuelve?',
+        ['Un mes de interposición ante el superior jerárquico del órgano que dictó el acto', 'Un mes de interposición ante el mismo órgano autor del acto', 'Tres meses ante el juzgado de lo contencioso-administrativo', 'Quince días ante el Consejo de Ministros'],
+        'El artículo 122.1 LPAC fija el plazo de un mes si el acto es expreso, y el art. 121.1 dispone que se resuelve por el órgano superior jerárquico.');
+      addQ('¿Cuál es el plazo máximo que tiene la Administración para resolver y notificar el recurso potestativo de reposición?',
+        ['Un mes', 'Tres meses', 'Seis meses', 'Diez días'],
+        'Conforme al artículo 124.2 de la Ley 39/2015, el plazo máximo para dictar y notificar la resolución del recurso de reposición es de un mes.');
+      addQ('¿Cuál de los siguientes actos está viciado de nulidad de pleno derecho según el artículo 47.1 de la Ley 39/2015?',
+        ['Los que lesionen los derechos y libertades susceptibles de amparo constitucional', 'Los que incurran en cualquier infracción leve del ordenamiento jurídico', 'Los que contengan un defecto de forma no invalidante', 'Los dictados fuera del plazo legal sin causar indefensión'],
+        'El art. 47.1.a de la Ley 39/2015 establece que son nulos de pleno derecho los actos que lesionen los derechos y libertades susceptibles de amparo constitucional.');
+    }
+
+    if (titleNorm.includes('seguridad social') || titleNorm.includes('afiliacion') || titleNorm.includes('cotizacion') || titleNorm.includes('recaudacion') || titleNorm.includes('prestacion') || titleNorm.includes('jubilacion') || titleNorm.includes('incapacidad') || titleNorm.includes('tgss') || titleNorm.includes('inss')) {
+      addQ('¿A qué entidad compete la titularidad del patrimonio único de la Seguridad Social, la afiliación, altas, bajas y la gestión recaudatoria?',
+        ['A la Tesorería General de la Seguridad Social (TGSS)', 'Al Instituto Nacional de la Seguridad Social (INSS)', 'Al Instituto Social de la Marina (ISM)', 'Al Ministerio de Hacienda y Función Pública'],
+        'La TGSS es el servicio común encargado de la titularidad del patrimonio único, inscripción de empresas, afiliación, altas y bajas, y la gestión liquidatoria y recaudatoria.');
+      addQ('¿Cuál es el plazo establecido para que la empresa comunique a la TGSS la baja y las variaciones de datos de un trabajador?',
+        ['Tres días naturales siguientes al cese en el trabajo', 'Tres días hábiles contados desde el despido o baja', 'Seis días naturales siguientes al cese', 'Diez días hábiles'],
+        'El Reglamento General de Afiliación (RD 84/1996, art. 32) fija el plazo de 3 días naturales para solicitar la baja y variaciones de datos.');
+      addQ('¿En qué momento debe solicitarse el alta del trabajador en la Seguridad Social?',
+        ['Con carácter previo al inicio de la prestación de servicios del trabajador', 'Dentro de los tres días naturales posteriores al inicio del trabajo', 'El mismo día de inicio antes de finalizar la jornada laboral', 'En los seis días hábiles siguientes a la firma del contrato'],
+        'Las solicitudes de alta deben dirigirse por los empresarios antes de la iniciación de la prestación de servicios; no son admisibles altas retroactivas.');
+      addQ('¿Cuál es la duración máxima inicial de la Incapacidad Temporal (IT) y cuánto puede prorrogarla el INSS?',
+        ['365 días, con posibilidad de prórroga de hasta 180 días más', '180 días, prorrogables por otros 180 días', '2 años improrrogables', '545 días desde el primer día sin prórroga adicional'],
+        'El art. 169 LGSS establece una duración de 365 días, que el INSS puede prorrogar por 180 días más cuando se prevea la curación del trabajador.');
+      addQ('En las contingencias profesionales (accidente de trabajo y enfermedad profesional), ¿se exige periodo de carencia previa cotizada?',
+        ['No, para las contingencias profesionales rige el principio de automatismo de las prestaciones sin carencia previa', 'Sí, se exige un periodo mínimo de 180 días cotizados en los últimos 5 años', 'Sí, se exige estar al corriente de pago durante al menos 1 año', 'Solo se exige carencia previa a los trabajadores autónomos'],
+        'El artículo 172.2 LGSS exime expresamente de períodos previos de cotización para las prestaciones derivadas de accidente (sea o no de trabajo) o enfermedad profesional.');
+      addQ('¿Cuál es el período genérico mínimo de cotización (carencia) exigido para acceder a la pensión contributiva de jubilación ordinaria?',
+        ['Quince años cotizados, de los cuales al menos dos deben estar dentro de los quince años inmediatamente anteriores', 'Diez años cotizados a lo largo de toda la vida laboral', 'Veinte años completos cotizados en el Régimen General', 'Veinticinco años sin requisito de carencia específica'],
+        'El artículo 205.1 LGSS exige tener cubierto un período mínimo de cotización de quince años, de los cuales al menos dos deberán estar comprendidos dentro de los quince años inmediatamente anteriores.');
+    }
+
+    if (titleNorm.includes('empleado') || titleNorm.includes('personal') || titleNorm.includes('trebep') || titleNorm.includes('funcionario') || titleNorm.includes('situaciones') || titleNorm.includes('incompatibilidades')) {
+      addQ('¿Cuántos días de vacaciones anuales retribuidas corresponden con carácter general a un empleado público por un año completo de servicios?',
+        ['Veintidós días hábiles (o los días que en proporción correspondan si el tiempo de servicio fue menor)', 'Treinta días naturales ininterrumpidos', 'Veinticinco días hábiles', 'Veinte días hábiles excluyendo sábados'],
+        'El artículo 50.1 del TREBEP establece como regla general que los funcionarios públicos tendrán derecho a disfrutar, como mínimo, de veintidós días hábiles de vacaciones retribuidas.');
+      addQ('¿Cuál es el plazo de prescripción de las faltas muy graves cometidas por los funcionarios públicos según el TREBEP?',
+        ['Tres años', 'Dos años', 'Cinco años', 'Seis meses'],
+        'Conforme al artículo 97.1 del TREBEP, las infracciones muy graves prescriben a los tres años, las graves a los dos años y las leves a los seis meses.');
+      addQ('¿Qué requisito de tiempo de servicios previos se exige con carácter general para solicitar una excedencia voluntaria por interés particular?',
+        ['Haber prestado servicios efectivos en cualquiera de las Administraciones Públicas durante un periodo mínimo de cinco años inmediatamente anteriores (o dos años en la AGE)', 'Haber superado el período de prueba de seis meses', 'Diez años ininterrumpidos de servicio activo', 'No se exige ningún tiempo mínimo previo'],
+        'El artículo 89.2 TREBEP exige haber prestado servicios durante un período mínimo que las leyes de Función Pública fijan entre dos y cinco años inmediatamente anteriores.');
+    }
+
+    if (titleNorm.includes('contrato') || titleNorm.includes('contratacion') || titleNorm.includes('licitacion')) {
+      addQ('¿Cuáles son los umbrales económicos de valor estimado para considerar un contrato menor conforme a la Ley 9/2017 (LCSP)?',
+        ['Valor estimado inferior a 40.000 € en contratos de obras y a 15.000 € en contratos de suministros o servicios', 'Inferior a 50.000 € en obras y 18.000 € en servicios', 'Inferior a 30.000 € en todo tipo de contratos', 'Inferior a 100.000 € en obras y 25.000 € en suministros'],
+        'El artículo 118.1 de la LCSP define los contratos menores como los de valor estimado inferior a 40.000 euros para obras e inferior a 15.000 euros para suministros o servicios.');
+      addQ('¿Cuál es la duración máxima legal de un contrato menor y cabe su prórroga?',
+        ['Duración máxima de un año y no puede ser objeto de prórroga', 'Duración de seis meses prorrogable por otros seis', 'Duración de dos años con prórroga expresa', 'Duración indefinida hasta la entrega de la prestación'],
+        'El artículo 29.8 de la LCSP prohíbe expresamente que los contratos menores tengan una duración superior a un año o sean objeto de prórroga.');
+    }
+
+    if (titleNorm.includes('presupuest') || titleNorm.includes('financier') || titleNorm.includes('gasto') || titleNorm.includes('credito') || titleNorm.includes('contabilidad')) {
+      addQ('¿Cuál es el orden cronológico de las cuatro fases que integran la gestión del gasto público en el Estado?',
+        ['Autorización (A), Disposición o Compromiso (D), Reconocimiento de la obligación (O) y Propuesta de pago (P)', 'Compromiso (D), Autorización (A), Ordenación del pago (P) y Liquidación (O)', 'Reconocimiento de la obligación (O), Autorización (A), Pago material (P) y Compromiso (D)', 'Fiscalización previa, Transferencia, Retención y Liquidación'],
+        'Las fases de ejecución del gasto presupuestario (art. 73 LGP) son sucesivamente: Autorización del gasto (A), Disposición o compromiso (D), Reconocimiento de la obligación (O) y Propuesta de pago (P).');
+      addQ('¿Cuál es el principio presupuestario que exige que el presupuesto se refiera a un año natural?',
+        ['Principio de anualidad presupuestaria (art. 34 LGP)', 'Principio de especialidad cuantitativa', 'Principio de unidad de caja', 'Principio de no afectación de ingresos'],
+        'El ejercicio presupuestario coincide con el año natural y a él se imputan los derechos liquidados y obligaciones reconocidas (art. 34 de la Ley 47/2003).');
+    }
+
+    if (titleNorm.includes('justicia') || titleNorm.includes('procesal') || titleNorm.includes('juicio') || titleNorm.includes('tribunal supremo') || titleNorm.includes('registro civil') || titleNorm.includes('auxilio judicial')) {
+      addQ('En el orden civil, ¿cuál es el criterio general de cuantía que separa el juicio verbal del juicio ordinario según la LEC?',
+        ['Se tramitan por juicio verbal las demandas cuya cuantía no exceda de 15.000 euros (Ley Orgánica 1/2024 / RDL 6/2023)', 'Se tramitan por juicio verbal las de hasta 6.000 euros', 'Se tramitan por juicio ordinario todas las reclamaciones inferiores a 3.000 euros', 'No existe límite de cuantía, depende de la materia exclusivamente'],
+        'Tras las reformas procesales, el juicio verbal conoce de todas las demandas civiles cuya cuantía no supere los 15.000 euros y no versen sobre materias reservadas al juicio ordinario.');
+      addQ('¿Cuál es el plazo legal ordinario para interponer recurso de apelación contra una sentencia civil?',
+        ['Veinte días hábiles', 'Diez días hábiles', 'Un mes natural', 'Cinco días hábiles'],
+        'El artículo 458 de la Ley de Enjuiciamiento Civil establece un plazo de veinte días hábiles para interponer el recurso de apelación ante el tribunal que dictó la resolución.');
+    }
+
+    if (titleNorm.includes('hacienda') || titleNorm.includes('tributari') || titleNorm.includes('impuest') || titleNorm.includes('aeat') || titleNorm.includes('recaudacion')) {
+      addQ('En el procedimiento de apremio, ¿cuál es el porcentaje del recargo de apremio reducido si se paga antes de la finalización del plazo del art. 62.5 LGT?',
+        ['10 por ciento (recargo de apremio reducido)', '5 por ciento (recargo ejecutivo)', '20 por ciento (recargo de apremio ordinario)', '15 por ciento con intereses de demora'],
+        'El artículo 28 LGT establece que el recargo ejecutivo es del 5%, el de apremio reducido es del 10% (si se abona en el plazo notificado) y el ordinario del 20%.');
+    }
+
+    if (!qs.length) {
+      addQ(`Respecto a «${t.title}», ¿cuál es el principio orientador aplicable con carácter general en el Derecho Administrativo?`,
+        ['Sometimiento pleno a la ley y al Derecho con interdicción de la arbitrariedad', 'Libre apreciación sin sujeción a normas reglamentarias', 'Discrecionalidad absoluta del órgano decisor sin motivación', 'Inaplicabilidad supletoria de la legislación básica estatal'],
+        `En el ámbito de ${t.title}, la actuación administrativa está sujeta al principio de legalidad y sometimiento pleno a la ley y al Derecho (art. 103.1 CE y art. 3 LRJSP).`);
+    }
+
+    return qs;
+  }
+
   function clozeQuestions(t){if(!t?.text)return [];const ls=sentences(t.text).filter(s=>words(s).length>=6&&s.length<620),qs=[],pool=[...new Set(ls.flatMap(s=>s.match(keyRX)||[]))],vocab=glossary(t.text);vocab.forEach((v,i)=>{const other=shuffle(vocab.filter(x=>norm(x.term)!==norm(v.term)).map(x=>x.term));const a=[...new Set([v.term,...other,'Resolución','Subsanación','Prescripción','Competencia'])].slice(0,4);qs.push({id:'g'+t.id+i,t:t.id,q:'¿Qué concepto de tus apuntes corresponde a esta definición? '+v.def,a,c:0,ref:t.title,url:t.source,why:v.term+': '+v.def})});ls.forEach((s,i)=>{const matches=s.match(keyRX)||[];const terms=matches.length?[...new Set(matches)]:[...new Set(words(s).map(v=>v.replace(/[^\p{L}]/gu,'')).filter(v=>v.length>=7&&!/^(artículo|artículos|durante|mediante|siempre|siguiente|presente|establece|conforme)$/i.test(v)))].slice(0,2);terms.slice(0,2).forEach((term,j)=>{let others=pool.filter(x=>norm(x)!==norm(term));if(/d[ií]as|mes|años|horas/i.test(term))others=shuffle(['5 días','10 días','15 días','un mes','tres meses','seis meses','un año'].filter(x=>norm(x)!==norm(term)));else others=[...others,...shuffle(ls.filter(x=>x!==s).flatMap(x=>words(x).map(w=>w.replace(/[^\p{L}]/gu,'')).filter(w=>w.length>=8)))];const a=[...new Map([term,...others,'competencia','resolución','procedimiento','presupuesto'].map(x=>[norm(x),x])).values()].slice(0,4);if(a.length===4)qs.push({id:'c'+t.id+'-'+i+'-'+j,t:t.id,q:'Completa el fragmento de tus apuntes: «'+s.replace(term,'_____')+'»',a,c:0,ref:t.title,url:t.source,why:'Texto original: «'+s+'»',origin:'local'})})});return qs.slice(0,160)}
-  function questionPool({scope='all',block=0,tid='',count=30}={}){const o=opp(),ts=o.topics.filter(t=>scope==='topic'?t.id===tid:scope==='block'?t.b===Number(block):true),ids=new Set(ts.map(t=>t.id));if(scope==='failed')return Object.entries(state.mistakes).filter(([k,v])=>k.startsWith(o.id+':')&&v.count>0).map(([,v])=>v.question);let qs=[...(o.template?bank:[]),...(o.questions||[])].filter(q=>ids.has(q.t));if(qs.length<count){for(const t of ts.filter(x=>x.text)){qs.push(...clozeQuestions(t));if(qs.length>count*7)break}}return [...new Map(qs.map(q=>[q.q,q])).values()]}
+  function questionPool({scope='all',block=0,tid='',count=30}={}) {
+    const o = opp();
+    const ts = o.topics.filter(t => scope === 'topic' ? t.id === tid : scope === 'block' ? t.b === Number(block) : true);
+    const ids = new Set(ts.map(t => t.id));
+
+    if (scope === 'failed') {
+      return Object.entries(state.mistakes)
+        .filter(([k,v]) => k.startsWith(o.id + ':') && v.count > 0)
+        .map(([,v]) => v.question);
+    }
+
+    let qs = [...(o.template ? bank : []), ...(o.questions || [])].filter(q => ids.has(q.t));
+
+    // Dynamic generation from all syllabus topics in scope
+    for (const t of ts) {
+      const dynQs = generateDynamicTopicQuestions(t);
+      qs.push(...dynQs);
+      if (t.text) {
+        qs.push(...clozeQuestions(t));
+      }
+    }
+
+    // Deduplicate by question text
+    const unique = [...new Map(qs.map(q => [q.q, q])).values()];
+    return shuffle(unique).slice(0, Math.max(count, 45));
+  }
   function sourceLink(q){const u=safeURL(q.url);return u?`<a class="law-link" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(q.ref||'Consultar fuente')} ${I('external',11)}</a>`:`<span class="tiny muted">Fuente local: ${esc(q.ref||'Mis apuntes')}</span>`}
   let pendingQuiz=null,testScope='all',testTopic='',testBlock='0',lastResult=null;
   function testsView(){return `<div class="page">${heading('Tests de examen','Diseña un simulacro y aprende de cada respuesta.',btn('Generar preguntas con IA','ai-questions','sparkle'),'Práctica / '+opp().short)}<div class="content-grid"><section class="surface workspace"><h2 class="panel-title">Configura tu examen</h2>${state.exam?.opp===opp().id?`<div class="notice between" style="margin-bottom:17px"><span>Tienes un examen en curso.</span><button class="btn sm" data-go="quiz">Continuar ${I('arrow',12)}</button></div>`:''}<form id="test-form" class="stack"><div class="field"><span>Número de preguntas</span><div class="choice-grid">${[10,15,20,30].map(n=>`<label><input type="radio" name="count" value="${n}" ${n===10?'checked':''}>${n}</label>`).join('')}</div></div><label class="field"><span>Contenido del examen</span><select name="scope" id="test-scope">${[['all','Todo mi temario'],['block','Un bloque temático'],['topic','Un tema concreto'],['failed','Mis preguntas falladas']].map(([v,l])=>`<option value="${v}" ${testScope===v?'selected':''}>${l}</option>`).join('')}</select></label><label class="field" id="test-block-field" ${testScope==='block'?'':'hidden'}><span>Bloque</span><select name="block">${opp().blocks.map((b,i)=>`<option value="${i}" ${i===Number(testBlock)?'selected':''}>${esc(b)}</option>`).join('')}</select></label><label class="field" id="test-topic-field" ${testScope==='topic'?'':'hidden'}><span>Tema</span><select name="topic">${opp().topics.map(t=>`<option value="${esc(t.id)}" ${t.id===(testTopic||currentTopic()?.id)?'selected':''}>${esc(t.title)}</option>`).join('')}</select></label><label class="field"><span>Penalización por respuesta incorrecta</span><select name="penalty" id="test-penalty"><option value="0">Sin penalización</option><option value="0.25">1/4 de un acierto</option><option value="${1/3}" selected>1/3 de un acierto · habitual en AGE</option><option value="0.5">1/2 de un acierto</option><option value="manual">Personalizada</option></select></label><label class="field" id="manual-penalty" hidden><span>Factor de penalización (0 a 1)</span><input type="number" name="manual" step="0.001" min="0" max="1" value="0.333"></label><p class="small muted">Puntuación neta = aciertos − (fallos × penalización). Las respuestas en blanco no restan. Comprueba las bases de tu convocatoria.</p><button class="btn primary">${I('play',12)}Empezar examen</button><p id="test-error" class="modal-error" aria-live="polite"></p></form></section><aside class="surface module-aside">${toolArt('tests')}<h3>Cuaderno de resultados</h3><p>Revisa tus errores y vuelve a intentarlo con una selección de las preguntas que más te cuestan.</p><div class="divider"></div>${state.history.filter(h=>h.opp===opp().id).slice(0,5).map(h=>`<button class="history-row w-full" data-act="show-result" data-id="${esc(h.id)}"><span>${esc(h.title)}<small class="muted" style="display:block;text-align:left">${new Date(h.at).toLocaleDateString('es-ES')}</small></span><b>${Number(h.grade).toFixed(1)}/10</b></button>`).join('')||'<p class="small">Tu primer resultado aparecerá aquí al terminar un examen.</p>'}</aside></div></div>`}
@@ -5127,12 +5376,125 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
   const wordKey=s=>String(s||'').toUpperCase().normalize('NFD').replace(/N\u0303/g,'Ñ').replace(/[\u0300-\u036f]/g,'').replace(/[^A-ZÑ]/g,'');
   const games=[['rosco','El Rosco de la Opo','Una vuelta al abecedario para poner a prueba tu vocabulario jurídico.','lilac'],['sopa','Sopa de letras','Encuentra los conceptos de tu temario entre las letras del tablero.','butter'],['fighter','Street Opositor Fighter','El Opositor contra el Tribunal. Cada respuesta decide el combate.','peach']];
   function gameArt(kind){if(kind==='rosco')return `<svg class="tool-art" viewBox="0 0 60 49" aria-hidden="true">${Array.from('ABCDEFGHJKLM', (l,i)=>{const a=i*Math.PI/6,x=30+Math.sin(a)*18,y=24-Math.cos(a)*18;return `<circle cx="${x}" cy="${y}" r="5.4" fill="${i<4?'#b5caae':'#c8b5da'}" stroke="#6d5b78" stroke-width="1"/><text x="${x}" y="${y+2}" text-anchor="middle" font-family="Arial" font-size="6" fill="#524454">${l}</text>`}).join('')}<text x="30" y="29" text-anchor="middle" font-family="Georgia" font-size="17" fill="#6d557a">A</text></svg>`;if(kind==='sopa')return `<svg class="tool-art" viewBox="0 0 60 49" aria-hidden="true"><g transform="rotate(-5 30 24)"><rect x="7" y="4" width="45" height="40" rx="3" fill="#fff6d8" stroke="#8c795b"/><path d="M13 12h31" stroke="#d4cf89" stroke-width="7"/>${['P L A Z O','R O L E Y','M I B O A','S E D E R'].map((s,i)=>`<text x="12" y="${14+i*8}" font-family="monospace" font-size="7" fill="#786349">${s}</text>`).join('')}</g></svg>`;return toolArt('arcade')}
-  function arcadeView(){return `<div class="page">${heading('OpoArcade','Un descanso activo: juega con los conceptos que estás estudiando.',null,'Sala de juegos')}<div class="between wrap" style="margin-bottom:18px"><span class="small muted">Elige tu próxima partida</span><label class="row small">Temario <select class="select" style="width:auto;max-width:250px" id="game-source"><option value="">Glosario jurídico y banco general</option>${opp().topics.filter(t=>t.text).map(t=>`<option value="${esc(t.id)}" ${gameSource===t.id?'selected':''}>${esc(t.title)}</option>`).join('')}</select></label></div><div class="game-picks">${games.map(([k,l,d,c])=>`<button class="game-pick ${c}" data-act="open-game" data-id="${k}">${gameArt(k)}<h2>${l}</h2><p>${d}</p><span class="text-btn">Entrar al juego ${I('arrow',14)}</span></button>`).join('')}</div><section class="surface workspace" style="margin-top:22px"><h2 class="panel-title">Mis mejores partidas</h2>${games.map(([k,l])=>{const r=state.records[opp().id+':'+k];return `<div class="history-row"><span>${l}</span><span class="muted">${r?r.best+(k==='rosco'?' aciertos':k==='sopa'?' segundos':' rondas')+' · '+r.plays+' partidas':'Aún sin partidas'}</span></div>`}).join('')}</section></div>`}
-  function gameGlossary(){const t=topic(gameSource),custom=t?glossary(t.text):[];if(t&&custom.length<4){for(const s of sentences(t.text).filter(x=>words(x).length>=8&&x.length<360)){const term=(s.match(keyRX)||[]).find(x=>wordKey(x).length>3&&wordKey(x).length<=14)||words(s).find(x=>/^[\p{L}]{7,12}$/u.test(x)&&!['Según','artículo','Artículo','artículos'].includes(x));if(term&&!custom.some(v=>norm(v.term)===norm(term)))custom.push({term,def:'Completa tu apunte: '+s.replace(term,'_____')})}}return custom}
+  function arcadeView() {
+    const o = opp();
+    return `
+      <div class="page">
+        ${heading('OpoArcade', 'Juegos interactivos con preguntas generadas de todo tu temario oficial.', null, 'Sala de juegos')}
+        
+        <div class="between wrap" style="margin-bottom:18px;gap:12px;background:#f9f7fc;padding:12px 16px;border-radius:12px;border:1.5px solid #e9e3f5">
+          <div style="flex:1;min-width:260px">
+            <span class="eyebrow" style="color:#6e48aa;margin-bottom:2px">Generador inteligente de preguntas de examen</span>
+            <div style="font-size:12.5px;color:#443d39">Las preguntas y palabras se adaptan y generan a partir de los temas y bloques de tu oposición activa: <strong>${esc(o.name)}</strong>.</div>
+          </div>
+          <label class="row small" style="align-items:center;gap:6px">
+            <strong style="color:var(--deep)">📚 Origen:</strong>
+            <select class="select" style="width:auto;max-width:320px;font-weight:600;padding:6px 10px;border-radius:8px;border:1.5px solid #d9d1f0;background:#fff" id="game-source" onchange="gameSource=this.value;renderRoute(false)">
+              <option value="" ${!gameSource?'selected':''}>🎯 Toda la oposición (${o.topics.length} temas oficiales)</option>
+              ${o.blocks.map((b, bi) => `
+                <optgroup label="Bloque ${bi+1}: ${esc(b)}">
+                  <option value="block:${bi}" ${gameSource==='block:'+bi?'selected':''}>⚡ Todo el Bloque ${bi+1}: ${esc(b)}</option>
+                  ${o.topics.filter(t=>t.b===bi).map(t=>`
+                    <option value="${esc(t.id)}" ${gameSource===t.id?'selected':''}>
+                      ${esc(t.title)}
+                    </option>
+                  `).join('')}
+                </optgroup>
+              `).join('')}
+            </select>
+          </label>
+        </div>
+
+        <div class="game-picks">
+          ${games.map(([k,l,d,c])=>`
+            <button class="game-pick ${c}" data-act="open-game" data-id="${k}">
+              ${gameArt(k)}
+              <h2>${l}</h2>
+              <p>${d}</p>
+              <span class="text-btn">Entrar al juego ${I('arrow',14)}</span>
+            </button>
+          `).join('')}
+        </div>
+
+        <section class="surface workspace" style="margin-top:22px">
+          <h2 class="panel-title">Mis mejores partidas</h2>
+          ${games.map(([k,l])=>{
+            const r=state.records[opp().id+':'+k];
+            return `<div class="history-row"><span>${l}</span><span class="muted">${r?r.best+(k==='rosco'?' aciertos':k==='sopa'?' segundos':' rondas')+' · '+r.plays+' partidas':'Aún sin partidas'}</span></div>`;
+          }).join('')}
+        </section>
+      </div>
+    `;
+  }
+  function gameGlossary() {
+    const o = opp();
+    const custom = [];
+    const targetTopics = gameSource.startsWith('block:') 
+      ? o.topics.filter(t => t.b === parseInt(gameSource.split(':')[1], 10))
+      : gameSource 
+        ? [topic(gameSource)].filter(Boolean)
+        : o.topics;
+
+    for (const t of targetTopics) {
+      if (t.text) {
+        custom.push(...glossary(t.text));
+      }
+      // Extract high-yield terms from topic titles
+      const wordsInTitle = norm(t.title).split(/[\s,.:;()\/]+/).filter(w => w.length >= 5 && !['sobre','entre','desde','hasta','segun','clases','ambito','regimen','general','parte','derecho'].includes(w));
+      for (const w of wordsInTitle) {
+        const term = w.toUpperCase();
+        if (!custom.some(x => norm(x.term) === norm(term))) {
+          custom.push({
+            term,
+            def: `Concepto esencial en ${t.title}: término clave en los exámenes oficiales.`
+          });
+        }
+      }
+      if (custom.length >= 60) break;
+    }
+    return custom;
+  }
   function roscoData(){const custom=gameGlossary(),used=new Set();return [...alphabet].map((letter,i)=>{const v=custom.find(x=>!used.has(x.term)&&wordKey(x.term).startsWith(letter))||custom.find(x=>!used.has(x.term)&&wordKey(x.term).includes(letter));if(v)used.add(v.term);return {letter,term:v?.term||legalWords[i][0],def:v?.def||legalWords[i][1],source:v?topic(gameSource).title:'Glosario jurídico',status:'pending'}})}
   function makeWordGrid(){const t=topic(gameSource),terms=gameGlossary().map(x=>wordKey(x.term)),source=[...new Set([...terms,...(t?words(t.text).filter(x=>/^[\p{L}]{6,12}$/u.test(x)).map(wordKey):[]),'SILENCIO','ALZADA','TREBEP','PRESUPUESTO','INVESTIDURA','QUORUM'])].filter(x=>x.length>=4&&x.length<=12).slice(0,6).sort((a,b)=>b.length-a.length),dirs=[[1,0],[0,1],[1,1],[-1,1],[-1,0],[0,-1],[1,-1]],size=12;let grid,placements;for(let attempt=0;attempt<15;attempt++){grid=Array(144).fill('');placements=[];for(const w of source){let placed=false;for(let j=0;j<220&&!placed;j++){const [dx,dy]=dirs[Math.floor(Math.random()*dirs.length)],x=Math.floor(Math.random()*size),y=Math.floor(Math.random()*size),endX=x+(w.length-1)*dx,endY=y+(w.length-1)*dy;if(endX<0||endX>=size||endY<0||endY>=size)continue;const cells=[...w].map((_,k)=>(y+k*dy)*size+x+k*dx);if(cells.every((c,k)=>!grid[c]||grid[c]===w[k])){cells.forEach((c,k)=>grid[c]=w[k]);placements.push({word:w,cells,found:false});placed=true}}}if(placements.length===source.length)break}if(placements.length!==source.length){grid=Array(144).fill('');placements=source.map((word,i)=>{const cells=[...word].map((_,k)=>i*12+k);cells.forEach((v,j)=>grid[v]=word[j]);return {word,cells,found:false}})}return {grid:grid.map(c=>c||alphabet[Math.floor(Math.random()*alphabet.length)]),placements,anchor:null}}
   function gameRecord(type,score){const k=opp().id+':'+type,old=state.records[k];state.records[k]={best:old?(type==='sopa'?Math.min(old.best,score):Math.max(old.best,score)):score,plays:(old?.plays||0)+1};save()}
-  function launchGame(type){const now=Date.now();if(type==='rosco')activeGame={type,started:now,deadline:now+180000,items:roscoData(),index:0,message:'',done:false};else if(type==='sopa')activeGame={type,started:now,...makeWordGrid(),done:false,message:'Selecciona la primera letra y después la última.'};else{const pool=questionPool({scope:gameSource?'topic':'all',tid:gameSource,count:15});if(!pool.length){toast('Importa apuntes para preparar las preguntas del combate.');return}activeGame={type:'fighter',started:now,pool:shuffle(pool),qi:0,player:100,enemy:100,round:1,wins:0,done:false,feedback:'',answered:null,deadline:now+20000,currentBlockIndex:0};activeGame.q=balancedQuestions([activeGame.pool[0]])[0]}renderRoute(false)}
+  function launchGame(type) {
+    const now = Date.now();
+    let scope = 'all', tid = '', block = 0;
+    if (gameSource.startsWith('block:')) {
+      scope = 'block';
+      block = parseInt(gameSource.split(':')[1], 10);
+    } else if (gameSource) {
+      scope = 'topic';
+      tid = gameSource;
+    }
+
+    if (type === 'rosco') {
+      activeGame = { type, started: now, deadline: now + 180000, items: roscoData(), index: 0, message: '', done: false };
+    } else if (type === 'sopa') {
+      activeGame = { type, started: now, ...makeWordGrid(), done: false, message: 'Selecciona la primera letra y después la última.' };
+    } else {
+      const pool = questionPool({ scope, tid, block, count: 35 });
+      activeGame = {
+        type: 'fighter',
+        started: now,
+        pool: shuffle(pool),
+        qi: 0,
+        player: 100,
+        enemy: 100,
+        round: 1,
+        wins: 0,
+        done: false,
+        feedback: '',
+        answered: null,
+        deadline: now + 20000,
+        scope,
+        tid,
+        block
+      };
+      activeGame.q = balancedQuestions([activeGame.pool[0]])[0];
+    }
+    renderRoute(false);
+  }
   function gameView(type){const info=games.find(x=>x[0]===type);if(!info)return arcadeView();const g=activeGame?.type===type?activeGame:null;const back=`<button class="bread" data-go="arcade">${I('back',13)}Sala de juegos</button>`;if(!g){const rules={rosco:'Tienes 3 minutos y 27 letras. Escribe la palabra que corresponde a cada definición. Puedes pasar y volver a esa letra en la siguiente vuelta.',sopa:'Encuentra seis palabras en una cuadrícula de 12 × 12. Selecciona sus extremos o arrastra en línea recta. Las palabras pueden ir en horizontal, vertical o diagonal, también al revés.',fighter:'Responde en 20 segundos para golpear al Tribunal. Cada acierto resta 25 HP al rival; cada fallo o turno agotado te resta 25 HP. Supera rondas hasta el K.O.'};return `<div class="page">${back}${heading(info[1],info[2],null,'OpoArcade / Cómo jugar')}<section class="surface workspace game-board ${info[3]}">${gameArt(type)}<h2 class="panel-title" style="margin-top:15px">Reglas de la partida</h2><p style="font-size:14px;line-height:1.8">${rules[type]}</p><p class="small muted" style="margin:12px 0 18px">Fuente: ${esc(topic(gameSource)?.title||(type==='fighter'?opp().short:'glosario jurídico'))}${type==='rosco'&&gameSource?' · Las letras que falten se completan con el glosario base.':''}</p><button class="btn primary" data-act="launch-game" data-id="${type}">${I('play',12)}Empezar partida</button></section></div>`}return `<div class="page">${back}${heading(info[1],g.done?'Partida finalizada. Cada intento cuenta.':type==='rosco'?'Una definición, una letra. ¿Te la sabes?':type==='sopa'?'Las palabras que buscas están en línea recta.':'El Opositor vs. El Tribunal Calificador',null,'OpoArcade / En juego')}<section class="surface workspace game-board">${type==='rosco'?roscoView(g):type==='sopa'?sopaView(g):fighterView(g)}</section></div>`}
   function remaining(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
   function gameEndButtons(){return `<div class="row wrap" style="margin-top:16px">${btn('Volver a jugar','replay','refresh','primary')}<button class="btn" data-go="arcade">Sala de juegos</button></div>`}
@@ -5291,9 +5653,23 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
       // Advance to next world
       const arenaKeys = ['inap', 'congreso', 'moncloa', 'bruselas', 'supremo'];
       g.stage = arenaKeys[(g.round - 1) % arenaKeys.length];
+
+      // Rotate questions across syllabus blocks on every round!
+      if (!g.tid && g.scope === 'all') {
+        const nextBlock = (g.round - 1) % (opp().blocks.length || 1);
+        const freshQs = questionPool({ scope: 'block', block: nextBlock, count: 15 });
+        if (freshQs.length) {
+          g.pool = [...g.pool, ...shuffle(freshQs)];
+        }
+      }
     }
     g.qi++;
-    if (g.qi % g.pool.length === 0) g.pool = shuffle(g.pool);
+    if (g.qi >= g.pool.length) {
+      // Replenish fresh questions from syllabus
+      const freshPool = questionPool({ scope: g.scope, tid: g.tid, block: g.block, count: 35 });
+      g.pool = shuffle(freshPool);
+      g.qi = 0;
+    }
     g.q = balancedQuestions([g.pool[g.qi % g.pool.length]])[0];
     g.answered = null;
     g.feedback = '';
