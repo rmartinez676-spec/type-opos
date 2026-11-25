@@ -846,7 +846,54 @@
       border-color: #a4cca0;
     }
 
-  </style>
+  
+    /* =================================================================
+       IMPRESIÓN Y EXPORTACIÓN A PDF EN TONOS PASTEL
+       ================================================================= */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 10mm 10mm 12mm 10mm;
+      }
+      body, html {
+        background: #fff !important;
+        color: #1c1917 !important;
+        font-size: 10pt !important;
+      }
+      header, #sidebar, .sidebar, .sidebar-host, .export-bar, .tabs, .reader-head, button, .btn, .pet-mascot, #announcer, .quick-actions, select, .tag-pomo {
+        display: none !important;
+      }
+      .app-layout, .main-content, .reader-col, .document-body, .summary-container, .class-scheme-wrapper, .final-review-wrapper {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+      }
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .surface, .cuadro-card, .class-block-card, .class-subbranch-card, .pastel-note-card {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        margin-bottom: 12px !important;
+        box-shadow: none !important;
+      }
+      table, .cuadro-table {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        width: 100% !important;
+      }
+      .print-page-break {
+        page-break-before: always !important;
+        break-before: page !important;
+      }
+    }
+</style>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -3227,6 +3274,13 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
   const highlight=s=>esc(s).replace(keyRX,'<strong>$1</strong>');
   function sentences(s){return String(s||'').replace(/\r/g,'').split(/\n+|(?<=[.!?;])\s+(?=[A-ZÁÉÍÓÚÑ¿])/).map(x=>x.trim()).filter(Boolean)}
   function summarize(text){const total=words(text).length,budget=Math.floor(total*.28);if(!budget)return [];if(text===noteProcedure)return ['Subsanación: 10 días; desistimiento previa resolución si no se subsana.','Días hábiles: excluir sábados, domingos y festivos. Inicio: día siguiente.','Audiencia: entre 10 y 15 días.','Alzada: superior jerárquico. Interposición contra acto expreso: un mes; resolución: tres meses.','Reposición: mismo órgano. Resolución y notificación: un mes.'];const pieces=sentences(text).flatMap(s=>s.split(/;\s*|:\s+(?=[A-ZÁÉÍÓÚ])/)).map((s,i)=>({s:s.replace(/^(?:En primer lugar,? |Cabe destacar que |Es importante señalar que |Por otra parte,? |Como hemos visto,? )/i,'').trim(),i})).filter(x=>words(x.s).length>=3);pieces.forEach(x=>{x.score=(x.s.match(keyRX)||[]).length*5+(/\b(debe|plazo|competent|requisito|define|consiste|principio|excep|función|efecto)/i.test(x.s)?3:0)+(/\d/.test(x.s)?1:0)});let left=budget;const out=[];for(const x of pieces.sort((a,b)=>b.score-a.score||a.i-b.i)){const ws=words(x.s);if(ws.length<=left&& !out.some(y=>y.s===x.s)){out.push(x);left-=ws.length}if(left<3)break}if(!out.length&&pieces.length){const x=pieces[0];out.push({i:x.i,s:x.s})}return out.sort((a,b)=>a.i-b.i).map(x=>x.s)}
+  function isTopicPoderJudicial(t) {
+    if (!t) return false;
+    const title = (t.title || '').toLowerCase();
+    const id = (t.id || '').toLowerCase();
+    return id === 't9' || /poder judicial|ministerio fiscal|lopj|cgpj|tribunal supremo|carrera judicial/i.test(title);
+  }
+
   function isTopicConstitutional(t) {
     if (!t) return false;
     const oppId = opp().id || '';
@@ -3466,6 +3520,214 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
   const tableHTML=rows=>`<div class="table-scroll"><table class="comp-table"><thead><tr>${tableHeads.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   function outlineHTML(t){const lines=summarize(t.text),n=words(lines.join(' ')).length,w=words(t.text).length;return `<div class="row wrap" style="margin-bottom:16px"><span class="tag">Síntesis local</span><span class="tiny muted">${n} de ${w} palabras · ${w?Math.round(100*n/w):0}% del original</span></div>${Object.entries(outlineGroups(lines)).map(([g,arr])=>`<div class="outline-group"><h4>${g}</h4><ul class="outline">${arr.map(s=>`<li>${highlight(s)}</li>`).join('')}</ul></div>`).join('')||'<p class="muted">Añade más texto para obtener una síntesis útil.</p>'}`}
 
+  
+  function getTopicPoderJudicialTables(t) {
+    return [
+      {
+        title: 'Cuadro 1: Organización Judicial Española y Planta de Tribunales',
+        heads: ['Órgano Judicial', 'Ámbito Territorial', 'Salas / Órdenes Jurisdiccionales', 'Competencias Clave y Trampa de Examen'],
+        widths: [0.24, 0.22, 0.26, 0.28],
+        rows: [
+          ['Tribunal Supremo (TS)', 'Todo el territorio nacional (Madrid)', '5 Salas: 1ª Civil, 2ª Penal, 3ª Contencioso-Adm., 4ª Social, 5ª Militar.', 'Órgano superior en todos los órdenes salvo garantías constitucionales (TC). Sala 61 de ilegalización de partidos.'],
+          ['Audiencia Nacional (AN)', 'Todo el territorio nacional (Madrid)', '4 Salas: Penal, Contencioso-Administrativo, Social y Apelación.', '¡TRAMPA: NO tiene Sala de lo Civil! Conoce de delitos contra la Corona, terrorismo y crimen organizado.'],
+          ['Tribunales Superiores de Justicia (TSJ)', 'Comunidad Autónoma', '3 Salas: Civil y Penal, Contencioso-Administrativo y Social.', 'Culminan la organización judicial en el ámbito de la CCAA sin perjuicio del TS. Aforamientos autonómicos.'],
+          ['Audiencias Provinciales (AP)', 'Provincia (capital)', 'Secciones Civiles y Penales (no divididas formalmente en Salas).', '¡TRAMPA: NO tienen orden contencioso ni social! Enjuician delitos con pena privativa > 5 años y apelaciones.'],
+          ['Juzgados de Primera Instancia e Instrucción', 'Partido Judicial', 'Instancia (Civil) e Instrucción (Penal / investigación).', 'Base de la justicia ordinaria. Conocen del Registro Civil (donde no esté transferido) y juicios verbales/ordinarios.'],
+          ['Juzgados Especializados', 'Provincia o Partido', 'Contencioso, Social, Mercantil, Menores, Vigilancia Penitenciaria, Violencia Mujer.', 'Juzgados de Paz: municipios donde NO existe Juzgado de 1ª Instancia e Instrucción. Juez de Paz no es de carrera.']
+        ]
+      },
+      {
+        title: 'Cuadro 2: Comparativa de Altos Órganos Constitucionales: CGPJ vs TC vs Ministerio Fiscal',
+        heads: ['Criterio / Órgano', 'Consejo General del Poder Judicial (CGPJ)', 'Tribunal Constitucional (TC)', 'Ministerio Fiscal (FGE)'],
+        widths: [0.20, 0.28, 0.26, 0.26],
+        rows: [
+          ['Naturaleza Jurídica', 'Órgano de gobierno del Poder Judicial (Art. 122 CE). ¡NO es jurisdiccional!', 'Intérprete supremo de la Constitución. Independiente de todos los poderes.', 'Órgano con personalidad jurídica propia. Promueve acción de la justicia (124).'],
+          ['Composición / Miembros', 'Presidente (lo es también del TS) + 20 Vocales.', '12 Magistrados nombrados por el Rey.', 'Fiscal General del Estado (Jefatura de la Fiscalía).'],
+          ['Sistema de Elección', '10 elegidos por Congreso (3/5) y 10 por Senado (3/5). (12 jueces + 8 juristas).', '4 Congreso (3/5), 4 Senado (3/5), 2 Gobierno, 2 CGPJ.', 'Nombrado por el Rey, a propuesta del Gobierno, oído el CGPJ, previo examen Congreso.'],
+          ['Duración del Mandato', '5 años (no prorrogable ni reelección inmediata).', '9 años (renovación por terceras partes: 4 cada 3 años).', '4 años (cese cuando cese el Gobierno que lo propuso).'],
+          ['Requisitos de Miembros', 'Jueces y magistrados en activo o juristas con >15 años de ejercicio profesional.', 'Juristas de reconocida competencia con más de 15 años de ejercicio profesional.', 'Jurista de prestigio con más de 15 años de ejercicio.'],
+          ['Principios de Actuación', 'Autonomía de gobierno y tutela de la independencia judicial.', 'Jurisdicción constitucional, cosa juzgada y efecto erga omnes.', 'Actuación: Legalidad e Imparcialidad. Estructura: Unidad y Dependencia.']
+        ]
+      },
+      {
+        title: 'Cuadro 3: Carrera Judicial y Preguntas Trampa del Tribunal Calificador',
+        heads: ['Materia / Pregunta Trampa', 'Regla Oficial de Examen', 'Fundamento Jurídico', 'Alerta / Trampa del Tribunal'],
+        widths: [0.25, 0.28, 0.22, 0.25],
+        rows: [
+          ['Categorías de la Carrera Judicial', 'Tres únicas categorías: 1) Juez, 2) Magistrado, 3) Magistrado del Tribunal Supremo.', 'Art. 299 LOPJ', '¡TRAMPA: Presidente de Sala o Juez Decano NO son categorías, son cargos gubernativos!'],
+          ['¿Forma parte el Fiscal del Poder Judicial?', 'NO. El Ministerio Fiscal está integrado con autonomía funcional, pero no juzga ni hace ejecutar lo juzgado.', 'Arts. 117 y 124 CE', '¡TRAMPA: La potestad jurisdiccional corresponde EXCLUSIVAMENTE a Juzgados y Tribunales!'],
+          ['Inamovilidad de Jueces y Magistrados', 'No pueden ser separados, suspendidos, trasladados ni jubilados sino por causas de ley.', 'Art. 117.2 CE', 'La jubilación forzosa se produce a los 70 años de edad (o 72 si solicitan prórroga legal).'],
+          ['Prohibiciones a Jueces y Fiscales', 'Prohibido pertenecer a partidos políticos o sindicatos. Sí pueden crear asociaciones profesionales.', 'Art. 127 CE', '¡TRAMPA: Asociaciones profesionales SÍ están permitidas; sindicatos y partidos políticos NO!'],
+          ['Habeas Corpus y Plazo Detención', 'Detención preventiva: máx. 72 horas. Procedimiento de Habeas Corpus: resolución en máx. 24 horas.', 'Art. 17 CE y LO 6/1984', 'Juez instructor competente para el Habeas Corpus: Juzgado de Instrucción de guardia.']
+        ]
+      }
+    ];
+  }
+
+  function getTopicPoderJudicialSummary(t) {
+    const title = (t && t.title) ? t.title : 'Tema 9: El Poder Judicial y el Ministerio Fiscal';
+    return `
+      <div class="summary-container stack" style="gap:16px">
+        <!-- PORTADA ESTILO LIBRETA PASTEL -->
+        <div class="surface" style="padding:16px 20px;border:1.5px solid #d8b4fe;border-radius:14px;background:linear-gradient(135deg, #fdf8f6 0%, #faf5ff 50%, #eff6ff 100%)">
+          <div class="row between wrap" style="gap:8px;margin-bottom:6px">
+            <span class="badge" style="background:#7e57c2;color:#fff;font-weight:700;font-size:11px;border-radius:20px;padding:3px 10px">📝 APUNTES OPOSICIONES PASTEL · DOCUMENTO DE ESTUDIO</span>
+            <span class="tiny muted font-mono">Arts. 117 a 127 CE · LO 6/1985 del Poder Judicial · EOMF</span>
+          </div>
+          <h2 style="font-size:18px;margin:0 0 6px 0;color:#3b2754;font-weight:800">${esc(title)}</h2>
+          <p class="small muted" style="margin:0">Apuntes depurados sin paja: estructura judicial, CGPJ, carrera judicial, régimen del Ministerio Fiscal y tablas comparativas de examen.</p>
+        </div>
+
+        <div class="surface" style="padding:18px;border:1.5px solid #e9d5ff;border-radius:14px;background:#fff">
+          <!-- 1. IDEAS FUERZA -->
+          <h3 style="margin:0 0 12px 0;color:#581c87;font-size:15px;display:flex;align-items:center;gap:6px">
+            <span>🎯</span> 1. Ideas Fuerza de Examen (Poder Judicial y Ministerio Fiscal)
+          </h3>
+          <ul style="margin:0 0 18px 0;padding-left:20px;font-size:13px;line-height:1.75;color:#3b3534">
+            <li><strong>Origen de la Justicia (Art. 117.1 CE):</strong> La justicia emana del pueblo y se administra en nombre del Rey por Jueces y Magistrados integrantes del Poder Judicial, <mark style="background:#fff3bf;padding:1px 5px;border-radius:4px">independientes, inamovibles, responsables y sometidos únicamente al imperio de la ley</mark>.</li>
+            <li><strong>Principio de Exclusividad Jurisdiccional (Art. 117.3 y 117.4 CE):</strong> El ejercicio de la potestad jurisdiccional en todo tipo de procesos, juzgando y haciendo ejecutar lo juzgado, corresponde <mark style="background:#d3f9d8;padding:1px 5px;border-radius:4px">exclusivamente a los Juzgados y Tribunales determinados por las leyes</mark>. No ejercerán más funciones que las señaladas.</li>
+            <li><strong>Principio de Unidad Jurisdiccional (Art. 117.5 CE):</strong> Es la base de la organización y funcionamiento de los Tribunales. La ley regulará el ejercicio de la jurisdicción militar estrictamente en el ámbito castrense y supuestos de estado de sitio. Se prohíben taxativamente los Tribunales de excepción y los de honor (Art. 26 y 117.6).</li>
+            <li><strong>Gratuidad de la Justicia (Art. 119 CE):</strong> Será gratuita cuando así lo disponga la ley y, en todo caso, respecto de quienes acrediten insuficiencia de recursos para litigar.</li>
+            <li><strong>Actuaciones judiciales y motivación (Art. 120 CE):</strong> Las actuaciones serán públicas, con las excepciones que prevean las leyes de procedimiento. El procedimiento será predominantemente oral, sobre todo en materia criminal. <mark style="background:#e7f5ff;padding:1px 5px;border-radius:4px">Las sentencias serán siempre motivadas y se pronunciarán en audiencia pública</mark>.</li>
+          </ul>
+
+          <!-- 2. ARTÍCULOS CLAVE DE CITA OBLIGATORIA -->
+          <h3 style="margin:18px 0 12px 0;color:#581c87;font-size:15px;display:flex;align-items:center;gap:6px">
+            <span>⚖️</span> 2. Artículos y Preceptos Clave de Cita Obligatoria en el Examen
+          </h3>
+          <div class="stack" style="gap:10px">
+            <div style="background:#faf5ff;border-left:4px solid #9c7fd6;border-radius:8px;padding:10px 14px">
+              <strong style="color:#581c87;font-size:13.5px">Art. 122 CE · El Consejo General del Poder Judicial (CGPJ):</strong>
+              <div style="font-size:13px;line-height:1.65;color:#3f3844;margin-top:4px">
+                Órgano de gobierno del Poder Judicial. Presidido por el Presidente del Tribunal Supremo y compuesto por <strong>20 miembros nombrados por el Rey por un período de 5 años</strong>: 12 entre Jueces y Magistrados de todas las categorías y 8 entre abogados y otros juristas de reconocida competencia con más de 15 años de ejercicio, elegidos a razón de <strong>10 por el Congreso y 10 por el Senado por mayoría de tres quintos (3/5)</strong> de sus miembros.
+              </div>
+            </div>
+
+            <div style="background:#eff6ff;border-left:4px solid #60a5fa;border-radius:8px;padding:10px 14px">
+              <strong style="color:#1e3a8a;font-size:13.5px">Art. 123 CE · El Tribunal Supremo (TS):</strong>
+              <div style="font-size:13px;line-height:1.65;color:#384152;margin-top:4px">
+                Tiene jurisdicción en toda España y es el <strong>órgano jurisdiccional superior en todos los órdenes</strong>, salvo lo dispuesto en materia de garantías constitucionales (Tribunal Constitucional). Su Presidente es nombrado por el Rey, a propuesta del Consejo General del Poder Judicial.
+              </div>
+            </div>
+
+            <div style="background:#f0fdf4;border-left:4px solid #4ade80;border-radius:8px;padding:10px 14px">
+              <strong style="color:#14532d;font-size:13.5px">Art. 124 CE · El Ministerio Fiscal (EOMF Ley 50/1981):</strong>
+              <div style="font-size:13px;line-height:1.65;color:#354439;margin-top:4px">
+                Tiene por misión promover la acción de la justicia en defensa de la legalidad, de los derechos de los ciudadanos y del interés público tutelado por la ley. Ejerce sus funciones conforme a los principios de <strong>legalidad e imparcialidad</strong>, con arreglo a los principios de <strong>unidad de actuación y dependencia jerárquica</strong>. El Fiscal General del Estado es nombrado por el Rey, a propuesta del Gobierno, oído el CGPJ.
+              </div>
+            </div>
+
+            <div style="background:#fffbeb;border-left:4px solid #facc15;border-radius:8px;padding:10px 14px">
+              <strong style="color:#78350f;font-size:13.5px">Art. 125 y 126 CE · Jurado Popular y Policía Judicial:</strong>
+              <div style="font-size:13px;line-height:1.65;color:#453a29;margin-top:4px">
+                Los ciudadanos podrán ejercer la acción popular y participar en la Administración de Justicia mediante la institución del <strong>Tribunal del Jurado</strong> (LO 5/1995) para los procesos penales determinados por la ley. La Policía Judicial depende de los Jueces, de los Tribunales y del Ministerio Fiscal en sus funciones de averiguación del delito y aseguramiento del delincuente.
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. PREGUNTAS TRAMPA -->
+          <h3 style="margin:20px 0 12px 0;color:#991b1b;font-size:15px;display:flex;align-items:center;gap:6px">
+            <span>🔴</span> 3. Notas al Margen y Preguntas Trampa Frecuentes del Tribunal
+          </h3>
+          <div style="background:#fff4ec;border:1.5px solid #fcd2bb;border-radius:10px;padding:12px 16px">
+            <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.7;color:#7c2d12;display:flex;flex-direction:column;gap:6px">
+              <li><strong>¿El CGPJ ejerce potestad jurisdiccional?</strong> <mark style="background:#fee2e2;padding:1px 5px;border-radius:3px">NO, EN NINGÚN CASO.</mark> El CGPJ es un órgano estrictamente de GOBIERNO (nombramientos, ascensos, régimen disciplinario e inspección). No juzga ni ejecuta lo juzgado.</li>
+              <li><strong>¿Forma parte el Ministerio Fiscal del Poder Judicial?</strong> NO. El Título VI de la CE se titula "Del Poder Judicial", pero el Art. 124 regula al Ministerio Fiscal como órgano colaborador autónomo. Los fiscales no tienen potestad jurisdiccional ni inamovilidad absoluta idéntica a la judicial.</li>
+              <li><strong>¿Quién nombra al Fiscal General del Estado?</strong> Lo nombra el Rey a propuesta del Gobierno, oído el CGPJ (previa comparecencia en el Congreso). ¡Trampa: el CGPJ solo emite informe preceptivo, NO propone ni elige al Fiscal General!</li>
+              <li><strong>¿Pueden los Jueces y Magistrados pertenecer a sindicatos?</strong> NO. El Art. 127 prohíbe expresamente a Jueces, Magistrados y Fiscales en activo pertenecer a partidos políticos o sindicatos. Solo pueden crear asociaciones profesionales de carácter judicial.</li>
+              <li><strong>¿Audiencia Nacional tiene Sala de lo Civil?</strong> NO. Tiene 4 Salas: Penal, Contencioso-Administrativo, Social y Apelación. Las reclamaciones civiles van a Juzgados de 1ª Instancia y Audiencias Provinciales.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 4. TABLAS OFICIALES PASTEL DIRECTAMENTE INTEGRADAS -->
+        <div style="margin-top:6px">
+          ${generateCuadrosHTML(t)}
+        </div>
+      </div>
+    `;
+  }
+
+  function getTopicPoderJudicialTree(t) {
+    return {
+      title: 'TÍTULO VI: EL PODER JUDICIAL Y EL MINISTERIO FISCAL (ARTS. 117 AL 127 CE)',
+      metrics: 'LOPJ 6/1985 · CGPJ · Tribunal Supremo · EOMF Ley 50/1981',
+      tier1: [
+        {
+          name: 'PRINCIPIOS Y ESTATUTO JUDICIAL (ARTS. 117 A 121 CE)',
+          category: 'BLOQUE I · PRINCIPIOS',
+          subbranches: [
+            {
+              name: 'Principios Constitucionales de la Justicia',
+              items: [
+                'Art. 117.1: La justicia emana del pueblo y se administra en nombre del Rey.',
+                'Rasgos esenciales: [LEY: JUECES Y MAGISTRADOS] Independientes, inamovibles, responsables y sometidos solo a la ley.',
+                'Art. 117.3: [TRAMPA: EXCLUSIVIDAD JURISDICCIONAL] Juzgar y hacer ejecutar lo juzgado corresponde únicamente a Juzgados y Tribunales.',
+                'Art. 117.5: [LEY: UNIDAD JURISDICCIONAL] Base de la organización y funcionamiento judicial. Prohibidos tribunales de excepción (117.6) y de honor (26).'
+              ]
+            },
+            {
+              name: 'Garantías Procesales y Carrera Judicial',
+              items: [
+                'Art. 120: Publicidad de actuaciones y [LEY: SENTENCIAS MOTIVADAS] leídas en audiencia pública. Oralidad en juicios criminales.',
+                'Art. 121: Indemnización por errores judiciales o funcionamiento anormal de la Administración de Justicia a cargo del Estado.',
+                'Art. 127: [TRAMPA: PROHIBICIÓN DE SINDICATOS Y PARTIDOS] En activo no pueden pertenecer a partidos ni sindicatos. Sí asociaciones profesionales.',
+                'Categorías de la carrera: [ÓRGANO: 3 CATEGORÍAS ÚNICAS] Juez, Magistrado y Magistrado del Tribunal Supremo (Art. 299 LOPJ).'
+              ]
+            }
+          ]
+        },
+        {
+          name: 'ÓRGANOS DE GOBIERNO Y PLANTA JUDICIAL (ARTS. 122 Y 123 CE)',
+          category: 'BLOQUE II · ORGANIZACIÓN',
+          subbranches: [
+            {
+              name: 'Consejo General del Poder Judicial (Art. 122 CE)',
+              items: [
+                'Naturaleza: [TRAMPA: ÓRGANO DE GOBIERNO] No ejerce potestad jurisdiccional.',
+                'Composición: [PLAZO: MANDATO DE 5 AÑOS] Presidente + 20 vocales designados por las Cortes Generales.',
+                'Elección de vocales: [MAYORÍA: 3/5 EN CONGRESO Y SENADO] 10 por Congreso (6 jueces + 4 juristas) y 10 por Senado (6 jueces + 4 juristas).',
+                'Requisito de juristas: [PLAZO: >15 AÑOS DE EJERCICIO] Reconocida competencia profesional.'
+              ]
+            },
+            {
+              name: 'Planta Judicial y Tribunal Supremo (Art. 123 CE)',
+              items: [
+                'Tribunal Supremo: Órgano superior en toda España en todos los órdenes salvo TC. [ÓRGANO: 5 SALAS] Civil, Penal, Contencioso, Social, Militar.',
+                'Audiencia Nacional: [TRAMPA: NO TIENE SALA CIVIL] 4 Salas (Penal, Contencioso, Social y Apelación). Delitos graves y terrorismo.',
+                'Tribunales Superiores de Justicia (TSJ): Culminan organización en la CCAA. 3 Salas: Civil/Penal, Contencioso, Social.',
+                'Audiencias Provinciales: Civil y Penal a nivel provincial. Juzgados: Primera Instancia, Instrucción, Social, Contencioso, Paz.'
+              ]
+            }
+          ]
+        },
+        {
+          name: 'MINISTERIO FISCAL Y PARTICIPACIÓN POPULAR (ARTS. 124 A 126 CE)',
+          category: 'BLOQUE III · FISCALÍA',
+          subbranches: [
+            {
+              name: 'Estatuto Orgánico del Ministerio Fiscal (Art. 124 CE)',
+              items: [
+                'Misión: Promover acción de la justicia en defensa de legalidad, derechos de ciudadanos e interés público.',
+                'Principios rectores: [LEY: LEGALIDAD E IMPARCIALIDAD] en la actuación y [LEY: UNIDAD Y DEPENDENCIA] en la organización interna.',
+                'Fiscal General del Estado: [ÓRGANO: NOMBRAMIENTO REAL] A propuesta del Gobierno, oído el CGPJ, previo examen del Congreso.',
+                'Mandato del FGE: [PLAZO: 4 AÑOS] Cesa cuando cesa el Gobierno que lo propuso o por causas de ley.'
+              ]
+            },
+            {
+              name: 'Participación Ciudadana y Policía Judicial',
+              items: [
+                'Art. 125: Acción popular y [ÓRGANO: TRIBUNAL DEL JURADO] para causas penales determinadas por LO 5/1995.',
+                'Art. 126: [ÓRGANO: POLICÍA JUDICIAL] Depende de Jueces, Tribunales y Ministerio Fiscal para investigación del delito.',
+                'Habeas Corpus: [PLAZO: 24 HORAS TOPE] Control judicial inmediato de detenciones ilegales ante Juzgado de Instrucción.'
+              ]
+            }
+          ]
+        }
+      ]
+    };
+  }
+
   function getTopicTables(t) {
     if (!t) return [];
     if (isTopicConstitutional(t)) {
@@ -3513,6 +3775,9 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     }
     if (isTopicRightsT2(t)) {
       return getTopicRightsT2Tables(t);
+    }
+    if (isTopicPoderJudicial(t)) {
+      return getTopicPoderJudicialTables(t);
     }
     if (isTopicSeguridadSocial(t)) {
       if (!t.text || t.text.trim().length < 50) {
@@ -3960,8 +4225,8 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
                 <span class="tiny muted" style="width:100%">EXPORTAR ${readerTab === 'review' ? 'REPASO FINAL · ESQUEMA REPASO EXAMEN PASTEL (MÁX. 2 HOJAS)' : 'RESUMEN · APUNTES OPOSICIONES PASTEL'}</span>
                 <button class="btn sm soft" data-act="pdf1" title="Descargar PDF 1 columna con fondo de libreta">${I('download', 12)} PDF · 1 columna</button>
                 <button class="btn sm soft" data-act="pdf2" title="Descargar PDF 2 columnas / máx. 2 hojas">${I('download', 12)} PDF · 2 hojas</button>
-                <button class="btn sm soft" onclick="downloadWordDoc(currentTopic(), readerTab)" title="Descargar en formato Word .doc">${I('file', 12)} Descargar Word .doc</button>
-                <button class="btn sm" onclick="download(pdfBlob(currentTopic(), 2, readerTab), 'RepasoFinal-2Hojas-' + esc(currentTopic().title.slice(0,30).replace(/[^a-zA-Z0-9]/g,'_')) + '.pdf');toast('Descargando PDF en 2 hojas...');" title="Descargar PDF máx. 2 hojas">${I('download', 12)} PDF Máx. 2 Hojas</button>
+                <button class="btn sm soft" onclick="downloadWordDoc(currentTopic(), readerTab)" title="Descargar en formato Word .doc">${I('file', 12)} Word .doc</button>
+                <button class="btn sm soft" onclick="window.print()" title="Imprimir o Guardar como PDF con diseño y colores pastel exactos">${I('download', 12)} 🖨️ Imprimir / PDF en Color Pastel</button>
               </div>
             ` : ''}
           </section>
@@ -4175,6 +4440,32 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
       ];
     }
 
+        if (isTopicPoderJudicial(t)) {
+      return [
+        { s: '1. PRINCIPIOS DEL PODER JUDICIAL (ARTS. 117 A 121 CE)', head: true },
+        { s: 'Justicia: Emana del pueblo y se administra en nombre del Rey por Jueces y Magistrados.', head: false },
+        { s: 'Principios: Independientes, inamovibles, responsables y sometidos únicamente a la ley.', head: false },
+        { s: 'Exclusividad (117.3): Juzgar y hacer ejecutar lo juzgado corresponde solo a Juzgados y Tribunales.', head: false },
+        { s: 'Unidad (117.5): Base de la organización judicial. Prohibidos tribunales de excepción y honor.', head: false },
+        { s: '2. EL CONSEJO GENERAL DEL PODER JUDICIAL (ART. 122 CE)', head: true },
+        { s: 'Naturaleza: Órgano de gobierno del Poder Judicial. NO ejerce potestad jurisdiccional.', head: false },
+        { s: 'Composición: Presidente (lo es del TS) + 20 vocales elegidos por 5 años por Cortes (3/5).', head: false },
+        { s: 'Vocales: 10 Congreso (6 jueces + 4 juristas >15a) y 10 Senado (6 jueces + 4 juristas >15a).', head: false },
+        { s: '3. PLANTA JUDICIAL Y TRIBUNAL SUPREMO (ART. 123 CE)', head: true },
+        { s: 'Tribunal Supremo: Órgano jurisdiccional superior en toda España (5 Salas).', head: false },
+        { s: 'Audiencia Nacional: 4 Salas (Penal, Contencioso, Social, Apelación). NO tiene Sala Civil.', head: false },
+        { s: 'TSJ culminan organización en CCAA. Audiencias Provinciales: civil y penal en provincias.', head: false },
+        { s: 'Carrera judicial: Tres categorías únicas: Juez, Magistrado y Magistrado del Tribunal Supremo.', head: false },
+        { s: '4. EL MINISTERIO FISCAL (ART. 124 CE)', head: true },
+        { s: 'Misión: Defensa de la legalidad, los derechos ciudadanos y el interés público tutelado.', head: false },
+        { s: 'Principios: Legalidad e imparcialidad (actuación) y unidad y dependencia jerárquica (estructura).', head: false },
+        { s: 'Fiscal General: Nombrado por el Rey, propuesta Gobierno, oído CGPJ. Mandato 4 años.', head: false },
+        { s: '5. PREGUNTAS TRAMPA DE EXAMEN', head: true },
+        { s: 'Trampa 1: El Ministerio Fiscal NO forma parte del Poder Judicial (es órgano autónomo).', head: false },
+        { s: 'Trampa 2: Jueces y Fiscales en activo NO pueden afiliarse a sindicatos ni partidos políticos.', head: false },
+        { s: 'Trampa 3: El CGPJ solo gobierna la judicatura; no dicta sentencias.', head: false }
+      ];
+    }
     if (isTopicRightsT2(t)) {
       return [
         { s: '1. ESTRUCTURA Y SISTEMÁTICA DEL TÍTULO I (ARTS. 10 AL 55)', head: true },
@@ -4237,9 +4528,172 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     ];
   }
 
-  function pdfBlob(t,cols=1,tab=readerTab){const W=595,H=842,M=35,gap=21,cw=(W-2*M-(cols-1)*gap)/cols,pages=[];let pg='',y=0,col=0,top=0;const ctx=document.createElement('canvas').getContext('2d');const hex=s=>Array.from(String(s).replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,'-').replace(/…/g,'...')).map(c=>(c.charCodeAt(0)<256?c.charCodeAt(0):c==='€'?128:63).toString(16).padStart(2,'0')).join('');const txt=(x,yy,s,size=10,b=false,color='.18 .21 .26')=>{pg+=`${color} rg BT /F${b?2:1} ${size} Tf 1 0 0 1 ${x.toFixed(2)} ${(H-yy).toFixed(2)} Tm <${hex(s)}> Tj ET\n`};const rect=(x,yy,w,h,color)=>{pg+=`${color} rg ${x.toFixed(2)} ${(H-yy-h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re f\n`};function wrapText(s,width,size,b=false){ctx.font=(b?'bold ':'')+size+'px Arial';const out=[];let line='';for(const word of words(s)){if(ctx.measureText(line+(line?' ':'')+word).width>width&&line){out.push(line);line=''}if(ctx.measureText(word).width>width){for(const char of word){if(ctx.measureText(line+char).width>width&&line){out.push(line);line=''}line+=char}}else line+=(line?' ':'')+word}if(line)out.push(line);return out}function newPage(){if(pg)pages.push(pg);pg='';rect(0,0,W,H,'.980 .969 .949');rect(0,0,W,42,'.867 .839 .969');txt(M,26,'Mi Cuaderno de Oposiciones / Cuaderno Oficial',11,true);const titleLines=wrapText(t.title,W-M*2,18,true);y=69;for(const l of titleLines){txt(M,y,l,18,true);y+=22}txt(M,y+5,opp().short+'  |  '+(tab==='table'?'Tablas y Cuadros Comparativos':'Esquema esencial')+'  |  '+cols+(cols===1?' columna':' columnas'),9);top=y+25;y=top;col=0;txt(M,H-22,'Mi Cuaderno de Oposiciones  -  '+new Date().toLocaleDateString('es-ES'),8);txt(W-M-17,H-22,String(pages.length+1),8)}function nextCol(){if(col+1<cols){col++;y=top}else newPage()}newPage();if(tab==='table'){const tables=getTopicTables(t);tables.forEach((tbl,tIdx)=>{if(tIdx>0){if(y+110>H-45){nextCol()}else{y+=16}}const tW=cols===2?cw:(W-2*M);rect(M+col*(cw+gap),y,tW,18,'.867 .839 .969');txt(M+col*(cw+gap)+6,y+13,tbl.title,cols===2?8:9.5,true,'.33 .20 .59');y+=22;const widths=(tbl.widths||[.25,.25,.25,.25]).map(r=>cw*r),font=cols===2?6.8:8.5;function row(cells,head=false){const wrap=cells.map((c,i)=>wrapText(c,widths[i]-8,font,head)),height=Math.max(...wrap.map(l=>l.length))*(font+3)+9;if(y+height>H-45){nextCol();if(!head)row(tbl.heads,true)}let x=M+col*(cw+gap);wrap.forEach((lines,i)=>{rect(x,y,widths[i]-.7,height-.7,head?'.867 .839 .969':i%2?'.952 .964 .930':'.988 .983 .967');lines.forEach((l,j)=>txt(x+4,y+font+3+j*(font+3),l,font,head));x+=widths[i]});y+=height}row(tbl.heads,true);tbl.rows.forEach(r=>row(r))})}else{const units = getTopicPdfUnits(t);const mid=Math.ceil(units.length/2);units.forEach((u,idx)=>{if(cols===2&&idx===mid&&col===0)nextCol();const size=u.head?11:10,ls=wrapText(u.s,cw-(u.head?12:15),size,u.head),height=ls.length*14+11;if(y+height>H-43)nextCol();const x=M+col*(cw+gap);if(u.head){rect(x,y,cw,height-3,'.733 .941 .816');ls.forEach((l,j)=>txt(x+6,y+14+j*14,l,size,true))}else{rect(x+2,y+6,3,3,'.55 .43 .63');ls.forEach((l,j)=>txt(x+12,y+11+j*14,l,size))}y+=height})}if(t.source){if(y+47>H-40)nextCol();y+=16;txt(M+col*(cw+gap),y,'Fuente de los apuntes:',8,true);for(const l of wrapText(t.source,cw,7)){y+=10;if(y>H-40)nextCol();txt(M+col*(cw+gap),y,l,7)}}pages.push(pg);const objects=['<< /Type /Catalog /Pages 2 0 R >>',`<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_,i)=>(5+2*i)+' 0 R').join(' ')}] >>`,'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>','<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'];pages.forEach((p,i)=>{objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${6+2*i} 0 R >>`);objects.push('<< /Length '+p.length+' >>\nstream\n'+p+'endstream')});let doc='%PDF-1.4\n',offsets=[0];objects.forEach((o,i)=>{offsets.push(doc.length);doc+=(i+1)+' 0 obj\n'+o+'\nendobj\n'});const pos=doc.length;doc+='xref\n0 '+offsets.length+'\n0000000000 65535 f \n'+offsets.slice(1).map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('')+'trailer\n<< /Size '+offsets.length+' /Root 1 0 R >>\nstartxref\n'+pos+'\n%%EOF';return new Blob([doc],{type:'application/pdf'})}
+  function pdfBlob(t,cols=1,tab=readerTab){
+    const W=595,H=842,M=32,gap=18,cw=(W-2*M-(cols-1)*gap)/cols,pages=[];
+    let pg='',y=0,col=0,top=0;
+    const ctx=document.createElement('canvas').getContext('2d');
+    const hex=s=>Array.from(String(s).replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,'-').replace(/…/g,'...')).map(c=>(c.charCodeAt(0)<256?c.charCodeAt(0):c==='€'?128:63).toString(16).padStart(2,'0')).join('');
+    const txt=(x,yy,s,size=9.5,b=false,color='.18 .21 .26')=>{pg+=`${color} rg BT /F${b?2:1} ${size} Tf 1 0 0 1 ${x.toFixed(2)} ${(H-yy).toFixed(2)} Tm <${hex(s)}> Tj ET
+`};
+    const rect=(x,yy,w,h,color)=>{pg+=`${color} rg ${x.toFixed(2)} ${(H-yy-h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re f
+`};
+    function wrapText(s,width,size,b=false){
+      ctx.font=(b?'bold ':'')+size+'px Arial';
+      const out=[];let line='';
+      for(const word of words(s)){
+        if(ctx.measureText(line+(line?' ':'')+word).width>width&&line){out.push(line);line=''}
+        if(ctx.measureText(word).width>width){
+          for(const char of word){
+            if(ctx.measureText(line+char).width>width&&line){out.push(line);line=''}
+            line+=char
+          }
+        } else line+=(line?' ':'')+word
+      }
+      if(line)out.push(line);
+      return out;
+    }
+    function newPage(){
+      if(pg)pages.push(pg);
+      pg='';
+      rect(0,0,W,H,'.984 .973 .957');
+      rect(0,0,W,40,'.867 .839 .969');
+      txt(M,24,'Mi Cuaderno de Oposiciones / Cuaderno Oficial Pastel',10.5,true,'.25 .15 .45');
+      const titleLines=wrapText(t.title,W-M*2,16,true);
+      y=65;
+      for(const l of titleLines){txt(M,y,l,16,true,'.18 .21 .26');y+=20}
+      const subBadge=(tab==='review'?'ESQUEMA REPASO EXAMEN PASTEL (MÁX. 2 HOJAS)':'APUNTES OPOSICIONES PASTEL (COMPLETO CON TABLAS)');
+      txt(M,y+4,opp().short+'  |  '+subBadge+'  |  '+cols+(cols===1?' columna':' columnas'),8.5,false,'.45 .42 .49');
+      top=y+22;y=top;col=0;
+      txt(M,H-20,'Mi Cuaderno de Oposiciones  -  '+new Date().toLocaleDateString('es-ES'),7.5,false,'.55 .52 .59');
+      txt(W-M-16,H-20,String(pages.length+1),7.5,true,'.55 .52 .59');
+    }
+    function nextCol(){
+      if(col+1<cols){col++;y=top}
+      else newPage();
+    }
+    newPage();
+
+    // 1. RENDERIZAR UNIDADES DE TEXTO / EPÍGRAFES
+    const units = getTopicPdfUnits(t);
+    if(units && units.length){
+      const mid = Math.ceil(units.length/2);
+      units.forEach((u,idx)=>{
+        if(cols===2&&idx===mid&&col===0)nextCol();
+        const size=u.head?(cols===2?9.5:10.5):(cols===2?8.0:9.0);
+        const ls=wrapText(u.s,cw-(u.head?10:14),size,u.head);
+        const height=ls.length*(size+3.2)+(u.head?8:3);
+        if(y+height>H-42)nextCol();
+        const x=M+col*(cw+gap);
+        if(u.head){
+          rect(x,y,cw,height-2,'.867 .839 .969');
+          ls.forEach((l,j)=>txt(x+5,y+size+2+j*(size+3.2),l,size,true,'.25 .15 .45'));
+        }else{
+          rect(x+2,y+4,3,3,'.55 .43 .63');
+          ls.forEach((l,j)=>txt(x+10,y+size+j*(size+3.2),l,size,false,'.18 .21 .26'));
+        }
+        y+=height;
+      });
+    }
+
+    // 2. RENDERIZAR SIEMPRE TODOS LOS CUADROS Y TABLAS DEL TEMA
+    const tables = getTopicTables(t);
+    if(tables && tables.length){
+      if(y+50>H-42)nextCol();
+      else y+=14;
+      rect(M+col*(cw+gap),y,cw,16,'.733 .941 .816');
+      txt(M+col*(cw+gap)+6,y+12,'CUADROS Y TABLAS COMPARATIVAS DE EXAMEN',cols===2?7.5:8.5,true,'.14 .53 .27');
+      y+=20;
+
+      tables.forEach((tbl,tIdx)=>{
+        if(tIdx>0){
+          if(y+75>H-42)nextCol();
+          else y+=12;
+        }
+        const tW=cw;
+        rect(M+col*(cw+gap),y,tW,15,'.867 .839 .969');
+        txt(M+col*(cw+gap)+5,y+11,tbl.title,cols===2?7.2:8.5,true,'.25 .15 .45');
+        y+=17;
+        const widths=(tbl.widths||[.25,.25,.25,.25]).map(r=>cw*r);
+        const font=cols===2?6.0:7.5;
+        function row(cells,head=false){
+          const wrap=cells.map((c,i)=>wrapText(c,widths[i]-5,font,head));
+          const height=Math.max(...wrap.map(l=>l.length))*(font+2.6)+5;
+          if(y+height>H-42){
+            nextCol();
+            if(!head)row(tbl.heads,true);
+          }
+          let x=M+col*(cw+gap);
+          wrap.forEach((lines,i)=>{
+            rect(x,y,widths[i]-.6,height-.6,head?'.867 .839 .969':i%2?'.952 .964 .930':'.988 .983 .967');
+            lines.forEach((l,j)=>txt(x+3,y+font+1.5+j*(font+2.6),l,font,head,head?'.21 .15 .38':'.18 .21 .26'));
+            x+=widths[i];
+          });
+          y+=height;
+        }
+        row(tbl.heads,true);
+        tbl.rows.forEach(r=>row(r));
+      });
+    }
+
+    if(t.source){
+      if(y+45>H-40)nextCol();
+      y+=14;
+      txt(M+col*(cw+gap),y,'Fuente oficial de referencia:',7.5,true,'.45 .42 .49');
+      for(const l of wrapText(t.source,cw,7)){
+        y+=9;
+        if(y>H-40)nextCol();
+        txt(M+col*(cw+gap),y,l,7,false,'.55 .52 .59');
+      }
+    }
+    pages.push(pg);
+
+    const objects=[
+      '<< /Type /Catalog /Pages 2 0 R >>',
+      `<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_,i)=>(5+2*i)+' 0 R').join(' ')}] >>`,
+      '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>',
+      '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'
+    ];
+    pages.forEach((p,i)=>{
+      objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${6+2*i} 0 R >>`);
+      objects.push('<< /Length ' + p.length + ' >>\nstream\n' + p + 'endstream');
+    });
+    let doc = '%PDF-1.4\n', offsets = [0];
+    objects.forEach((o, i) => {
+      offsets.push(doc.length);
+      doc += (i + 1) + ' 0 obj\n' + o + '\nendobj\n';
+    });
+    const pos = doc.length;
+    doc += 'xref\n0 ' + offsets.length + '\n0000000000 65535 f \n' + offsets.slice(1).map(o => String(o).padStart(10, '0') + ' 00000 n \n').join('') + 'trailer\n<< /Size ' + offsets.length + ' /Root 1 0 R >>\nstartxref\n' + pos + '\n%%EOF';
+    return new Blob([doc],{type:'application/pdf'});
+  }
   function zipStored(files){const enc=new TextEncoder(),parts=[],central=[];let offset=0,cdSize=0;const crcTable=Array.from({length:256},(_,i)=>{let v=i;for(let j=0;j<8;j++)v=(v&1)?0xedb88320^(v>>>1):v>>>1;return v>>>0});const le=(n,size)=>Array.from({length:size},(_,i)=>(n>>>(8*i))&255);for(const [filename,content] of Object.entries(files)){const name=enc.encode(filename),data=enc.encode(content);let crc=0xffffffff;for(const byte of data)crc=crcTable[(crc^byte)&255]^(crc>>>8);crc=(crc^0xffffffff)>>>0;const common=[...le(20,2),...le(2048,2),0,0,0,0,33,0,...le(crc,4),...le(data.length,4),...le(data.length,4),...le(name.length,2),0,0];const local=Uint8Array.from([80,75,3,4,...common,...name]);parts.push(local,data);const cent=Uint8Array.from([80,75,1,2,20,0,...common,0,0,0,0,0,0,0,0,0,0,...le(offset,4),...name]);central.push(cent);cdSize+=cent.length;offset+=local.length+data.length}const n=central.length;return [...parts,...central,Uint8Array.from([80,75,5,6,0,0,0,0,...le(n,2),...le(n,2),...le(cdSize,4),...le(offset,4),0,0])]}
-  function docxBlob(t,tab=readerTab){const ns='http://schemas.openxmlformats.org/wordprocessingml/2006/main',pre='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',p=(s,size=22,b=false,bg='')=>`<w:p><w:pPr>${bg?`<w:shd w:fill="${bg}"/>`:''}<w:spacing w:after="120"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>${b?'<w:b/>':''}<w:color w:val="2D3748"/><w:sz w:val="${size}"/></w:rPr><w:t xml:space="preserve">${esc(s)}</w:t></w:r></w:p>`;let body=p('OPOSAPIENS STUDIO',20,true,'DDD6FE')+p(t.title,36,true)+p(opp().short+' / '+(tab==='table'?'Tablas Comparativas Oficiales':'Esquema de repaso'),20);if(tab==='table'){const tables=getTopicTables(t);tables.forEach(tbl=>{body+=p(tbl.title,22,true,'DDD6FE');const rows=[tbl.heads,...tbl.rows];const colCount=tbl.heads.length;const colWidth=Math.floor(8960/colCount);body+='<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(x=>`<w:${x} w:val="single" w:sz="4" w:color="DDD6DE"/>`).join('')+'</w:tblBorders></w:tblPr><w:tblGrid>'+Array(colCount).fill(`<w:gridCol w:w="${colWidth}"/>`).join('')+'</w:tblGrid>'+rows.map((r,i)=>'<w:tr>'+r.map(c=>`<w:tc><w:tcPr><w:tcW w:w="${colWidth}" w:type="dxa"/><w:shd w:fill="${i===0?'DDD6FE':i%2?'FAF7F2':'E8F1E6'}"/></w:tcPr>${p(c,18,i===0)}</w:tc>`).join('')+'</w:tr>').join('')+'</w:tbl>'+p('',12);});}else{const units=getTopicPdfUnits(t);units.forEach(u=>{if(u.head)body+=p(u.s,24,true,'BBF7D0');else body+=p('• '+u.s,20)});}if(t.source)body+=p('Fuente: '+t.source,18);const types='http://schemas.openxmlformats.org/package/2006/content-types',rels='http://schemas.openxmlformats.org/package/2006/relationships';const files={'[Content_Types].xml':pre+`<Types xmlns="${types}"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`,'_rels/.rels':pre+`<Relationships xmlns="${rels}"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`,'word/document.xml':pre+`<w:document xmlns:w="${ns}"><w:background w:color="FAF7F2"/><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1100" w:bottom="1100" w:left="1250" w:right="1250"/></w:sectPr></w:body></w:document>`};return new Blob(zipStored(files),{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})}
+  function docxBlob(t,tab=readerTab){
+    const ns='http://schemas.openxmlformats.org/wordprocessingml/2006/main',pre='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+    const p=(s,size=22,b=false,bg='')=>`<w:p><w:pPr>${bg?`<w:shd w:fill="${bg}"/>`:''}<w:spacing w:after="120"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>${b?'<w:b/>':''}<w:color w:val="2D3748"/><w:sz w:val="${size}"/></w:rPr><w:t xml:space="preserve">${esc(s)}</w:t></w:r></w:p>`;
+    let body=p('MI CUADERNO DE OPOSICIONES · ESTILO PASTEL',20,true,'DDD6FE')+p(t.title,36,true)+p(opp().short+' / '+(tab==='review'?'Esquema Repaso Examen Pastel (Máx. 2 Hojas)':'Apuntes Oposiciones Pastel'),20);
+    
+    // 1. Unidades de texto
+    const units = getTopicPdfUnits(t);
+    units.forEach(u=>{
+      body+=p(u.s,u.head?24:20,u.head,u.head?'E9D5FF':'');
+    });
+
+    // 2. Tablas del tema
+    const tables = getTopicTables(t);
+    if(tables && tables.length){
+      body+=p('CUADROS Y TABLAS COMPARATIVAS DE EXAMEN',24,true,'D1FAE5');
+      tables.forEach(tbl=>{
+        body+=p(tbl.title,22,true,'DDD6FE');
+        const rows=[tbl.heads,...tbl.rows];
+        const colCount=tbl.heads.length;
+        const colWidth=Math.floor(8960/colCount);
+        body+='<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(x=>`<w:${x} w:val="single" w:sz="4" w:color="DDD6DE"/>`).join('')+'</w:tblBorders></w:tblPr><w:tblGrid>'+Array(colCount).fill(`<w:gridCol w:w="${colWidth}"/>`).join('')+'</w:tblGrid>'+rows.map((r,i)=>'<w:tr>'+r.map(c=>`<w:tc><w:tcPr><w:tcW w:w="${colWidth}" w:type="dxa"/>${i===0?'<w:shd w:fill="EDE9FE"/>':i%2?'<w:shd w:fill="F5F3FF"/>':''}</w:tcPr><w:p><w:r><w:rPr>${i===0?'<w:b/>':''}<w:color w:val="2D3748"/><w:sz w:val="18"/></w:rPr><w:t xml:space="preserve">${esc(c)}</w:t></w:r></w:p></w:tc>`).join('')+'</w:tr>').join('')+'</w:tbl>';
+      });
+    }
+
+    const files={'[Content_Types].xml':`${pre}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`,'_rels/.rels':`${pre}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`,'word/document.xml':`${pre}<w:document xmlns:w="${ns}"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr></w:body></w:document>`};
+    return new Blob([zipStored(files)],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+  }
   function exportNotes(type){const t=currentTopic();if(!t?.text)return toast('Añade apuntes al tema antes de exportar.');const name=t.title.replace(/[^\p{L}\p{N} -]/gu,'').slice(0,80),isWord=type==='docx';download(isWord?docxBlob(t):pdfBlob(t,type==='pdf2'?2:1),name+' - '+(readerTab==='table'?'tabla':'esquema')+(isWord?'.docx':' - '+(type==='pdf2'?'2 columnas':'1 columna')+'.pdf'));toast('Documento preparado para descargar.')}
   const glossary=text=>sentences(text).map(s=>s.match(/^([\p{L}\d][\p{L}\d \-\/]{1,45})\s*[:=]\s*(.{6,600})$/u)).filter(Boolean).map(m=>({term:m[1].trim(),def:m[2].trim()}));
     /* =================================================================
@@ -6272,6 +6726,9 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     if (isTopicRightsT2(t)) {
       return getTopicRightsT2Tree();
     }
+    if (isTopicPoderJudicial(t)) {
+      return getTopicPoderJudicialTree(t);
+    }
     if (isTopicSeguridadSocial(t)) {
       if (!t.text || t.text.trim().length < 50) {
         return getTopicSeguridadSocialTree(t);
@@ -6961,8 +7418,9 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     const hasNotes = t.text && t.text.trim().length > 10;
     const isT2 = isTopicRightsT2(t);
     const isSS = isTopicSeguridadSocial(t);
+    const isT9 = isTopicPoderJudicial(t);
 
-    if (!tables.length || (!hasNotes && !isT2 && !isSS)) {
+    if (!tables.length || (!hasNotes && !isT2 && !isSS && !isT9)) {
       return `
         <div class="empty-state surface" style="padding:32px 20px;border-radius:12px;border:1.5px dashed var(--line);text-align:center">
           <div style="font-size:38px;margin-bottom:12px">⚖️</div>
@@ -7175,6 +7633,11 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
             ${trapQuestions.map(q => `<li>${q}</li>`).join('')}
           </ul>
         </div>
+
+        <!-- TABLAS Y CUADROS COMPARATIVOS PASTEL -->
+        <div style="margin-top:16px">
+          ${generateCuadrosHTML(t)}
+        </div>
       </div>
     `;
   }
@@ -7220,12 +7683,20 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
               <li><strong>¿Se puede iniciar una reforma constitucional bajo estado de alarma?</strong> NO. El art. 169 prohíbe taxativamente iniciar reformas en tiempo de guerra o bajo estados de alarma, excepción y sitio (art. 116).</li>
             </ul>
           </div>
+
+          <!-- TABLAS Y CUADROS COMPARATIVOS PASTEL -->
+          <div style="margin-top:16px">
+            ${generateCuadrosHTML(t)}
+          </div>
         </div>
       `;
     }
 
     if (isTopicRightsT2(t)) {
       return getTopicRightsT2Summary();
+    }
+    if (isTopicPoderJudicial(t)) {
+      return getTopicPoderJudicialSummary(t);
     }
 
     if (isTopicSeguridadSocial(t) && (!t.text || t.text.trim().length < 50)) {
