@@ -1525,14 +1525,14 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
 
   function defaultGeminiSkills() {
     return {
-      summary: 'HABILIDAD GEMINI · APUNTES EN PAPEL: Actúa como preparador de élite de oposiciones. Redacta unos apuntes limpios listos para estudiar en papel: 1) Ideas fuerza y estructura clara sin paja, 2) Artículos y conceptos clave de cita obligatoria subrayados, 3) Notas al margen y preguntas trampa del tribunal.',
-      scheme: 'HABILIDAD GEMINI · ESQUEMA MÁX. 2 HOJAS EN NUEVA PIZARRA: Sintetiza el tema completo en un esquema visual de Nueva Pizarra que quepa en un MÁXIMO DE 2 HOJAS (A4). Organiza en bloques de colores, destaca [PLAZO], [MAYORÍA], [TRAMPA] y [LEY], e incluye un cuadro exprés de repaso final.'
+      summary: 'HABILIDAD · APUNTES OPOSICIONES PASTEL: Actúa como preparador experto de oposiciones. A partir del documento original del tema, genera apuntes en papel con estética pastel limpia y ordenada: 1) Ideas fuerza y epígrafes claros sin paja, 2) Artículos y definiciones clave de cita obligatoria destacados en tonos pastel, 3) Notas al margen y preguntas trampa del tribunal.',
+      scheme: 'HABILIDAD · ESQUEMA REPASO EXAMEN PASTEL: Sintetiza el documento original completo en un esquema visual de repaso final en tonos pastel (máximo 2 hojas A4 en nueva pizarra). Estructura en bloques claros con etiquetas [PLAZO], [MAYORÍA], [TRAMPA] y [LEY], y cuadro exprés final de plazos y competencias.'
     };
   }
 
   function initialState(){
     return {
-      version: 5,
+      version: 6,
       active: 'gace-a2',
       opps: [makeTemplateGACE(), makeTemplateSeguridadSocialC1(), makeTemplateC1(), makeTemplateAuxiliarC2()],
       geminiSkills: defaultGeminiSkills(),
@@ -1557,8 +1557,8 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     const raw = localStorage.getItem(STORAGE) || localStorage.getItem('oposapiens.studio.v1');
     let d = raw ? JSON.parse(raw) : null;
     if (d && Array.isArray(d.opps) && d.opps.length) {
-      if ((d.version || 0) < 5) {
-        d.version = 5;
+      if ((d.version || 0) < 6) {
+        d.version = 6;
         d.geminiSkills = defaultGeminiSkills();
         // Upgrade existing oppositions: if user named an opp "seguridad social" but it had 58 topics of GACE, fix it with SS official syllabus!
         d.opps.forEach(o => {
@@ -2247,14 +2247,21 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
   function topicList(){const o=opp();let count=0;const html=o.blocks.map((b,bi)=>{const ts=o.topics.filter(t=>t.b===bi&&norm(t.title+' '+b).includes(norm(libraryQuery))&&(!libraryFilter||(topicState(t)[0]||'review')===libraryFilter));count+=ts.length;if(!ts.length)return '';return `<details class="block-group" ${libraryQuery||libraryFilter||bi===0?'open':''}><summary><span class="block-index">${String(bi+1).padStart(2,'0')}</span><span>${esc(b)}</span><span class="block-count">${ts.length} temas</span>${I('down',15)}</summary>${ts.map(t=>`<button class="topic-row" data-act="read" data-id="${esc(t.id)}"><span class="topic-no">${String(o.topics.indexOf(t)+1).padStart(2,'0')}</span><span class="topic-title">${esc(t.title)}</span>${t.assets?.length?I('file',12):''}${stateLabel(t)}${I('right',13)}</button>`).join('')}</details>`}).join('');return count?html:`<div class="empty-state">${I('book',30)}<h3>${o.topics.length?'No hay coincidencias':'Tu cuaderno está listo'}</h3><p>${o.topics.length?'Prueba con otro término o cambia el filtro.':'Añade un tema o importa tus primeros apuntes para comenzar.'}</p>${o.topics.length?btn('Quitar filtros','reset-filter'):btn('Añadir mi primer tema','add-topic','plus')}</div>`}
   function addTopic(){modal('Añadir un tema',`<form id="topic-form" class="stack"><label class="field"><span>Título del tema</span><input name="title" required maxlength="200" placeholder="Ej. Los recursos administrativos"></label><label class="field"><span>Bloque</span><input list="block-options" name="block" required value="${esc(opp().blocks[0]||'Temario general')}"><datalist id="block-options">${opp().blocks.map(b=>`<option value="${esc(b)}">`).join('')}</datalist><small>Elige un bloque existente o escribe el nombre de uno nuevo.</small></label><label class="field"><span>Apuntes iniciales <small>(opcional)</small></span><textarea name="text" placeholder="Pega aquí tus apuntes..."></textarea></label><button class="btn primary">Crear tema</button></form>`)}
   let pendingFiles=[],pdfEngine=null;
-  function importNotes(id=''){pendingFiles=[];const t=topic(id)||currentTopic();modal('Importar apuntes',`<p>Archivos privados, guardados solo en este dispositivo.</p><form id="import-form" class="stack"><label class="field"><span>Tema de destino</span><select name="topic" id="import-topic"><option value="auto" ${!t?'selected':''}>✨ Clasificación automática inteligente (detecta bloque y tema de cada archivo)</option><option value="new">➕ Crear un tema nuevo con estos apuntes</option>${opp().topics.map(x=>`<option value="${esc(x.id)}" ${t&&x.id===t.id?'selected':''}>${esc(x.title)}</option>`).join('')}</select></label><label class="field" id="import-title-field" ${t?'hidden':''}><span>Título del nuevo tema</span><input name="title" maxlength="200" placeholder="Nombre de tus apuntes"></label><div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Elegir archivos PDF, Word, audio, vídeo, presentaciones o apuntes">${I('upload',25)}<strong>Arrastra tus temas, audios o vídeos aquí</strong><small>o haz clic para elegir · PDF, Word (DOCX), Audios (MP3/M4A), Vídeos (MP4), Diapositivas (PPTX), TXT y Markdown · máx. 100 MB</small></div><input type="file" id="note-files" accept=".pdf,.docx,.doc,.odt,.txt,.md,.markdown,.mp3,.m4a,.wav,.ogg,.mp4,.webm,.pptx,.ppt,.odp" multiple hidden><div id="chosen-files" class="small muted" hidden></div><label class="field"><span>O pega el texto directamente</span><textarea name="text" rows="4" placeholder="Tu temario, artículos, definiciones..."></textarea></label><label class="field"><span>URL de la fuente <small>(opcional)</small></span><input name="source" type="url" placeholder="https://www.boe.es/..."></label><label class="checkline"><input type="checkbox" name="replace">Reemplazar el texto anterior del tema en vez de ampliarlo.</label><div id="import-status" class="small muted" aria-live="polite"></div><div id="modal-error" class="modal-error"></div><button class="btn primary" type="submit">${I('upload',15)}Guardar mis apuntes</button></form>`);const drop=$('#dropzone');drop.onclick=()=>$('#note-files').click();drop.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('#note-files').click()}};drop.ondragover=e=>{e.preventDefault();drop.classList.add('drag')};drop.ondragleave=()=>drop.classList.remove('drag');drop.ondrop=e=>{e.preventDefault();drop.classList.remove('drag');updateFiles([...e.dataTransfer.files])};$('#note-files').onchange=e=>updateFiles([...e.target.files]);$('#import-topic').onchange=e=>$('#import-title-field').hidden=e.target.value!=='new'}
+  function importNotes(id=''){pendingFiles=[];const explicitTopic=id?topic(id):null;modal('Importar apuntes y temas',`<p>Sube uno o <strong>todos los temas que quieras de una vez</strong>. El detector automático asignará cada archivo a su bloque y tema oficial.</p><form id="import-form" class="stack"><label class="field"><span>Destino de los archivos</span><select name="topic" id="import-topic"><option value="auto" ${!explicitTopic?'selected':''}>✨ Clasificación automática inteligente (sube todos los temas a la vez)</option><option value="new">➕ Crear un tema nuevo con estos apuntes</option>${opp().topics.map(x=>`<option value="${esc(x.id)}" ${explicitTopic&&x.id===explicitTopic.id?'selected':''}>${esc(x.title)}</option>`).join('')}</select></label><label class="field" id="import-title-field" hidden><span>Título del nuevo tema</span><input name="title" maxlength="200" placeholder="Nombre de tus apuntes"></label><div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Elegir uno o varios archivos PDF, Word, audio, vídeo, presentaciones o apuntes">${I('upload',25)}<strong>Arrastra uno o varios temas aquí de golpe</strong><small>o haz clic para seleccionar múltiples archivos · PDF, Word (DOCX), Audios (MP3/M4A), Vídeos (MP4), PPTX, TXT · máx. 100 MB cada uno</small></div><input type="file" id="note-files" accept=".pdf,.docx,.doc,.odt,.txt,.md,.markdown,.mp3,.m4a,.wav,.ogg,.mp4,.webm,.pptx,.ppt,.odp" multiple hidden><div id="chosen-files" class="small muted" hidden></div><label class="field"><span>O pega el texto directamente</span><textarea name="text" rows="4" placeholder="Tu temario, artículos, definiciones..."></textarea></label><label class="field"><span>URL de la fuente <small>(opcional)</small></span><input name="source" type="url" placeholder="https://www.boe.es/..."></label><label class="checkline"><input type="checkbox" name="replace">Reemplazar el texto anterior del tema en vez de ampliarlo.</label><div id="import-status" class="small muted" aria-live="polite"></div><div id="modal-error" class="modal-error"></div><button class="btn primary" type="submit">${I('upload',15)}Guardar y clasificar mis apuntes</button></form>`);const drop=$('#dropzone');drop.onclick=()=>$('#note-files').click();drop.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('#note-files').click()}};drop.ondragover=e=>{e.preventDefault();drop.classList.add('drag')};drop.ondragleave=()=>drop.classList.remove('drag');drop.ondrop=e=>{e.preventDefault();drop.classList.remove('drag');updateFiles([...e.dataTransfer.files])};$('#note-files').onchange=e=>updateFiles([...e.target.files]);$('#import-topic').onchange=e=>$('#import-title-field').hidden=e.target.value!=='new'}
   function updateFiles(list){pendingFiles=[...pendingFiles,...list].filter((f,i,a)=>a.findIndex(x=>x.name===f.name&&x.size===f.size)===i);const n=$('#chosen-files');
+    const sel=$('#import-topic');
+    if (pendingFiles.length > 1 && sel && sel.value !== 'auto') {
+      sel.value = 'auto';
+      const titleField = $('#import-title-field');
+      if (titleField) titleField.hidden = true;
+    }
     n.hidden=false;
     const classifiedList = pendingFiles.map(f => {
       const matched = matchTopicForFile(f.name);
-      return '📄 ' + f.name + ' (' + Math.ceil(f.size/1024) + ' KB) ➔ Sugerido: ' + matched.title;
+      return '📄 ' + f.name + ' (' + Math.ceil(f.size/1024) + ' KB) ➔ Detectado: ' + matched.title;
     }).join('\n');
-    n.innerHTML = '<div style="white-space:pre-wrap;background:#fdfbf7;padding:8px 12px;border-radius:8px;border:1px solid var(--line);max-height:140px;overflow-y:auto;font-size:12px;line-height:1.6"><strong>' + pendingFiles.length + ' archivo(s) listo(s):</strong>\n' + esc(classifiedList) + '</div>';
+    const multiBanner = pendingFiles.length > 1 ? '<div style="color:#553396;font-weight:700;margin-bottom:6px">✨ Detección automática multi-tema activada (' + pendingFiles.length + ' archivos)</div>' : '';
+    n.innerHTML = '<div style="white-space:pre-wrap;background:#fdfbf7;padding:8px 12px;border-radius:8px;border:1px solid var(--line);max-height:170px;overflow-y:auto;font-size:12px;line-height:1.6">' + multiBanner + '<strong>' + pendingFiles.length + ' archivo(s) listo(s):</strong>\n' + esc(classifiedList) + '</div>';
   }
   async function cachedModule(url,key){let blob=await fileStore('get',key);if(!blob){const r=await fetch(url,{signal:AbortSignal.timeout(25000)});if(!r.ok)throw Error('No se pudo descargar el lector PDF.');blob=new Blob([await r.text()],{type:'text/javascript'});await fileStore('put',key,blob)}return URL.createObjectURL(blob)}
   async function extractPDF(file,progress){if(!pdfEngine){const base='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/';const [main,worker]=await Promise.all([cachedModule(base+'pdf.min.mjs','@pdf-main-4.10'),cachedModule(base+'pdf.worker.min.mjs','@pdf-worker-4.10')]);pdfEngine=await import(main);pdfEngine.GlobalWorkerOptions.workerSrc=worker}const pdf=await pdfEngine.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false,useSystemFonts:true}).promise;let out=[];try{for(let i=1;i<=pdf.numPages;i++){progress('Extrayendo texto: página '+i+' de '+pdf.numPages);const p=await pdf.getPage(i),c=await p.getTextContent();out.push(c.items.map(x=>(x.str||'')+(x.hasEOL?'\n':' ')).join(''));p.cleanup()}return out.join('\n\n')}finally{await pdf.destroy()}}
@@ -3113,8 +3120,9 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
           <!-- COLUMNA IZQUIERDA: DOCUMENTO ORIGINAL / VISOR / AUDIOS -->
           <section class="surface reader-col">
             <div class="reader-head">
-              <div class="row" style="gap:8px">
+              <div class="row wrap" style="gap:6px">
                 <h2>${I('book', 16)} Documento original</h2>
+                <button class="btn sm soft" data-act="import" title="Subir uno o todos los temas que quieras a la vez (detección automática)">${I('upload', 12)} Subir temas</button>
                 <button class="icon-btn" data-act="edit-notes" title="Editar texto">${I('pen', 14)}</button>
               </div>
               <!-- Barra de Subrayadores Pastel -->
@@ -3211,7 +3219,7 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
             <!-- Barra de Exportación Completa -->
             ${readerTab !== 'tools' ? `
               <div class="export-bar wrap" style="gap:6px">
-                <span class="tiny muted" style="width:100%">EXPORTAR ${readerTab === 'review' ? 'REPASO FINAL · NUEVA PIZARRA (MÁX. 2 HOJAS)' : 'RESUMEN · APUNTES EN PAPEL'}</span>
+                <span class="tiny muted" style="width:100%">EXPORTAR ${readerTab === 'review' ? 'REPASO FINAL · ESQUEMA REPASO EXAMEN PASTEL (MÁX. 2 HOJAS)' : 'RESUMEN · APUNTES OPOSICIONES PASTEL'}</span>
                 <button class="btn sm soft" data-act="pdf1" title="Descargar PDF 1 columna con fondo de libreta">${I('download', 12)} PDF · 1 columna</button>
                 <button class="btn sm soft" data-act="pdf2" title="Descargar PDF 2 columnas / máx. 2 hojas">${I('download', 12)} PDF · 2 hojas</button>
                 <button class="btn sm soft" onclick="downloadWordDoc(currentTopic(), readerTab)" title="Descargar en formato Word .doc">${I('file', 12)} Descargar Word .doc</button>
@@ -3264,21 +3272,21 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
   async function openBases(){const o=opp();if(o.basePdf){modal('Bases oficiales',`<div class="pdf-host document-body" data-asset="${esc(o.basePdf)}"><span class="loading"></span></div><div class="modal-actions">${btn('Cambiar bases','bases','pin','sm')}</div>`,true);await openPdfHost(o.basePdf)}else if(safeURL(o.baseURL))window.open(safeURL(o.baseURL),'_blank','noopener,noreferrer');else basesModal()}
   function geminiSkillsModal() {
     state.geminiSkills = state.geminiSkills || defaultGeminiSkills();
-    modal('✨ Mis Habilidades de Gemini', `
+    modal('✨ Mis Habilidades Pastel', `
       <div class="stack" style="gap:14px">
-        <div class="notice" style="background:#eef6fc;border-color:#b8dbf7">
-          🤖 <strong>Tus 2 Habilidades Activas de Gemini:</strong> Configura o pega aquí el texto exacto de tus habilidades de Gemini. Se aplican directamente en las pestañas <strong>📝 Resumen</strong> y <strong>⚡ Repaso Final</strong>.
+        <div class="notice" style="background:#f9f5ff;border-color:#e9d5ff">
+          ✨ <strong>Tus 2 Habilidades Activas:</strong> <strong>Apuntes Oposiciones Pastel</strong> (en la pestaña <em>📝 Resumen</em>) y <strong>Esquema Repaso Examen Pastel</strong> (en la pestaña <em>⚡ Repaso Final</em>). Puedes personalizarlas o pegar tus instrucciones exactas aquí:
         </div>
         <form id="gemini-skills-form" class="stack" style="gap:14px">
           <label class="field">
-            <span>📝 1. Habilidad: Apuntes en papel (Pestaña Resumen)</span>
+            <span>📝 1. Apuntes Oposiciones Pastel (Pestaña Resumen)</span>
             <textarea name="summary" rows="6" required style="font-family:monospace;font-size:12px;line-height:1.5">${esc(state.geminiSkills.summary || '')}</textarea>
-            <small class="muted">Genera apuntes limpios listos para estudiar en papel: ideas fuerza, artículos obligatorios y trampas de examen.</small>
+            <small class="muted">Genera apuntes en papel con estética pastel: ideas fuerza, artículos de cita obligatoria y trampas de examen.</small>
           </label>
           <label class="field">
-            <span>⚡ 2. Habilidad: Esquema de máximo 2 hojas en Nueva Pizarra (Pestaña Repaso Final)</span>
+            <span>⚡ 2. Esquema Repaso Examen Pastel (Pestaña Repaso Final)</span>
             <textarea name="scheme" rows="6" required style="font-family:monospace;font-size:12px;line-height:1.5">${esc(state.geminiSkills.scheme || '')}</textarea>
-            <small class="muted">Sintetiza el tema en un esquema visual de Nueva Pizarra que ocupe como máximo 2 hojas A4 para el repaso final.</small>
+            <small class="muted">Genera el esquema visual en tonos pastel de máximo 2 hojas en nueva pizarra con cuadro exprés de plazos.</small>
           </label>
           <div class="modal-actions" style="margin-top:8px">
             <button class="btn soft" type="button" data-act="restore-gemini-skills">↺ Restaurar predeterminados</button>
@@ -5474,21 +5482,21 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
       <div class="class-scheme-wrapper stack" style="gap:16px">
         ${toolbarHTML}
 
-        <div class="class-scheme-header surface" style="padding:16px 20px;border:1.5px solid #d9d1f0;border-radius:12px;background:linear-gradient(135deg, #fdfbf7 0%, #f4f0fa 100%)">
+        <div class="class-scheme-header surface" style="padding:16px 20px;border:1.5px solid #e9d5ff;border-radius:14px;background:linear-gradient(135deg, #fdf7fa 0%, #f3e8ff 50%, #eef6ff 100%)">
           <div class="row between wrap" style="gap:8px;margin-bottom:8px">
-            <span class="badge" style="background:#553396;color:#fff;font-weight:700;font-size:11px">⚡ NUEVA PIZARRA · ESQUEMA MÁX. 2 HOJAS (REPASO FINAL)</span>
+            <span class="badge" style="background:#7e57c2;color:#fff;font-weight:700;font-size:11px;border-radius:20px;padding:3px 10px">⚡ ESQUEMA REPASO EXAMEN PASTEL · MÁX. 2 HOJAS</span>
             <span class="tiny muted font-mono">${esc(tree.metrics)}</span>
           </div>
-          <h2 style="font-size:18px;margin:0 0 6px 0;color:#2b1b42;font-weight:800">${esc(tree.title)}</h2>
-          <p class="small muted" style="margin:0">Habilidad Gemini activa: <strong>Esquema de máximo 2 hojas en Nueva Pizarra</strong>. Plazos, quórums y trampas de tribunal concentrados para el repaso final.</p>
+          <h2 style="font-size:18px;margin:0 0 6px 0;color:#3b2754;font-weight:800">${esc(tree.title)}</h2>
+          <p class="small muted" style="margin:0">Habilidad activa: <strong>Esquema Repaso Examen Pastel</strong>. Nueva pizarra pastel optimizada en máximo 2 hojas con plazos, quórums y trampas de examen.</p>
         </div>
 
         <div class="class-scheme-blocks stack" style="gap:16px">
           ${tree.tier1.map((t1, t1Idx) => {
             const colors = [
-              { border: '#75618e', bg: '#f9f6fc', title: '#46276b', tagBg: '#ebe3f6', tagColor: '#553396' },
-              { border: '#3182ce', bg: '#f2f7fc', title: '#23538a', tagBg: '#dbeafe', tagColor: '#1e40af' },
-              { border: '#b7791f', bg: '#fcf8ec', title: '#805315', tagBg: '#fef3c7', tagColor: '#92400e' }
+              { border: '#d8b4fe', bg: '#faf5ff', title: '#581c87', tagBg: '#f3e8ff', tagColor: '#6b21a8' },
+              { border: '#93c5fd', bg: '#eff6ff', title: '#1e3a8a', tagBg: '#dbeafe', tagColor: '#1d4ed8' },
+              { border: '#86efac', bg: '#f0fdf4', title: '#14532d', tagBg: '#dcfce7', tagColor: '#15803d' }
             ];
             const theme = colors[t1Idx % colors.length];
             return `
@@ -5976,8 +5984,8 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
 
     return `
       <div class="summary-container stack" style="gap:14px">
-        <div class="notice row between" style="background:#fdf7e7;border-color:#f5e5ba;padding:12px 16px;border-radius:10px">
-          <span>📝 <strong>Resumen · Apuntes en papel ${isTopicSeguridadSocial(t) ? '(Seguridad Social · RDL 8/2015)' : ''} · ${esc(t.title)}:</strong> Habilidad Gemini activa — síntesis limpia lista para estudiar en papel.</span>
+        <div class="notice row between" style="background:linear-gradient(135deg,#fdf2f8 0%,#f5f3ff 100%);border-color:#e9d5ff;padding:12px 16px;border-radius:12px">
+          <span>📝 <strong>Apuntes Oposiciones Pastel ${isTopicSeguridadSocial(t) ? '· Seguridad Social (RDL 8/2015)' : ''} · ${esc(t.title)}:</strong> Resumen limpio en tonos pastel listo para estudiar en papel.</span>
           <button class="btn sm soft" data-act="regenerate-analysis" title="Reanalizar apuntes">${I('sparkle',12)} Actualizar</button>
         </div>
 
@@ -6070,8 +6078,8 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     const title = (t && t.title) ? t.title : 'Seguridad Social';
     return `
       <div class="summary-container stack" style="gap:14px">
-        <div class="notice row between" style="background:#eef6fc;border-color:#b8dbf7;padding:12px 16px;border-radius:10px">
-          <span>📝 <strong>Resumen · Apuntes en papel (Seguridad Social · RDL 8/2015 LGSS):</strong> Habilidad Gemini activa — ideas fuerza, artículos de cita obligatoria y trampas frecuentes de examen.</span>
+        <div class="notice row between" style="background:linear-gradient(135deg,#fdf2f8 0%,#f5f3ff 100%);border-color:#e9d5ff;padding:12px 16px;border-radius:12px">
+          <span>📝 <strong>Apuntes Oposiciones Pastel · Seguridad Social (RDL 8/2015 LGSS):</strong> Resumen limpio en tonos pastel con ideas fuerza, artículos de cita obligatoria y trampas de examen.</span>
         </div>
 
         <div class="surface" style="padding:16px;border:1.5px solid #d9d1f0;border-radius:12px;">
@@ -6130,11 +6138,11 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
       if (blockTopics[tNumInBlock - 1]) return blockTopics[tNumInBlock - 1];
     }
 
-    // 2. Check for explicit "Tema X" or "Tema 04" or "T4"
-    const mTopic = normName.match(/(?:tema|t|leccion|capitulo)[\s._-]*(\d+)/i);
+    // 2. Check for explicit "Tema X", "T4", "SS14" or leading number "04 - La Corona.pdf"
+    const mTopic = normName.match(/(?:tema|t|leccion|capitulo|ss)[\s._-]*(\d+)/i) || normName.match(/^(\d{1,2})(?:[\s._-]|$)/);
     if (mTopic) {
       const num = parseInt(mTopic[1], 10);
-      const byId = o.topics.find(t => t.id === 't' + num);
+      const byId = o.topics.find(t => t.id === 't' + num || t.id === 'ss' + num || t.id === 'c2-' + num);
       if (byId) return byId;
       if (num > 0 && num <= o.topics.length) return o.topics[num - 1];
     }
