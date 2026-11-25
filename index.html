@@ -1859,8 +1859,17 @@
 
   function defaultGeminiSkills() {
     return {
-      summary: 'HABILIDAD · APUNTES OPOSICIONES PASTEL: Actúa como preparador experto de oposiciones. A partir del documento original del tema, genera apuntes en papel con estética pastel limpia y ordenada: 1) Ideas fuerza y epígrafes claros sin paja, 2) Artículos y definiciones clave de cita obligatoria destacados en tonos pastel, 3) Notas al margen y preguntas trampa del tribunal.',
-      scheme: 'HABILIDAD · ESQUEMA REPASO EXAMEN PASTEL: Sintetiza el documento original completo en un esquema visual de repaso final en tonos pastel (máximo 2 hojas A4 en nueva pizarra). Estructura en bloques claros con etiquetas [PLAZO], [MAYORÍA], [TRAMPA] y [LEY], y cuadro exprés final de plazos y competencias.'
+      summary: `Actúa como preparador de oposiciones de élite en España. A partir del texto del tema adjunto, genera los "APUNTES OPOSICIONES PASTEL" listos para estudiar en papel:
+- Estructura limpia y jerárquica en Markdown (#, ##, ###) orientada a preguntas de examen oficial.
+- 1. IDEAS FUERZA Y CONCEPTOS CLAVE: Desglose sintético sin paja de cada epígrafe con los conceptos jurídicos exactos.
+- 2. ARTÍCULOS Y PRECEPTOS DE CITA OBLIGATORIA: Cita los preceptos normativos exactos de la Constitución y leyes aplicables con su contenido literal que siempre preguntan en test.
+- 3. CUADRO COMPARATIVO DE EXAMEN: Tabla en Markdown con figuras, órganos competentes, plazos y efectos.
+- 4. PREGUNTAS TRAMPA DEL TRIBUNAL Y ALERTAS: Incluye trampas clásicas de test (días hábiles vs naturales, excepciones, quórums) utilizando las etiquetas [PLAZO: ...], [MAYORÍA: ...], [TRAMPA: ...] y [LEY: ...].`,
+      scheme: `Actúa como preparador de oposiciones de élite en España. A partir del texto del tema adjunto, genera el "ESQUEMA REPASO EXAMEN PASTEL" (máximo 2 hojas A4 en Nueva Pizarra):
+- Esquema visual de máxima síntesis y jerarquía estricta en Markdown.
+- Desglose estructurado por bloques con viñetas concisas y conectores lógicos claros.
+- Uso obligatorio de etiquetas visuales en mayúsculas: [PLAZO: x días/meses], [MAYORÍA: x], [TRAMPA: alerta], [LEY: norma y art].
+- CUADRO EXPRÉS DE CIERRE: Tabla resumen con todas las cifras, plazos perentorios, órganos y quórums de examen.`
     };
   }
 
@@ -3795,6 +3804,318 @@
   }
   function basesModal(){const o=opp();modal('Bases de mi oposición',`<p>Ancla la convocatoria oficial a este cuaderno. Podrás abrirla desde la cabecera de tu oposición.</p><form id="bases-form" class="stack"><label class="field"><span>Enlace a las bases</span><input type="url" name="url" value="${esc(o.baseURL||'')}" placeholder="https://www.boe.es/..."></label><label class="field"><span>O adjunta las bases en PDF</span><input type="file" name="file" accept=".pdf,application/pdf"><small>${o.basePdf?'Hay un PDF anclado. El archivo nuevo lo sustituirá.':'El PDF quedará disponible sin conexión.'}</small></label>${o.basePdf?'<label class="checkline"><input type="checkbox" name="remove">Quitar el PDF anclado</label>':''}<button class="btn primary">${I('pin',14)}Guardar bases</button></form>`)}
   async function openBases(){const o=opp();if(o.basePdf){modal('Bases oficiales',`<div class="pdf-host document-body" data-asset="${esc(o.basePdf)}"><span class="loading"></span></div><div class="modal-actions">${btn('Cambiar bases','bases','pin','sm')}</div>`,true);await openPdfHost(o.basePdf)}else if(safeURL(o.baseURL))window.open(safeURL(o.baseURL),'_blank','noopener,noreferrer');else basesModal()}
+    function getGeminiApiKey() {
+    return apiKey || localStorage.getItem('opocuaderno_gemini_key') || '';
+  }
+
+  function setGeminiApiKey(key) {
+    apiKey = String(key || '').trim();
+    if (apiKey) localStorage.setItem('opocuaderno_gemini_key', apiKey);
+    else localStorage.removeItem('opocuaderno_gemini_key');
+  }
+
+  async function callAIProvider(prompt, systemPrompt = '') {
+    const key = getGeminiApiKey();
+    if (!key) throw new Error('NO_KEY');
+    
+    const isGemini = key.startsWith('AIza') || (state.model && state.model.includes('gemini')) || !key.startsWith('sk-');
+    
+    if (isGemini) {
+      const model = (state.model && state.model.includes('gemini')) ? state.model : 'gemini-1.5-flash';
+      const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(key);
+      
+      const contents = [];
+      if (systemPrompt) {
+        contents.push({ role: 'user', parts: [{ text: systemPrompt }] });
+        contents.push({ role: 'model', parts: [{ text: 'Entendido. Aplicaré estas directrices estrictamente sobre el texto del tema que proporciones.' }] });
+      }
+      contents.push({ role: 'user', parts: [{ text: prompt }] });
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents, generationConfig: { temperature: 0.3, maxOutputTokens: 8192 } })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.error?.message || ('Error HTTP ' + res.status + ' al conectar con Google Gemini'));
+      }
+      const data = await res.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) throw new Error('Gemini no devolvió texto.');
+      return text;
+    } else {
+      const model = state.model || 'gpt-4o-mini';
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model,
+          messages: [
+            ...(systemPrompt ? [{ role: 'system', content: systemPrompt }] : []),
+            { role: 'user', content: prompt }
+          ]
+        })
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.error?.message || ('Error HTTP ' + res.status + ' al conectar con OpenAI'));
+      }
+      const data = await res.json();
+      return data.choices?.[0]?.message?.content || '';
+    }
+  }
+
+  function renderGeminiMarkdown(md) {
+    if (!md) return '';
+    const lines = md.split(/\r?\n/);
+    let html = '';
+    let inTable = false;
+    let tableRows = [];
+    let inList = false;
+
+    function flushList() {
+      if (inList) { html += '</ul>'; inList = false; }
+    }
+
+    function flushTable() {
+      if (!inTable) return;
+      if (tableRows.length) {
+        let tHtml = '<div style="overflow-x:auto;margin:16px 0"><table class="cuadro-table">';
+        tableRows.forEach((row, rIdx) => {
+          if (rIdx === 0) {
+            tHtml += '<thead><tr>' + row.map(c => '<th>' + c + '</th>').join('') + '</tr></thead><tbody>';
+          } else {
+            tHtml += '<tr>' + row.map((c, cIdx) => (cIdx === 0 ? '<td><strong>' + c + '</strong></td>' : '<td>' + c + '</td>')).join('') + '</tr>';
+          }
+        });
+        tHtml += '</tbody></table></div>';
+        html += tHtml;
+      }
+      inTable = false;
+      tableRows = [];
+    }
+
+    function fmtLine(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&#60;')
+        .replace(/>/g, '&#62;')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code style="background:#f3e8ff;padding:2px 6px;border-radius:4px;font-size:12px">$1</code>')
+        .replace(/\[PLAZO:\s*([^\]]+)\]/gi, '<span class="badge-plazo">⏱️ $1</span>')
+        .replace(/\[MAYOR[IÍ]A:\s*([^\]]+)\]/gi, '<span class="badge-mayoria">🟣 $1</span>')
+        .replace(/\[TRAMPA:\s*([^\]]+)\]/gi, '<span class="badge-trampa">🔴 $1</span>')
+        .replace(/\[LEY:\s*([^\]]+)\]/gi, '<span class="tag">⚖️ $1</span>');
+    }
+
+    for (let i = 0; i < lines.length; i++) {
+      const rawLine = lines[i].trim();
+      
+      if (rawLine.startsWith('|') && rawLine.endsWith('|')) {
+        flushList();
+        const cells = rawLine.slice(1, -1).split('|').map(c => fmtLine(c.trim()));
+        if (cells.every(c => /^:?-+:?$/.test(c.replace(/&#60;|&#62;|&amp;/g, '')))) {
+          continue;
+        }
+        inTable = true;
+        tableRows.push(cells);
+        continue;
+      } else {
+        flushTable();
+      }
+
+      if (!rawLine) {
+        flushList();
+        continue;
+      }
+
+      if (rawLine.startsWith('### ')) {
+        flushList();
+        html += '<h4 style="margin:18px 0 8px 0;color:#553396;font-size:15px;font-weight:700">' + fmtLine(rawLine.slice(4)) + '</h4>';
+        continue;
+      }
+      if (rawLine.startsWith('## ')) {
+        flushList();
+        html += '<div class="surface" style="padding:14px 18px;margin:18px 0 10px 0;border-left:4px solid #9333ea;border-radius:8px;background:#faf5ff"><h3 style="margin:0;color:#3b1e54;font-size:16px;font-weight:800">' + fmtLine(rawLine.slice(3)) + '</h3></div>';
+        continue;
+      }
+      if (rawLine.startsWith('# ')) {
+        flushList();
+        html += '<div class="notice" style="background:linear-gradient(135deg,#fdf2f8 0%,#f5f3ff 100%);border-color:#e9d5ff;padding:16px;border-radius:12px;margin-bottom:14px"><h2 style="margin:0;color:#3b1e54;font-size:18px;font-weight:800">' + fmtLine(rawLine.slice(2)) + '</h2></div>';
+        continue;
+      }
+
+      if (rawLine.startsWith('> ')) {
+        flushList();
+        html += '<div style="background:#fff7ed;border-left:4px solid #ea580c;padding:10px 14px;border-radius:6px;margin:10px 0;font-size:13px;color:#7c2d12">' + fmtLine(rawLine.slice(2)) + '</div>';
+        continue;
+      }
+
+      if (/^[-*•]\s+/.test(rawLine)) {
+        if (!inList) {
+          html += '<ul style="margin:8px 0 12px 0;padding-left:22px;font-size:13px;line-height:1.7;color:#332e38">';
+          inList = true;
+        }
+        html += '<li>' + fmtLine(rawLine.replace(/^[-*•]\s+/, '')) + '</li>';
+        continue;
+      } else {
+        flushList();
+      }
+
+      html += '<p style="margin:6px 0;font-size:13px;line-height:1.65;color:#332e38">' + fmtLine(rawLine) + '</p>';
+    }
+
+    flushList();
+    flushTable();
+    return html;
+  }
+
+  async function generateTopicWithGemini(topicId, type) {
+    const t = topic(topicId);
+    if (!t) return toast('Tema no encontrado.');
+    const raw = String(t.text || '').trim();
+    if (!raw) {
+      toast('Añade o importa los apuntes del tema primero.');
+      return;
+    }
+
+    const key = getGeminiApiKey();
+    if (!key) {
+      openApiKeyOrPromptModal(topicId, type);
+      return;
+    }
+
+    const isSummary = type === 'summary';
+    const skillName = isSummary ? 'Apuntes Oposiciones Pastel' : 'Esquema Repaso Examen Pastel';
+    const systemPrompt = isSummary ? (state.geminiSkills?.summary || '') : (state.geminiSkills?.scheme || '');
+    const userPrompt = 'DOCUMENTO ORIGINAL DEL TEMA:\nTítulo: ' + t.title + '\nOposición: ' + opp().name + '\n\nContenido del tema:\n' + raw.slice(0, 32000);
+
+    modal('✨ Generando con Gemini AI', `
+      <div class="stack" style="text-align:center;padding:24px 16px;gap:14px">
+        <div style="font-size:42px" class="pet-breathe">✨</div>
+        <h3 style="margin:0;color:var(--deep)">Aplicando habilidad «${esc(skillName)}»</h3>
+        <p class="muted small" style="margin:0 auto;max-width:440px">
+          Gemini está analizando el documento original de <strong>${esc(t.title)}</strong> para estructurar tus apuntes con estética pastel y rigor de examen...
+        </p>
+        <span class="loading" style="margin:8px auto"></span>
+      </div>
+    `, true);
+
+    try {
+      const generatedMarkdown = await callAIProvider(userPrompt, systemPrompt);
+      if (isSummary) {
+        t.geminiSummary = generatedMarkdown;
+      } else {
+        t.geminiScheme = generatedMarkdown;
+      }
+      save();
+      closeModal();
+      renderRoute(false);
+      toast('¡' + skillName + ' generado con éxito por Gemini!');
+      petReact(true);
+    } catch (err) {
+      if (err.message === 'NO_KEY') {
+        openApiKeyOrPromptModal(topicId, type);
+      } else {
+        modalError(err.message || 'Error al conectar con Gemini.');
+      }
+    }
+  }
+
+  function openApiKeyOrPromptModal(topicId, type) {
+    const t = topic(topicId);
+    const isSummary = type === 'summary';
+    const skillName = isSummary ? 'Apuntes Oposiciones Pastel' : 'Esquema Repaso Examen Pastel';
+    modal('✨ Activar Generación con Gemini AI', `
+      <div class="stack" style="gap:16px">
+        <div class="notice" style="background:#f9f5ff;border-color:#e9d5ff">
+          🤖 Para generar <strong>${esc(skillName)}</strong> automáticamente en tu navegador, tienes dos opciones:
+        </div>
+        
+        <div class="surface" style="padding:16px;border:1.5px solid #d8b4fe;border-radius:12px;background:#faf5ff">
+          <h4 style="margin:0 0 6px 0;color:#581c87">Opción 1: Conectar tu clave gratuita de Google Gemini (Recomendado)</h4>
+          <p class="small muted" style="margin:0 0 10px 0">
+            Puedes obtener una clave de API 100% gratuita en Google AI Studio (tarda menos de 1 minuto). Se guarda únicamente en tu navegador.
+          </p>
+          <form id="gemini-key-connect-form" class="stack" style="gap:10px" data-tid="${esc(topicId)}" data-kind="${esc(type)}">
+            <input type="password" name="apiKey" required placeholder="AIzaSy..." autocomplete="off" style="font-family:monospace;font-size:13px" value="${esc(getGeminiApiKey())}">
+            <div class="row between wrap" style="gap:8px">
+              <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="small" style="color:#7e57c2;font-weight:700">
+                👉 Obtener clave gratis en Google AI Studio ↗
+              </a>
+              <button class="btn primary sm" type="submit">${I('sparkle', 12)} Guardar y Generar Ahora</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="surface" style="padding:16px;border:1px solid var(--line);border-radius:12px">
+          <h4 style="margin:0 0 6px 0;color:var(--deep)">Opción 2: Usar tu Gemini Web habitual (Sin clave API)</h4>
+          <p class="small muted" style="margin:0 0 10px 0">
+            Copia el prompt con las instrucciones de tu habilidad y el texto de este tema, pégalo en tu Gemini web o en tu Gem, y pega el resultado aquí:
+          </p>
+          <div class="row wrap" style="gap:8px">
+            <button class="btn sm soft" data-act="copy-gemini-prompt" data-id="${esc(topicId)}" data-kind="${esc(type)}">📋 Copiar Prompt completo para Gemini Web</button>
+            <button class="btn sm" data-act="${isSummary ? 'paste-gemini-summary' : 'paste-gemini-scheme'}" data-id="${esc(topicId)}">📥 Pegar Respuesta de Gemini</button>
+          </div>
+        </div>
+      </div>
+    `);
+  }
+
+  function openPasteGeminiModal(topicId, type) {
+    const t = topic(topicId);
+    if (!t) return toast('Tema no encontrado.');
+    const isSummary = type === 'summary';
+    const skillName = isSummary ? 'Apuntes Oposiciones Pastel' : 'Esquema Repaso Examen Pastel';
+    modal('📥 Pegar ' + esc(skillName) + ' de Gemini', `
+      <form id="paste-gemini-output-form" class="stack" style="gap:14px" data-tid="${esc(topicId)}" data-kind="${esc(type)}">
+        <p class="small muted" style="margin:0">
+          Pega aquí el texto o Markdown que te ha generado Gemini para <strong>${esc(t.title)}</strong>. La aplicación lo adaptará automáticamente con la tipografía, tablas y colores pastel:
+        </p>
+        <textarea name="content" rows="12" required placeholder="Pega aquí el resultado de Gemini..." style="font-family:monospace;font-size:12px;line-height:1.5">${esc(isSummary ? (t.geminiSummary || '') : (t.geminiScheme || ''))}</textarea>
+        <div class="modal-actions">
+          <button class="btn" type="button" onclick="closeModal()">Cancelar</button>
+          <button class="btn primary" type="submit">${I('save', 14)} Guardar y Mostrar</button>
+        </div>
+      </form>
+    `);
+  }
+
+  async function copyGeminiPrompt(topicId, type) {
+    const t = topic(topicId);
+    if (!t) return toast('Tema no encontrado.');
+    const isSummary = type === 'summary';
+    const systemPrompt = isSummary ? (state.geminiSkills?.summary || '') : (state.geminiSkills?.scheme || '');
+    const raw = String(t.text || '').trim();
+    if (!raw) return toast('Añade apuntes al tema antes de copiar el prompt.');
+    const fullPrompt = systemPrompt + '\n\n=========================\nDOCUMENTO ORIGINAL DEL TEMA:\nTítulo: ' + t.title + '\nOposición: ' + opp().name + '\n=========================\n\n' + raw;
+    try {
+      await navigator.clipboard.writeText(fullPrompt);
+      toast('¡Prompt copiado al portapapeles! Pégalo en tu chat de Gemini.');
+    } catch {
+      modal('Prompt para Gemini Web', `
+        <label class="field">
+          <span>Selecciona y copia este texto completo para pegarlo en Gemini:</span>
+          <textarea rows="12" readonly style="font-family:monospace;font-size:12px">${esc(fullPrompt)}</textarea>
+        </label>
+      `);
+    }
+  }
+
+  function clearTopicAIContent(topicId, type) {
+    const t = topic(topicId);
+    if (!t) return;
+    if (type === 'summary') delete t.geminiSummary;
+    else delete t.geminiScheme;
+    save();
+    renderRoute(false);
+    toast('Se ha restablecido al análisis local estándar.');
+  }
+
+
   function geminiSkillsModal() {
     state.geminiSkills = state.geminiSkills || defaultGeminiSkills();
     modal('✨ Mis Habilidades Pastel', `
@@ -6256,7 +6577,7 @@
     `;
   }
 
-  function generateFinalReviewHTML(t) {
+    function generateFinalReviewHTML(t) {
     if (!t) return '';
     const raw = String(t.text || '').trim();
     if (!raw) {
@@ -6276,8 +6597,43 @@
         </div>
       `;
     }
+
+    if (t.geminiScheme) {
+      return `
+        <div class="final-review-wrapper stack" style="gap:14px">
+          <div class="notice row between wrap" style="background:linear-gradient(135deg,#fdf2f8 0%,#f5f3ff 100%);border-color:#e9d5ff;padding:12px 16px;border-radius:12px;gap:8px">
+            <span style="display:flex;align-items:center;gap:6px">
+              <span style="font-size:18px">⚡</span>
+              <strong>Esquema Repaso Examen Pastel (Generado con Gemini AI · Máx. 2 Hojas):</strong>
+              <span class="tag" style="background:#f3e8ff;color:#7e22ce;border-color:#d8b4fe">Habilidad Gemini Activa</span>
+            </span>
+            <div class="row wrap" style="gap:6px">
+              <button class="btn sm soft" data-act="generate-gemini-scheme" data-id="${esc(t.id)}" title="Regenerar con Gemini AI">${I('sparkle',12)} Regenerar</button>
+              <button class="btn sm soft" data-act="paste-gemini-scheme" data-id="${esc(t.id)}" title="Pegar nuevo esquema">${I('pen',12)} Editar / Pegar</button>
+              <button class="btn sm" data-act="clear-gemini-scheme" data-id="${esc(t.id)}" title="Volver al esquema Novolex">↺ Local</button>
+            </div>
+          </div>
+          <div class="gemini-rendered-content surface" style="padding:22px;border:1.5px solid #d8b4fe;border-radius:14px;background:#fff">
+            ${renderGeminiMarkdown(t.geminiScheme)}
+          </div>
+        </div>
+      `;
+    }
+
     return `
       <div class="final-review-wrapper stack" style="gap:22px">
+        <div class="notice row between wrap" style="background:linear-gradient(135deg,#fdf2f8 0%,#f5f3ff 100%);border-color:#e9d5ff;padding:12px 16px;border-radius:12px;gap:8px">
+          <span style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:18px">⚡</span>
+            <strong>Esquema Repaso Examen Pastel · ${esc(t.title)}:</strong>
+            <span class="tag" style="background:#f3e8ff;color:#6b21a8">Máx. 2 Hojas</span>
+          </span>
+          <div class="row wrap" style="gap:6px">
+            <button class="btn sm primary" data-act="generate-gemini-scheme" data-id="${esc(t.id)}">${I('sparkle',12)} Generar con Habilidad Gemini</button>
+            <button class="btn sm soft" data-act="paste-gemini-scheme" data-id="${esc(t.id)}">📥 Pegar de Gemini</button>
+            <button class="btn sm soft" data-act="gemini-skills" title="Configurar Habilidades">${I('settings',12)} Prompt</button>
+          </div>
+        </div>
         ${generateSchemeHTML(t)}
         <div style="border-top:2px dashed var(--line);padding-top:18px">
           ${generateCuadrosHTML(t)}
@@ -6401,11 +6757,33 @@
           <div class="notice row between" style="background:#fdf7e7;border-color:#f5e5ba;padding:14px 18px;border-radius:10px">
             <div>
               <strong>📖 Sin apuntes cargados para este tema</strong>
-              <p style="margin:4px 0 0 0;font-size:13px;color:#6b5830">Importa apuntes en PDF/Word o pega tus notas para generar el Resumen Anti-Paja dinámico.</p>
+              <p style="margin:4px 0 0 0;font-size:13px;color:#6b5830">Importa apuntes en PDF/Word o pega tus notas para generar los Apuntes Oposiciones Pastel.</p>
             </div>
             <div class="row" style="gap:8px">
               <button class="btn sm primary" data-act="import" data-id="${esc(t.id)}">Importar apuntes</button>
             </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (t.geminiSummary) {
+      return `
+        <div class="summary-container stack" style="gap:14px">
+          <div class="notice row between wrap" style="background:linear-gradient(135deg,#fdf2f8 0%,#f5f3ff 100%);border-color:#e9d5ff;padding:12px 16px;border-radius:12px;gap:8px">
+            <span style="display:flex;align-items:center;gap:6px">
+              <span style="font-size:18px">✨</span>
+              <strong>Apuntes Oposiciones Pastel (Generados con Gemini AI):</strong>
+              <span class="tag" style="background:#f3e8ff;color:#7e22ce;border-color:#d8b4fe">Habilidad Gemini Activa</span>
+            </span>
+            <div class="row wrap" style="gap:6px">
+              <button class="btn sm soft" data-act="generate-gemini-summary" data-id="${esc(t.id)}" title="Regenerar con Gemini AI">${I('sparkle',12)} Regenerar</button>
+              <button class="btn sm soft" data-act="paste-gemini-summary" data-id="${esc(t.id)}" title="Pegar nuevo texto">${I('pen',12)} Editar / Pegar</button>
+              <button class="btn sm" data-act="clear-gemini-summary" data-id="${esc(t.id)}" title="Volver al análisis local">↺ Local</button>
+            </div>
+          </div>
+          <div class="gemini-rendered-content surface" style="padding:22px;border:1px solid #e9d5ff;border-radius:14px;background:#fff">
+            ${renderGeminiMarkdown(t.geminiSummary)}
           </div>
         </div>
       `;
@@ -6454,9 +6832,17 @@
 
     return `
       <div class="summary-container stack" style="gap:14px">
-        <div class="notice row between" style="background:linear-gradient(135deg,#fdf2f8 0%,#f5f3ff 100%);border-color:#e9d5ff;padding:12px 16px;border-radius:12px">
-          <span>📝 <strong>Apuntes Oposiciones Pastel · ${esc(t.title)}:</strong> Resumen limpio en tonos pastel listo para estudiar en papel.</span>
-          <button class="btn sm soft" data-act="regenerate-analysis" title="Reanalizar apuntes">${I('sparkle',12)} Actualizar</button>
+        <div class="notice row between wrap" style="background:linear-gradient(135deg,#fdf2f8 0%,#f5f3ff 100%);border-color:#e9d5ff;padding:12px 16px;border-radius:12px;gap:8px">
+          <span style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:18px">📝</span>
+            <strong>Apuntes Oposiciones Pastel · ${esc(t.title)}:</strong>
+            <span class="tag" style="background:#fdf4ff;color:#a21caf">Estilo Pastel</span>
+          </span>
+          <div class="row wrap" style="gap:6px">
+            <button class="btn sm primary" data-act="generate-gemini-summary" data-id="${esc(t.id)}">${I('sparkle',12)} Generar con Habilidad Gemini</button>
+            <button class="btn sm soft" data-act="paste-gemini-summary" data-id="${esc(t.id)}">📥 Pegar de Gemini</button>
+            <button class="btn sm soft" data-act="gemini-skills" title="Configurar Habilidades">${I('settings',12)} Prompt</button>
+          </div>
         </div>
 
         <div class="surface" style="padding:16px;border:1px solid var(--line);border-radius:12px;">
@@ -6675,6 +7061,13 @@
   async function performAction(action,el){
     const id=el.dataset.id||'';
     switch(action){
+      case 'generate-gemini-summary': generateTopicWithGemini(id || currentTopic()?.id, 'summary'); break;
+      case 'generate-gemini-scheme': generateTopicWithGemini(id || currentTopic()?.id, 'scheme'); break;
+      case 'paste-gemini-summary': openPasteGeminiModal(id || currentTopic()?.id, 'summary'); break;
+      case 'paste-gemini-scheme': openPasteGeminiModal(id || currentTopic()?.id, 'scheme'); break;
+      case 'copy-gemini-prompt': copyGeminiPrompt(id || currentTopic()?.id, el.dataset.kind || 'summary'); break;
+      case 'clear-gemini-summary': clearTopicAIContent(id || currentTopic()?.id, 'summary'); break;
+      case 'clear-gemini-scheme': clearTopicAIContent(id || currentTopic()?.id, 'scheme'); break;
       case 'practice-menu':showPracticeMenu(el);break;
       case 'profile-menu': profileManagerModal(); break;
       case 'mobile-menu':menu(el,navLink('home','grid','Mi escritorio')+navLink('library','book','Mi temario')+navLink('schemes','layers','Esquemas')+navLink('tests','list','Tests de examen')+navLink('cases','scale','Supuestos prácticos')+navLink('flash','cards','Flashcards')+navLink('arcade','game','OpoArcade')+navLink('boe','news','Convocatorias'));break;
@@ -6921,6 +7314,36 @@
           closeModal();
           go('library');
           toast('¡Oposición «'+o.name+'» lista con '+o.topics.length+' temas oficiales!');
+          petReact(true);
+          break;
+        }
+        case 'gemini-key-connect-form': {
+          const k = String(fd.get('apiKey') || '').trim();
+          if (!k) throw Error('Introduce una clave de API válida.');
+          setGeminiApiKey(k);
+          const tid = form.dataset.tid;
+          const kind = form.dataset.kind;
+          closeModal();
+          toast('Clave de Gemini guardada en tu navegador.');
+          await generateTopicWithGemini(tid, kind);
+          break;
+        }
+        case 'paste-gemini-output-form': {
+          const c = String(fd.get('content') || '').trim();
+          if (!c) throw Error('Pega el contenido antes de guardar.');
+          const tid = form.dataset.tid;
+          const kind = form.dataset.kind;
+          const t = topic(tid);
+          if (!t) throw Error('Tema no encontrado.');
+          if (kind === 'summary') {
+            t.geminiSummary = c;
+          } else {
+            t.geminiScheme = c;
+          }
+          save();
+          closeModal();
+          renderRoute(false);
+          toast('¡Contenido de Gemini guardado y formateado en estilo Pastel!');
           petReact(true);
           break;
         }
