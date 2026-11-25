@@ -2917,14 +2917,18 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
       </p>
       <form id="import-form" class="stack" style="gap:10px">
         <label class="field"><span>Destino de los archivos</span>
-          <select name="topic" id="import-topic" onchange="if(pendingFiles.length) updateFiles([]); document.getElementById('import-title-field').hidden = this.value !== 'new';">
-            <option value="auto" ${!explicitTopic?'selected':''}>✨ Detección automática en todos los bloques (clasifica por nombre y contenido)</option>
-            <optgroup label="Asignar al bloque (si tus temas están numerados por bloque: Tema 1, 2, 3...)">
-              ${o.blocks.map((b, bi) => `<option value="block:${bi}">📁 Bloque ${bi+1}: ${esc(b)}</option>`).join('')}
+          <select name="topic" id="import-topic" onchange="if(pendingFiles.length) updateFiles([]); document.getElementById('import-title-field').hidden = this.value !== 'new';" style="padding:8px 10px;font-size:13px;border-radius:8px">
+            ${explicitTopic ? `
+              <option value="topic:${esc(explicitTopic.id)}" selected>📌 Asignar directamente a este tema: Bloque ${explicitTopic.b+1} · ${esc(explicitTopic.title)}</option>
+              <option value="block:${explicitTopic.b}">📁 Asignar al Bloque ${explicitTopic.b+1}: ${esc(o.blocks[explicitTopic.b])}</option>
+            ` : ''}
+            <option value="auto" ${!explicitTopic?'selected':''}>✨ Detección automática inteligente entre todos los bloques (clasifica por nombre)</option>
+            <optgroup label="Asignar a un bloque entero (para audios/temas numerados: Tema 1, 2, 3...)">
+              ${o.blocks.map((b, bi) => `<option value="block:${bi}" ${explicitTopic&&explicitTopic.b===bi&&!explicitTopic?'selected':''}>📁 Bloque ${bi+1}: ${esc(b)}</option>`).join('')}
             </optgroup>
             <optgroup label="O asignar a un tema específico de la oposición">
               <option value="new">➕ Crear un tema nuevo con estos archivos</option>
-              ${o.topics.map(x=>`<option value="${esc(x.id)}" ${explicitTopic&&x.id===explicitTopic.id?'selected':''}>Bloque ${x.b+1} · ${esc(x.title)}</option>`).join('')}
+              ${o.topics.map(x=>`<option value="${esc(x.id)}" ${explicitTopic&&x.id===explicitTopic.id&&!explicitTopic?'selected':''}>Bloque ${x.b+1} · ${esc(x.title)}</option>`).join('')}
             </optgroup>
           </select>
         </label>
@@ -2979,18 +2983,19 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     if (!sel || !n) return;
     
     let blockFilterIdx = -1;
+    let explicitTopicTarget = null;
     if (sel.value.startsWith('block:')) {
       blockFilterIdx = parseInt(sel.value.split(':')[1], 10);
-    } else if (pendingFiles.length > 1 && sel.value !== 'auto' && !sel.value.startsWith('block:')) {
-      sel.value = 'auto';
-      const titleField = $('#import-title-field');
-      if (titleField) titleField.hidden = true;
+    } else if (sel.value.startsWith('topic:')) {
+      explicitTopicTarget = topic(sel.value.replace(/^topic:/, ''));
+    } else if (sel.value !== 'auto' && sel.value !== 'new') {
+      explicitTopicTarget = topic(sel.value);
     }
     n.hidden = false;
 
     const o = opp();
     const rows = pendingFiles.map((f, idx) => {
-      const detected = matchTopicForFile(f.name, blockFilterIdx);
+      const detected = explicitTopicTarget || matchTopicForFile(f.name, blockFilterIdx);
       const fType = getFileType(f.name);
       const icon = fType === 'audio' ? '🎧' : fType === 'video' ? '🎬' : fType === 'pdf' ? '📄' : fType === 'docx' || fType === 'doc' ? '📝' : fType === 'slides' ? '📊' : '📁';
       const sizeStr = f.size > 1024*1024 ? (f.size / (1024*1024)).toFixed(1) + ' MB' : Math.ceil(f.size/1024) + ' KB';
@@ -3139,17 +3144,21 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     if (!raw && !files.length) throw Error('Añade un archivo o pega texto antes de guardar.');
     if (files.some(f => f.size > 100 * 1024 * 1024)) throw Error('Cada archivo debe ocupar menos de 100 MB.');
     const o = opp();
-    const selVal = String(fd.get('topic') || 'auto');
-    const isAuto = selVal === 'auto' || selVal.startsWith('block:');
+        const selVal = String(fd.get('topic') || 'auto');
     const isNew = selVal === 'new';
     const status = msg => { const s = $('#import-status'); if (s) s.textContent = msg; };
 
-    // Auto or Block classification mode for multiple files
-    if (isAuto && files.length > 0) {
+    // File classification mode
+    if (!isNew && files.length > 0) {
       let importedCount = 0;
       let blockFilterIdx = -1;
+      let explicitTopic = null;
       if (selVal.startsWith('block:')) {
         blockFilterIdx = parseInt(selVal.split(':')[1], 10);
+      } else if (selVal.startsWith('topic:')) {
+        explicitTopic = topic(selVal.replace(/^topic:/, ''));
+      } else if (selVal !== 'auto') {
+        explicitTopic = topic(selVal);
       }
 
       for (const f of files) {
@@ -3158,13 +3167,16 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
         if (overrideEl && overrideEl.value) {
           targetTopic = topic(overrideEl.value);
         }
+        if (!targetTopic && explicitTopic) {
+          targetTopic = explicitTopic;
+        }
         if (!targetTopic) {
           targetTopic = matchTopicForFile(f.name, blockFilterIdx);
         }
 
         const key = uid();
         const fType = getFileType(f.name);
-        status('Clasificando ' + f.name + ' en «' + targetTopic.title + '»...');
+        status('Guardando ' + f.name + ' en «' + targetTopic.title + '»...');
         await fileStore('put', key, f);
         targetTopic.assets = [...(targetTopic.assets || []), { id: key, name: f.name, pdf: fType === 'pdf', type: fType }];
 
@@ -3185,7 +3197,6 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
             extracted = await f.text();
           } catch(e) {}
         }
-        // Audio, video, slides: NEVER call f.text() to prevent hangs!
 
         if (extracted.trim()) {
           targetTopic.text = [targetTopic.text, extracted].filter(Boolean).join('\n\n');
@@ -3196,7 +3207,7 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
       save();
       closeModal();
       renderRoute(false);
-      toast('¡' + importedCount + ' archivo(s) clasificado(s) correctamente en sus temas y bloques!');
+      toast('¡' + importedCount + ' archivo(s) guardado(s) y clasificado(s) correctamente en sus temas!');
       petReact(true);
       return;
     }
@@ -4048,6 +4059,96 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     toast('Documento Word descargado.');
   }
 
+  
+  async function removeAssetFromTopic(topicId, assetId) {
+    const t = topic(topicId);
+    if (!t) return toast('Tema no encontrado.');
+    const asset = (t.assets || []).find(a => a.id === assetId);
+    const assetName = asset ? asset.name : 'este archivo';
+    if (!confirm(`¿Estás seguro de que quieres eliminar «${assetName}» de este tema?\n\nEsta acción quitará el archivo multimedia de tu cuaderno.`)) {
+      return;
+    }
+    t.assets = (t.assets || []).filter(a => a.id !== assetId);
+    t.updated = Date.now();
+    try {
+      await fileStore('delete', assetId);
+    } catch(e) {}
+    save();
+    renderRoute(false);
+    toast(`«${assetName}» eliminado del tema.`);
+    petReact(true);
+  }
+
+  function openMoveAssetModal(topicId, assetId) {
+    const t = topic(topicId);
+    if (!t) return toast('Tema no encontrado.');
+    const asset = (t.assets || []).find(a => a.id === assetId);
+    if (!asset) return toast('Archivo no encontrado.');
+    const o = opp();
+
+    modal('Mover archivo a otro tema o bloque', `
+      <div class="stack" style="gap:14px">
+        <div class="notice" style="background:#f5f3ff;border-color:#ddd6fe;padding:12px 14px;border-radius:10px">
+          <div class="row" style="gap:10px;align-items:center">
+            <span style="font-size:24px">${asset.type === 'audio' || /\.(mp3|m4a|wav|ogg|flac)$/i.test(asset.name) ? '🎧' : asset.type === 'video' ? '🎬' : '📄'}</span>
+            <div>
+              <strong style="font-size:13.5px;color:#3b2754">${esc(asset.name)}</strong>
+              <div class="tiny muted" style="margin-top:2px">Actualmente asignado a: <strong>Bloque ${t.b + 1} · ${esc(t.title)}</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <label class="field"><span>Selecciona el bloque y tema de destino:</span>
+          <select id="move-dest-topic" class="select" style="font-size:12px;padding:8px;border-radius:8px">
+            ${o.blocks.map((b, bi) => `
+              <optgroup label="📁 Bloque ${bi+1}: ${esc(b)}">
+                ${o.topics.filter(x => x.b === bi).map(x => `
+                  <option value="${esc(x.id)}" ${x.id === topicId ? 'disabled' : ''}>
+                    ${esc(x.title)} ${x.id === topicId ? ' (Actual)' : ''}
+                  </option>
+                `).join('')}
+              </optgroup>
+            `).join('')}
+          </select>
+        </label>
+
+        <div class="row between" style="margin-top:8px">
+          <button class="btn soft" onclick="closeModal()">Cancelar</button>
+          <button class="btn primary" onclick="executeMoveAsset('${esc(topicId)}', '${esc(assetId)}')">
+            ↔ Mover archivo aquí
+          </button>
+        </div>
+      </div>
+    `, true);
+  }
+
+  async function executeMoveAsset(fromTopicId, assetId) {
+    const fromT = topic(fromTopicId);
+    const destSel = document.getElementById('move-dest-topic');
+    if (!destSel || !destSel.value) return toast('Selecciona un tema de destino.');
+    const toT = topic(destSel.value);
+    if (!fromT || !toT) return toast('Tema no disponible.');
+
+    const asset = (fromT.assets || []).find(a => a.id === assetId);
+    if (!asset) return toast('Archivo no encontrado.');
+
+    // Remove from source topic
+    fromT.assets = (fromT.assets || []).filter(a => a.id !== assetId);
+    fromT.updated = Date.now();
+
+    // Add to target topic
+    toT.assets = [...(toT.assets || []), asset];
+    toT.updated = Date.now();
+
+    save();
+    closeModal();
+    toast(`«${asset.name}» movido con éxito a Bloque ${toT.b + 1}: ${toT.title}`);
+    petReact(true);
+
+    // Switch view to the target topic so user immediately sees their audio there
+    go('reader', toT.id);
+  }
+
   function renderMediaBar(t) {
     const assets = t.assets || [];
     const audios = assets.filter(a => a.type === 'audio' || /\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(a.name));
@@ -4063,30 +4164,40 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
           <span class="tag" style="background:#f0eef9;color:#553396;font-size:10px">${audios.length + videos.length + slides.length} adjuntos</span>
         </div>
         ${audios.map(a => `
-          <div style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid var(--line)">
-            <div class="row between small" style="margin-bottom:6px">
-              <span>🎧 <strong>Audio de clase / voz:</strong> ${esc(a.name)}</span>
-              <div class="row" style="gap:6px">
-                <label class="row tiny muted">Velocidad <select onchange="this.closest('div').parentElement.parentElement.querySelector('audio').playbackRate = +this.value" style="padding:1px 4px;font-size:10px"><option value="1">1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></label>
-                <button class="btn sm soft" onclick="downloadAsset('${esc(a.id)}', '${esc(a.name)}')" title="Descargar archivo de audio" style="padding:1px 6px;font-size:10px">${I('download', 10)} Guardar</button>
+          <div style="background:#fff;padding:10px 14px;border-radius:10px;border:1.5px solid #e9d5ff;box-shadow:0 1px 4px rgba(0,0,0,0.03)">
+            <div class="row between wrap small" style="margin-bottom:8px;gap:6px;align-items:center">
+              <span style="font-weight:600;color:#2e263d">🎧 Audio de clase: <strong style="color:#553396">${esc(a.name)}</strong></span>
+              <div class="row wrap" style="gap:5px;align-items:center">
+                <label class="row tiny muted" style="gap:3px">Velocidad <select onchange="this.closest('div').parentElement.parentElement.querySelector('audio').playbackRate = +this.value" style="padding:1px 4px;font-size:10px"><option value="1">1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></label>
+                <button class="btn sm soft" onclick="downloadAsset('${esc(a.id)}', '${esc(a.name)}')" title="Descargar archivo de audio" style="padding:2px 7px;font-size:10px">${I('download', 10)} Guardar</button>
+                <button class="btn sm soft" onclick="openMoveAssetModal('${esc(t.id)}', '${esc(a.id)}')" title="Mover este audio a su bloque/tema correspondiente" style="padding:2px 7px;font-size:10px">↔ Mover tema</button>
+                <button class="btn sm danger soft" onclick="removeAssetFromTopic('${esc(t.id)}', '${esc(a.id)}')" title="Eliminar este audio de este tema" style="padding:2px 7px;font-size:10px;color:#c92a2a">${I('trash', 10)} Eliminar</button>
               </div>
             </div>
-            <audio controls preload="metadata" style="width:100%;height:32px" id="audio-${esc(a.id)}"></audio>
+            <audio controls preload="metadata" style="width:100%;height:34px" id="audio-${esc(a.id)}"></audio>
           </div>
         `).join('')}
         ${videos.map(v => `
-          <div style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid var(--line)">
-            <div class="row between small" style="margin-bottom:6px">
-              <span>🎬 <strong>Vídeo explicativo:</strong> ${esc(v.name)}</span>
-              <button class="btn sm soft" onclick="downloadAsset('${esc(v.id)}', '${esc(v.name)}')" style="padding:1px 6px;font-size:10px">${I('download', 10)} Descargar Vídeo</button>
+          <div style="background:#fff;padding:10px 14px;border-radius:10px;border:1.5px solid #bfdbfe;box-shadow:0 1px 4px rgba(0,0,0,0.03)">
+            <div class="row between wrap small" style="margin-bottom:8px;gap:6px;align-items:center">
+              <span style="font-weight:600;color:#1e3a8a">🎬 Vídeo explicativo: <strong>${esc(v.name)}</strong></span>
+              <div class="row wrap" style="gap:5px">
+                <button class="btn sm soft" onclick="downloadAsset('${esc(v.id)}', '${esc(v.name)}')" style="padding:2px 7px;font-size:10px">${I('download', 10)} Guardar</button>
+                <button class="btn sm soft" onclick="openMoveAssetModal('${esc(t.id)}', '${esc(v.id)}')" style="padding:2px 7px;font-size:10px">↔ Mover tema</button>
+                <button class="btn sm danger soft" onclick="removeAssetFromTopic('${esc(t.id)}', '${esc(v.id)}')" style="padding:2px 7px;font-size:10px;color:#c92a2a">${I('trash', 10)} Eliminar</button>
+              </div>
             </div>
             <video controls preload="metadata" style="width:100%;max-height:220px;border-radius:6px;background:#000" id="video-${esc(v.id)}"></video>
           </div>
         `).join('')}
         ${slides.map(s => `
-          <div class="row between" style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid var(--line);font-size:12px">
-            <span>📊 <strong>Diapositivas PowerPoint:</strong> ${esc(s.name)}</span>
-            <button class="btn sm soft" onclick="downloadAsset('${esc(s.id)}', '${esc(s.name)}')">${I('download', 12)} Descargar PPTX</button>
+          <div class="row between wrap" style="background:#fff;padding:10px 14px;border-radius:10px;border:1.5px solid #fed7aa;font-size:12px;gap:6px;align-items:center">
+            <span>📊 Diapositivas: <strong style="color:#9a3412">${esc(s.name)}</strong></span>
+            <div class="row wrap" style="gap:5px">
+              <button class="btn sm soft" onclick="downloadAsset('${esc(s.id)}', '${esc(s.name)}')" style="padding:2px 7px;font-size:10px">${I('download', 10)} Guardar</button>
+              <button class="btn sm soft" onclick="openMoveAssetModal('${esc(t.id)}', '${esc(s.id)}')" style="padding:2px 7px;font-size:10px">↔ Mover tema</button>
+              <button class="btn sm danger soft" onclick="removeAssetFromTopic('${esc(t.id)}', '${esc(s.id)}')" style="padding:2px 7px;font-size:10px;color:#c92a2a">${I('trash', 10)} Eliminar</button>
+            </div>
           </div>
         `).join('')}
       </div>
@@ -7822,7 +7933,27 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
       }
     }
 
-    // 3. Keyword / Concept matching across ALL topics
+    // 3. If block was detected (by "Bloque X", "Derecho Administrativo", "Seguridad Social", etc.), prioritize topics in that block!
+    if (detectedBlockIdx >= 0 && detectedBlockIdx < o.blocks.length) {
+      const blockTopics = o.topics.filter(t => t.b === detectedBlockIdx);
+      const mNum = normName.match(/(?:tema|t|leccion|capitulo)[\s._-]*(\d+)/i) || normName.match(/^(\d{1,2})(?:[\s._-]|$)/);
+      if (mNum) {
+        const n = parseInt(mNum[1], 10);
+        if (blockTopics[n - 1]) return blockTopics[n - 1];
+      }
+      // Also check concept matches within this block
+      let bestInBlock = null, bestInBlockScore = 0;
+      for (const t of blockTopics) {
+        const words = norm(t.title).split(/[\s,.:;()\/]+/).filter(w => w.length > 3 && !['para','como','este','esta','sobre','entre','del','las','los','tema'].includes(w));
+        let score = 0;
+        for (const w of words) if (normName.includes(w)) score += w.length;
+        if (score > bestInBlockScore) { bestInBlockScore = score; bestInBlock = t; }
+      }
+      if (bestInBlock && bestInBlockScore >= 4) return bestInBlock;
+      if (blockTopics.length) return blockTopics[0];
+    }
+
+    // 4. Keyword / Concept matching across ALL topics
     let bestTopic = null;
     let bestScore = 0;
     for (const t of o.topics) {
@@ -7838,21 +7969,8 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
       }
     }
 
-    // If we have a strong keyword match (score >= 6), trust it over bare numbers
     if (bestTopic && bestScore >= 6) {
       return bestTopic;
-    }
-
-    // If block was detected, and there is a number in filename, use that number within the block!
-    if (detectedBlockIdx >= 0 && detectedBlockIdx < o.blocks.length) {
-      const blockTopics = o.topics.filter(t => t.b === detectedBlockIdx);
-      const mNum = normName.match(/(?:tema|t|leccion|capitulo)[\s._-]*(\d+)/i) || normName.match(/^(\d{1,2})(?:[\s._-]|$)/);
-      if (mNum) {
-        const n = parseInt(mNum[1], 10);
-        if (blockTopics[n - 1]) return blockTopics[n - 1];
-      }
-      if (bestTopic && bestTopic.b === detectedBlockIdx) return bestTopic;
-      if (blockTopics.length) return blockTopics[0];
     }
 
     // If moderate keyword match exists (score >= 4)
