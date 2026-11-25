@@ -1525,15 +1525,14 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
 
   function defaultGeminiSkills() {
     return {
-      summary: 'Actúa como preparador de élite de oposiciones en España. Para el temario o apuntes aportados, genera un resumen sin paja: 1. Ideas fuerza que caen en examen, 2. Artículos clave de cita obligatoria, 3. Preguntas trampa del tribunal con plazos y excepciones.',
-      scheme: 'Genera un esquema estructurado tipo clase / pizarra de academia: jerárquico a 3 niveles, sin párrafos de relleno, con etiquetas destacadas [PLAZO], [MAYORÍA], [TRAMPA], [LEY], organizado para memorización rápida.',
-      tables: 'Construye cuadros comparativos y matrices de examen: 1. Matriz de plazos (días hábiles vs naturales), 2. Órganos y competencias exclusivas, 3. Régimen de recursos y procedimientos.'
+      summary: 'HABILIDAD GEMINI · APUNTES EN PAPEL: Actúa como preparador de élite de oposiciones. Redacta unos apuntes limpios listos para estudiar en papel: 1) Ideas fuerza y estructura clara sin paja, 2) Artículos y conceptos clave de cita obligatoria subrayados, 3) Notas al margen y preguntas trampa del tribunal.',
+      scheme: 'HABILIDAD GEMINI · ESQUEMA MÁX. 2 HOJAS EN NUEVA PIZARRA: Sintetiza el tema completo en un esquema visual de Nueva Pizarra que quepa en un MÁXIMO DE 2 HOJAS (A4). Organiza en bloques de colores, destaca [PLAZO], [MAYORÍA], [TRAMPA] y [LEY], e incluye un cuadro exprés de repaso final.'
     };
   }
 
   function initialState(){
     return {
-      version: 4,
+      version: 5,
       active: 'gace-a2',
       opps: [makeTemplateGACE(), makeTemplateSeguridadSocialC1(), makeTemplateC1(), makeTemplateAuxiliarC2()],
       geminiSkills: defaultGeminiSkills(),
@@ -1548,7 +1547,7 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
       records: {},
       recent: [],
       exam: null,
-      model: 'gpt-4o-mini',
+      model: 'gemini-1.5-flash',
       demo: false
     };
   }
@@ -1558,9 +1557,9 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     const raw = localStorage.getItem(STORAGE) || localStorage.getItem('oposapiens.studio.v1');
     let d = raw ? JSON.parse(raw) : null;
     if (d && Array.isArray(d.opps) && d.opps.length) {
-      if (d.version !== 4) {
-        d.version = 4;
-        d.geminiSkills = d.geminiSkills || defaultGeminiSkills();
+      if ((d.version || 0) < 5) {
+        d.version = 5;
+        d.geminiSkills = defaultGeminiSkills();
         // Upgrade existing oppositions: if user named an opp "seguridad social" but it had 58 topics of GACE, fix it with SS official syllabus!
         d.opps.forEach(o => {
           if (/seguridad social|inss|tgss/i.test(o.name) && (o.topics.length === 58 || o.blocks[0]?.includes('11 temas') || o.blocks[0]?.includes('Organización del Estado y de la Administración Pública (11 temas)'))) {
@@ -1599,7 +1598,7 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
   const opp=()=>state.opps.find(x=>x.id===state.active)||state.opps[0];
   const topic=id=>opp().topics.find(t=>t.id===id);
   const currentTopic=()=>topic(opp().lastTopic)||opp().topics.find(x=>x.text)||opp().topics[0];
-  let toastTimer,petTimer,apiKey='',modalCleanup=null,pageCleanup=null,currentPage='home',currentSub='',readerTab='outline',sourceTab='text',issuedURLs=[],activeGame=null,quickQ=null,flashCurrent=null,flashFlipped=false,libraryQuery='',libraryFilter='',chosenCase=0,chosenTopic='',aiAbort=null;
+  let toastTimer,petTimer,apiKey='',modalCleanup=null,pageCleanup=null,currentPage='home',currentSub='',readerTab='summary',sourceTab='text',issuedURLs=[],activeGame=null,quickQ=null,flashCurrent=null,flashFlipped=false,libraryQuery='',libraryFilter='',chosenCase=0,chosenTopic='',aiAbort=null;
   function toast(message){const n=$('#announcer');n.innerHTML=`<div class="toast">${esc(message)}</div>`;clearTimeout(toastTimer);toastTimer=setTimeout(()=>n.innerHTML='',3600)}
   let persistRevision=0,persistQueue=Promise.resolve();
   function save(){const revision=++persistRevision,json=JSON.stringify(state);try{localStorage.setItem(STORAGE,json);return true}catch{persistQueue=persistQueue.then(async()=>{if(revision!==persistRevision)return;await fileStore('put','@workspace',JSON.parse(json));if(revision===persistRevision)localStorage.setItem(STORAGE,JSON.stringify({large:true}))}).catch(()=>toast('Almacenamiento lleno o no disponible. Descarga una copia desde Preferencias.'));return false}}
@@ -3095,7 +3094,7 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     return `
       <div class="page font-mode-${currentFontMode}">
         <button class="bread" data-go="library">${I('back', 13)} Volver al temario</button>
-        ${heading(schemes ? 'Esquemas y Cuadros de Estudio' : t.title, schemes ? 'Tu texto oficial y sus ideas esenciales en esquema de llaves, cuadros y resumen.' : (opp().blocks[t.b] || 'Temario') + ' · ' + t.rounds + ' vueltas de estudio', `
+        ${heading(schemes ? 'Resumen y Repaso Final' : t.title, schemes ? 'Tus apuntes en papel (Resumen) y esquema de máximo 2 hojas en Nueva Pizarra (Repaso Final).' : (opp().blocks[t.b] || 'Temario') + ' · ' + t.rounds + ' vueltas de estudio', `
           <div class="row" style="gap:6px">
             ${btn('Importar apuntes / audio', 'import', 'upload', 'sm')}
             ${btn('Marcar vuelta', 'reviewed', 'check', 'primary', 'sm')}
@@ -3161,11 +3160,11 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
             </div>
           </section>
 
-          <!-- COLUMNA DERECHA: ESQUEMAS, CUADROS, RESUMEN ANTIPAJA -->
+          <!-- COLUMNA DERECHA: RESUMEN (APUNTES EN PAPEL), REPASO FINAL (MÁX. 2 HOJAS) Y PRACTICAR -->
           <section class="surface reader-col">
             <div class="reader-head">
               <div class="tabs">
-                ${[['outline', '📋 Esquema y Pizarra'], ['table', '⚖️ Cuadros y Tablas'], ['summary', '🎯 Resumen Anti-Paja'], ['tools', 'Practicar']].map(([k, l]) => `
+                ${[['summary', '📝 Resumen'], ['review', '⚡ Repaso Final'], ['tools', '🎯 Practicar']].map(([k, l]) => `
                   <button class="tab ${readerTab === k ? 'selected' : ''}" data-act="reader-tab" data-id="${k}">${l}</button>
                 `).join('')}
               </div>
@@ -3202,23 +3201,21 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
                   ${btn('Repasar flashcards del tema', 'topic-flash', 'cards')}
                   ${btn('Jugar en OpoArcade', 'topic-game', 'game')}
                 </div>
-              ` : readerTab === 'table' ? `
-                ${generateCuadrosHTML(t)}
-              ` : readerTab === 'summary' ? `
-                ${generateExecutiveSummaryHTML(t)}
+              ` : readerTab === 'review' ? `
+                ${generateFinalReviewHTML(t)}
               ` : `
-                ${generateBracketTreeHTML(t)}
+                ${generateExecutiveSummaryHTML(t)}
               `}
             </div>
 
             <!-- Barra de Exportación Completa -->
             ${readerTab !== 'tools' ? `
               <div class="export-bar wrap" style="gap:6px">
-                <span class="tiny muted" style="width:100%">EXPORTAR ${readerTab === 'table' ? 'CUADROS Y TABLAS' : readerTab === 'summary' ? 'RESUMEN ANTIPAJA' : 'ESQUEMA DE LLAVES'}</span>
+                <span class="tiny muted" style="width:100%">EXPORTAR ${readerTab === 'review' ? 'REPASO FINAL · NUEVA PIZARRA (MÁX. 2 HOJAS)' : 'RESUMEN · APUNTES EN PAPEL'}</span>
                 <button class="btn sm soft" data-act="pdf1" title="Descargar PDF 1 columna con fondo de libreta">${I('download', 12)} PDF · 1 columna</button>
-                <button class="btn sm soft" data-act="pdf2" title="Descargar PDF 2 columnas / doble página">${I('download', 12)} PDF · 2 columnas</button>
+                <button class="btn sm soft" data-act="pdf2" title="Descargar PDF 2 columnas / máx. 2 hojas">${I('download', 12)} PDF · 2 hojas</button>
                 <button class="btn sm soft" onclick="downloadWordDoc(currentTopic(), readerTab)" title="Descargar en formato Word .doc">${I('file', 12)} Descargar Word .doc</button>
-                <button class="btn sm" onclick="download(pdfBlob(currentTopic(), 2, readerTab), 'Esquema-DoblePagina-' + esc(currentTopic().title.slice(0,30).replace(/[^a-zA-Z0-9]/g,'_')) + '.pdf');toast('Descargando PDF a doble página...');" title="Descargar PDF a doble página">${I('download', 12)} PDF Doble Página</button>
+                <button class="btn sm" onclick="download(pdfBlob(currentTopic(), 2, readerTab), 'RepasoFinal-2Hojas-' + esc(currentTopic().title.slice(0,30).replace(/[^a-zA-Z0-9]/g,'_')) + '.pdf');toast('Descargando PDF en 2 hojas...');" title="Descargar PDF máx. 2 hojas">${I('download', 12)} PDF Máx. 2 Hojas</button>
               </div>
             ` : ''}
           </section>
@@ -3267,31 +3264,26 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
   async function openBases(){const o=opp();if(o.basePdf){modal('Bases oficiales',`<div class="pdf-host document-body" data-asset="${esc(o.basePdf)}"><span class="loading"></span></div><div class="modal-actions">${btn('Cambiar bases','bases','pin','sm')}</div>`,true);await openPdfHost(o.basePdf)}else if(safeURL(o.baseURL))window.open(safeURL(o.baseURL),'_blank','noopener,noreferrer');else basesModal()}
   function geminiSkillsModal() {
     state.geminiSkills = state.geminiSkills || defaultGeminiSkills();
-    modal('✨ Mis Habilidades y Prompts de Gemini', `
+    modal('✨ Mis Habilidades de Gemini', `
       <div class="stack" style="gap:14px">
         <div class="notice" style="background:#eef6fc;border-color:#b8dbf7">
-          🤖 <strong>Personalización de Habilidades Gemini:</strong> Transfiere o personaliza aquí tus prompts e instrucciones de Gemini. El motor aplicará estas pautas para estructurar tus Resúmenes Anti-Paja, Esquemas de Pizarra y Cuadros Comparativos a partir de cualquier tema oficial o apunte que subas.
+          🤖 <strong>Tus 2 Habilidades Activas de Gemini:</strong> Configura o pega aquí el texto exacto de tus habilidades de Gemini. Se aplican directamente en las pestañas <strong>📝 Resumen</strong> y <strong>⚡ Repaso Final</strong>.
         </div>
         <form id="gemini-skills-form" class="stack" style="gap:14px">
           <label class="field">
-            <span>🎯 1. Habilidad de Resumen Anti-Paja (Prompt del Sistema)</span>
-            <textarea name="summary" rows="5" required style="font-family:monospace;font-size:12px;line-height:1.5">${esc(state.geminiSkills.summary || '')}</textarea>
-            <small class="muted">Define cómo extraer ideas fuerza, artículos de cita obligatoria y preguntas trampa de examen.</small>
+            <span>📝 1. Habilidad: Apuntes en papel (Pestaña Resumen)</span>
+            <textarea name="summary" rows="6" required style="font-family:monospace;font-size:12px;line-height:1.5">${esc(state.geminiSkills.summary || '')}</textarea>
+            <small class="muted">Genera apuntes limpios listos para estudiar en papel: ideas fuerza, artículos obligatorios y trampas de examen.</small>
           </label>
           <label class="field">
-            <span>📋 2. Habilidad de Esquema de Pizarra / Clase (Novolex)</span>
-            <textarea name="scheme" rows="5" required style="font-family:monospace;font-size:12px;line-height:1.5">${esc(state.geminiSkills.scheme || '')}</textarea>
-            <small class="muted">Define cómo estructurar las ramas, destacar [PLAZO: ...], [TRAMPA: ...] y [MAYORÍA: ...].</small>
-          </label>
-          <label class="field">
-            <span>⚖️ 3. Habilidad de Cuadros y Tablas Comparativas</span>
-            <textarea name="tables" rows="5" required style="font-family:monospace;font-size:12px;line-height:1.5">${esc(state.geminiSkills.tables || '')}</textarea>
-            <small class="muted">Define la extracción de matrices de plazos, órganos competentes y cómputos temporales.</small>
+            <span>⚡ 2. Habilidad: Esquema de máximo 2 hojas en Nueva Pizarra (Pestaña Repaso Final)</span>
+            <textarea name="scheme" rows="6" required style="font-family:monospace;font-size:12px;line-height:1.5">${esc(state.geminiSkills.scheme || '')}</textarea>
+            <small class="muted">Sintetiza el tema en un esquema visual de Nueva Pizarra que ocupe como máximo 2 hojas A4 para el repaso final.</small>
           </label>
           <div class="modal-actions" style="margin-top:8px">
             <button class="btn soft" type="button" data-act="restore-gemini-skills">↺ Restaurar predeterminados</button>
             <button class="btn" type="button" onclick="closeModal()">Cancelar</button>
-            <button class="btn primary" type="submit">${I('sparkle', 14)} Guardar mis Habilidades Gemini</button>
+            <button class="btn primary" type="submit">${I('sparkle', 14)} Guardar Habilidades</button>
           </div>
         </form>
       </div>
@@ -4690,7 +4682,7 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     s.history=s.history.filter(h=>Array.isArray(h.items)&&h.items.every(validQ)&&Array.isArray(h.answers));if(s.exam&&(!Array.isArray(s.exam.items)||!s.exam.items.every(validQ)||!Array.isArray(s.exam.answers)))s.exam=null;
     state=s;resetContext();save();go('home');toast('Cuaderno y documentos restaurados.');
   }
-  function resetContext(){libraryQuery='';libraryFilter='';testScope='all';testTopic='';flashTopic='';flashCurrent=null;flashFlipped=false;gameSource='';activeGame=null;chosenCase=0;readerTab='outline';sourceTab='text'}
+  function resetContext(){libraryQuery='';libraryFilter='';testScope='all';testTopic='';flashTopic='';flashCurrent=null;flashFlipped=false;gameSource='';activeGame=null;chosenCase=0;readerTab='summary';sourceTab='text'}
   function routeParts(){try{const [page='home',id='']=location.hash.slice(1).split('/');return [page||'home',decodeURIComponent(id)]}catch{return ['home','']}}
   
   /* =================================================================
@@ -5484,11 +5476,11 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
 
         <div class="class-scheme-header surface" style="padding:16px 20px;border:1.5px solid #d9d1f0;border-radius:12px;background:linear-gradient(135deg, #fdfbf7 0%, #f4f0fa 100%)">
           <div class="row between wrap" style="gap:8px;margin-bottom:8px">
-            <span class="badge" style="background:#553396;color:#fff;font-weight:700;font-size:11px">ACADEMIA NOVOLEX · ESQUEMA DE CLASE SISTEMATIZADO</span>
+            <span class="badge" style="background:#553396;color:#fff;font-weight:700;font-size:11px">⚡ NUEVA PIZARRA · ESQUEMA MÁX. 2 HOJAS (REPASO FINAL)</span>
             <span class="tiny muted font-mono">${esc(tree.metrics)}</span>
           </div>
           <h2 style="font-size:18px;margin:0 0 6px 0;color:#2b1b42;font-weight:800">${esc(tree.title)}</h2>
-          <p class="small muted" style="margin:0">Esquema estructurado en pizarra para estudio intensivo. Plazos, quórums y trampas frecuentes de tribunal calificador destacados con mnemotecnia visual.</p>
+          <p class="small muted" style="margin:0">Habilidad Gemini activa: <strong>Esquema de máximo 2 hojas en Nueva Pizarra</strong>. Plazos, quórums y trampas de tribunal concentrados para el repaso final.</p>
         </div>
 
         <div class="class-scheme-blocks stack" style="gap:16px">
@@ -5526,6 +5518,18 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
               </div>
             `;
           }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function generateFinalReviewHTML(t) {
+    if (!t) return '';
+    return `
+      <div class="final-review-wrapper stack" style="gap:22px">
+        ${generateSchemeHTML(t)}
+        <div style="border-top:2px dashed var(--line);padding-top:18px">
+          ${generateCuadrosHTML(t)}
         </div>
       </div>
     `;
@@ -5973,7 +5977,7 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     return `
       <div class="summary-container stack" style="gap:14px">
         <div class="notice row between" style="background:#fdf7e7;border-color:#f5e5ba;padding:12px 16px;border-radius:10px">
-          <span>🎯 <strong>Resumen Anti-Paja ${isTopicSeguridadSocial(t) ? 'Oficial · Seguridad Social (RDL 8/2015)' : 'Dinámico'} · ${esc(t.title)}:</strong> Síntesis de alta fidelidad con los artículos, plazos y trampas más probables en el examen.</span>
+          <span>📝 <strong>Resumen · Apuntes en papel ${isTopicSeguridadSocial(t) ? '(Seguridad Social · RDL 8/2015)' : ''} · ${esc(t.title)}:</strong> Habilidad Gemini activa — síntesis limpia lista para estudiar en papel.</span>
           <button class="btn sm soft" data-act="regenerate-analysis" title="Reanalizar apuntes">${I('sparkle',12)} Actualizar</button>
         </div>
 
@@ -6067,7 +6071,7 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     return `
       <div class="summary-container stack" style="gap:14px">
         <div class="notice row between" style="background:#eef6fc;border-color:#b8dbf7;padding:12px 16px;border-radius:10px">
-          <span>🎯 <strong>Resumen Anti-Paja Oficial · Seguridad Social (RDL 8/2015 LGSS):</strong> Datos literales, plazos perentorios y trampas que siempre caen en los exámenes del INSS y TGSS.</span>
+          <span>📝 <strong>Resumen · Apuntes en papel (Seguridad Social · RDL 8/2015 LGSS):</strong> Habilidad Gemini activa — ideas fuerza, artículos de cita obligatoria y trampas frecuentes de examen.</span>
         </div>
 
         <div class="surface" style="padding:16px;border:1.5px solid #d9d1f0;border-radius:12px;">
@@ -6213,7 +6217,7 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
       case 'choose-opp':if(state.opps.some(o=>o.id===id)){state.active=id;resetContext();save();go('home');toast('Cuaderno activo: '+opp().short)}break;
       case 'planner':planModal();break;
       case 'session':toggleSession();break;
-      case 'read':case 'continue':{const t=action==='read'?topic(id):currentTopic();if(t){remember(t);readerTab='outline';sourceTab=t.assets?.some(a=>a.pdf)?'pdf':'text';go('reader',t.id)}else importNotes();break}
+      case 'read':case 'continue':{const t=action==='read'?topic(id):currentTopic();if(t){remember(t);readerTab='summary';sourceTab=t.assets?.some(a=>a.pdf)?'pdf':'text';go('reader',t.id)}else importNotes();break}
       case 'open-bases':await openBases();break;
       case 'bases':basesModal();break;
       case 'pin-result':{const u=officialURL(el.dataset.url);if(!u)throw Error('La URL no corresponde a una sede oficial reconocida.');opp().baseURL=u;opp().basePdf='';save();toast('Convocatoria anclada como bases de tu oposición.');break}
@@ -6450,8 +6454,7 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
         case 'gemini-skills-form':{
           state.geminiSkills = {
             summary: String(fd.get('summary') || '').trim(),
-            scheme: String(fd.get('scheme') || '').trim(),
-            tables: String(fd.get('tables') || '').trim()
+            scheme: String(fd.get('scheme') || '').trim()
           };
           save();
           closeModal();
