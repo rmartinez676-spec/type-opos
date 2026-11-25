@@ -1068,7 +1068,50 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
 - Nombramiento por mayoría de 3/5 de cada Cámara (Congreso y Senado) por un mandato de 5 años.
 - Independiente, inamovible e inviolable por opiniones en el ejercicio de sus funciones.
 - Supervisa la Administración del Estado, autonómica y local. Rinde informe anual a las Cortes.
-- Legitimación extraordinaria ante el Tribunal Constitucional para Recurso de Inconstitucionalidad y Recurso de Amparo.`
+- Legitimación extraordinaria ante el Tribunal Constitucional para Recurso de Inconstitucionalidad y Recurso de Amparo.`,
+
+    ss11: `TEMA 11. EL SISTEMA DE LA SEGURIDAD SOCIAL: PRINCIPIOS, ESTRUCTURA Y LA LEY GENERAL DE LA SEGURIDAD SOCIAL (LGSS - RDL 8/2015).
+
+1. FUNDAMENTO CONSTITUCIONAL (ART. 41 CE)
+- Los poderes públicos mantendrán un régimen público de Seguridad Social para todos los ciudadanos.
+- Garantizará la asistencia y prestaciones sociales suficientes ante situaciones de necesidad, especialmente en caso de desempleo.
+- La asistencia y prestaciones complementarias serán libres.
+- Naturaleza jurídica: Principio rector de la política social y económica (Capítulo III del Título I).
+
+2. PRINCIPIOS INFORMADORES BÁSICOS
+- Universalidad subjetiva: Extensión del campo de aplicación a toda la ciudadanía española y residentes legales.
+- Solidaridad intergeneracional e interterritorial: Financiación de las pensiones y prestaciones actuales con las cotizaciones actuales de trabajadores y empresas (sistema de reparto).
+- Unidad de caja: La Tesorería General de la Seguridad Social (TGSS) es titular exclusiva de todos los recursos y obligaciones patrimoniales del sistema (principio sagrado e indivisible que impide la fragmentación de la caja común).
+- Contributividad y proporcionalidad: Correlación entre el esfuerzo contributivo a lo largo de la vida laboral y la cuantía de las prestaciones económicas.
+- Gestión pública y control estatal: Administrada por entidades públicas con personalidad jurídica (INSS, TGSS, ISM), con participación de los agentes sociales.
+
+3. ESTRUCTURA LEGAL DE LA LGSS (RDL 8/2015)
+- Título I (Arts. 1 a 135): Normas generales del sistema (campo de aplicación, afiliación, cotización, recaudación y acción protectora).
+- Título II (Arts. 136 a 261): Régimen General de la Seguridad Social (trabajadores por cuenta ajena).
+- Título III (Arts. 262 a 304): Protección por desempleo (contributivo y asistencial).
+- Título IV (Arts. 305 a 326): Régimen Especial de Trabajadores Autónomos (RETA) y nuevo sistema de cotización por rendimientos netos.
+- Título V (Arts. 327 a 350): Régimen Especial de la Minería del Carbón.
+- Título VI (Arts. 351 a 373): Prestaciones no contributivas (invalidez y jubilación).`,
+
+    ss14: `TEMA 14. AFILIACIÓN DE TRABAJADORES, ALTAS Y BAJAS EN LA SEGURIDAD SOCIAL (LGSS Y RD 84/1996).
+
+1. ACTOS DE ENCUADRAMIENTO: CONCEPTOS Y CARACTERES
+- Afiliación: Acto administrativo mediante el cual la TGSS incorpora al sistema a la persona que por vez primera realiza una actividad laboral. Es obligatoria, única para toda la vida del trabajador y general para todos los regímenes.
+- Número de Afiliación (NAF): Identificador numérico e invariable en todo el territorio nacional.
+
+2. ALTAS Y BAJAS: PLAZOS PERENTORIOS DE EXAMEN
+- Alta previa: La solicitud de alta debe formularse con carácter PREVIO al inicio de la prestación de servicios, con un máximo de 60 días naturales de antelación.
+- Bajas y variaciones de datos: Deben presentarse en el plazo improrrogable de 3 DÍAS NATURALES siguientes al cese en el trabajo o cambio de situación.
+- Trampas de examen: ¡No son días hábiles, son naturales! Y el alta previa no puede ser el mismo día a posteriori salvo causa de fuerza mayor debidamente acreditada.
+
+3. CLASES DE ALTAS
+- Alta real: El trabajador inicia efectivamente la actividad laboral.
+- Alta asimilada: Situaciones donde no hay trabajo efectivo pero se mantiene la protección (ej. desempleo contributivo, excedencia forzosa, huelga legal, maternidad/paternidad).
+- Alta presunta o de pleno derecho: El trabajador tiene derecho a las prestaciones de accidentes de trabajo y enfermedades profesionales aunque el empresario haya incumplido su deber de darle de alta.
+
+4. EFECTOS DEL INCUMPLIMIENTO
+- Altas tardías o extemporáneas promovidas por el empresario: Solo surten efectos desde el día de la solicitud, sin efecto retroactivo.
+- Altas de oficio por la Inspección de Trabajo y Seguridad Social (ITSS): Retroactividad a la fecha en que se inició la actividad laboral acreditada, con derivación de responsabilidad empresarial de pago de cuotas y recargos.`
   };
 
   function getOfficialAcademyNotes(t) {
@@ -1313,14 +1356,187 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     };
   }
 
+  function makeTemplateSeguridadSocialC1() {
+    let idx = 0;
+    const ssBlocks = [
+      'Bloque I · Organización del Estado y Derecho Administrativo (10 temas)',
+      'Bloque II · Seguridad Social: Gestión, Afiliación, Cotización y Prestaciones (26 temas)'
+    ];
+
+    const ssSyllabus = [
+      [
+        'Tema 1. La Constitución Española de 1978: Principios y Valores. Derechos y Deberes Fundamentales',
+        'Tema 2. La Corona. Las Cortes Generales: Congreso de los Diputados y Senado',
+        'Tema 3. El Gobierno y la Administración. Órganos superiores y directivos de la AGE',
+        'Tema 4. El Poder Judicial. El CGPJ y el Tribunal Supremo',
+        'Tema 5. La organización territorial del Estado: Comunidades Autónomas y Administración Local',
+        'Tema 6. La Unión Europea: Instituciones y fuentes del Derecho comunitario',
+        'Tema 7. El acto administrativo: Eficacia, validez, nulidad y anulabilidad',
+        'Tema 8. El procedimiento administrativo común (Ley 39/2015): Fases y plazos',
+        'Tema 9. Revisión de actos y recursos administrativos (Alzada y Reposición)',
+        'Tema 10. El Estatuto Básico del Empleado Público (TREBEP): Clases de personal y derechos'
+      ],
+      [
+        'Tema 11. El Sistema de la Seguridad Social: Principios (Art. 41 CE), estructura y la LGSS (RDL 8/2015)',
+        'Tema 12. Campo de aplicación: Modalidad contributiva y no contributiva. Régimen General y Regímenes Especiales',
+        'Tema 13. Inscripción de empresas: Concepto, procedimiento, plazos y modificaciones',
+        'Tema 14. Afiliación de trabajadores, altas y bajas: Procedimiento, plazos (previo al alta) y efectos',
+        'Tema 15. Cotización a la Seguridad Social: Sujetos obligados y responsables. Dinámica de la obligación',
+        'Tema 16. Bases y tipos de cotización: Conceptos computables y no computables. Topes máximos y mínimos',
+        'Tema 17. Liquidación de cuotas: Sistema de Liquidación Directa (Sistema RED). Plazos de presentación',
+        'Tema 18. Recaudación en periodo voluntario: Competencias de la TGSS, plazos de pago y medios',
+        'Tema 19. Aplazamientos y fraccionamientos del pago de deudas con la Seguridad Social',
+        'Tema 20. Recaudación en periodo ejecutivo: Providencia de apremio, recargos y costas',
+        'Tema 21. El procedimiento de apremio: Embargo de bienes, prelación y subasta pública',
+        'Tema 22. Acción protectora: Contingencias comunes y profesionales. Accidente de trabajo y enfermedad profesional',
+        'Tema 23. Asistencia sanitaria y prestación farmacéutica: Beneficiarios y requisitos',
+        'Tema 24. Incapacidad Temporal (IT): Causas, requisitos, cuantía, duración máxima y prórrogas',
+        'Tema 25. Riesgo durante el embarazo y lactancia. Cuidado de menores con cáncer o enfermedad grave',
+        'Tema 26. Nacimiento y cuidado de menor: Beneficiarios, períodos de descanso y corresponsabilidad',
+        'Tema 27. Incapacidad Permanente: Grados (parcial, total, absoluta, gran invalidez), cálculo y revisión',
+        'Tema 28. Jubilación contributiva ordinaria: Edad legal, cómputo de años cotizados y base reguladora',
+        'Tema 29. Modalidades de jubilación: Anticipada, parcial, activa, flexible y demorada con incentivos',
+        'Tema 30. Muerte y supervivencia: Pensión de viudedad, pensión de orfandad y auxilio por defunción',
+        'Tema 31. Prestaciones familiares no contributivas y el Ingreso Mínimo Vital (IMV) (Ley 19/2021)',
+        'Tema 32. Régimen Especial de Trabajadores Autónomos (RETA): Sistema de cotización por ingresos reales',
+        'Tema 33. Entidades Gestoras de la Seguridad Social: Instituto Nacional de la Seguridad Social (INSS) e ISM',
+        'Tema 34. Servicios Comunes: Tesorería General (TGSS) y Gerencia de Informática (GISS)',
+        'Tema 35. Entidades colaboradoras: Mutuas colaboradoras con la Seguridad Social y empresas asociadas',
+        'Tema 36. Régimen económico y financiero: Patrimonio único, Fondo de Reserva, LISOS y reclamaciones previas'
+      ]
+    ];
+
+    const topics = ssSyllabus.flatMap((b, bi) => b.map(title => {
+      idx++;
+      const id = 't' + idx;
+      let text = '';
+      if (idx === 1) text = officialAcademyNotes.t1;
+      else if (idx === 8) text = noteProcedure;
+      else if (idx === 11) text = officialAcademyNotes.ss11;
+      else if (idx === 14) text = officialAcademyNotes.ss14;
+      return {
+        id,
+        title,
+        b: bi,
+        rounds: 0,
+        errors: 0,
+        text,
+        source: 'https://www.seg-social.es/wps/portal/wss/internet/Inicio',
+        assets: [],
+        updated: 0
+      };
+    }));
+
+    return {
+      id: 'ss-c1',
+      name: 'Administrativo de la Administración de la Seguridad Social (C1)',
+      short: 'Seg. Social C1',
+      group: 'C1',
+      blocks: ssBlocks,
+      topics,
+      baseURL: 'https://www.seg-social.es/wps/portal/wss/internet/InformacionUtil/44539/44084',
+      basePdf: '',
+      template: true,
+      questions: [],
+      cards: [],
+      lastTopic: 't1'
+    };
+  }
+
+  function makeTemplateAuxiliarC2() {
+    let idx = 0;
+    const c2Blocks = [
+      'Bloque I · Organización Pública (16 temas)',
+      'Bloque II · Actividad Administrativa y Ofimática (12 temas)'
+    ];
+
+    const c2Syllabus = [
+      [
+        'Tema 1. La Constitución Española de 1978: Principios fundamentales y derechos',
+        'Tema 2. El Tribunal Constitucional. La Corona. Las Cortes Generales',
+        'Tema 3. El Gobierno y la Administración General del Estado',
+        'Tema 4. La organización territorial del Estado: CCAA y Entidades Locales',
+        'Tema 5. La Unión Europea y sus instituciones principales',
+        'Tema 6. El Estatuto Básico del Empleado Público: Derechos y deberes',
+        'Tema 7. Políticas de igualdad y no discriminación por razón de género',
+        'Tema 8. Transparencia, acceso a la información y protección de datos',
+        'Tema 9. El acto administrativo: Requisitos, eficacia y validez',
+        'Tema 10. El procedimiento administrativo común: Iniciación, instrucción y fin',
+        'Tema 11. Los recursos administrativos: Alzada y reposición',
+        'Tema 12. La Administración electrónica en los servicios al ciudadano',
+        'Tema 13. Servicios de atención ciudadana e información administrativa',
+        'Tema 14. Concepto de documento, registro y archivo en la AGE',
+        'Tema 15. Principios de la contratación pública en el sector público',
+        'Tema 16. Nociones de gestión presupuestaria y gasto público'
+      ],
+      [
+        'Tema 17. Informática básica: Hardware, software y sistemas operativos',
+        'Tema 18. Entorno Windows y explorador de archivos',
+        'Tema 19. Procesadores de texto (Microsoft Word): Formato, tablas y estilos',
+        'Tema 20. Hojas de cálculo (Microsoft Excel): Fórmulas, funciones y gráficos',
+        'Tema 21. Bases de datos (Microsoft Access): Tablas, consultas e informes',
+        'Tema 22. Correo electrónico y comunicaciones electrónicas (Outlook)',
+        'Tema 23. Navegación por Internet y búsquedas avanzadas',
+        'Tema 24. Redes de comunicaciones y seguridad básica en ofimática',
+        'Tema 25. Procesamiento y archivo digital de expedientes administrativos',
+        'Tema 26. Gestión y manipulación de documentos PDF y formularios',
+        'Tema 27. Herramientas colaborativas en la nube de la Administración',
+        'Tema 28. Mecanografía y transcripción rápida de textos oficiales'
+      ]
+    ];
+
+    const topics = c2Syllabus.flatMap((b, bi) => b.map(title => {
+      idx++;
+      const id = 't' + idx;
+      let text = '';
+      if (idx === 1) text = officialAcademyNotes.t1;
+      else if (idx === 10) text = noteProcedure;
+      return {
+        id,
+        title,
+        b: bi,
+        rounds: 0,
+        errors: 0,
+        text,
+        source: 'https://www.inap.es/procesos-selectivos',
+        assets: [],
+        updated: 0
+      };
+    }));
+
+    return {
+      id: 'c2-age',
+      name: 'Auxiliar Administrativo del Estado (C2 / AGE)',
+      short: 'Auxiliar C2',
+      group: 'C2',
+      blocks: c2Blocks,
+      topics,
+      baseURL: 'https://www.inap.es/procesos-selectivos',
+      basePdf: '',
+      template: true,
+      questions: [],
+      cards: [],
+      lastTopic: 't1'
+    };
+  }
+
   const makeTemplate = makeTemplateGACE;
   const STORAGE='typeopos.studio.v1';
 
+  function defaultGeminiSkills() {
+    return {
+      summary: 'Actúa como preparador de élite de oposiciones en España. Para el temario o apuntes aportados, genera un resumen sin paja: 1. Ideas fuerza que caen en examen, 2. Artículos clave de cita obligatoria, 3. Preguntas trampa del tribunal con plazos y excepciones.',
+      scheme: 'Genera un esquema estructurado tipo clase / pizarra de academia: jerárquico a 3 niveles, sin párrafos de relleno, con etiquetas destacadas [PLAZO], [MAYORÍA], [TRAMPA], [LEY], organizado para memorización rápida.',
+      tables: 'Construye cuadros comparativos y matrices de examen: 1. Matriz de plazos (días hábiles vs naturales), 2. Órganos y competencias exclusivas, 3. Régimen de recursos y procedimientos.'
+    };
+  }
+
   function initialState(){
     return {
-      version: 3,
+      version: 4,
       active: 'gace-a2',
-      opps: [makeTemplateGACE(), makeTemplateC1()],
+      opps: [makeTemplateGACE(), makeTemplateSeguridadSocialC1(), makeTemplateC1(), makeTemplateAuxiliarC2()],
+      geminiSkills: defaultGeminiSkills(),
       name: 'Opositor',
       goal: 120,
       days: {},
@@ -1342,16 +1558,29 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     const raw = localStorage.getItem(STORAGE) || localStorage.getItem('oposapiens.studio.v1');
     let d = raw ? JSON.parse(raw) : null;
     if (d && Array.isArray(d.opps) && d.opps.length) {
-      if (d.version !== 3) {
-        // Upgrade legacy cache: ensure GACE A2 is active with 58 official topics
-        d.version = 3;
-        const gace = makeTemplateGACE();
-        const c1 = makeTemplateC1();
-        d.opps = [gace, c1, ...d.opps.filter(o => !['gace-a2', 'c1-age', 'gace'].includes(o.id))];
-        d.active = 'gace-a2';
+      if (d.version !== 4) {
+        d.version = 4;
+        d.geminiSkills = d.geminiSkills || defaultGeminiSkills();
+        // Upgrade existing oppositions: if user named an opp "seguridad social" but it had 58 topics of GACE, fix it with SS official syllabus!
+        d.opps.forEach(o => {
+          if (/seguridad social|inss|tgss/i.test(o.name) && (o.topics.length === 58 || o.blocks[0]?.includes('11 temas') || o.blocks[0]?.includes('Organización del Estado y de la Administración Pública (11 temas)'))) {
+            const fresh = makeTemplateSeguridadSocialC1();
+            o.blocks = fresh.blocks;
+            o.topics = fresh.topics;
+            o.short = 'Seg. Social C1';
+            o.group = 'C1';
+          }
+        });
+        if (!d.opps.some(o => o.id === 'ss-c1' || /seguridad social/i.test(o.name))) {
+          d.opps.splice(1, 0, makeTemplateSeguridadSocialC1());
+        }
+        if (!d.opps.some(o => o.id === 'c2-age' || /auxiliar/i.test(o.name))) {
+          d.opps.push(makeTemplateAuxiliarC2());
+        }
         localStorage.setItem(STORAGE, JSON.stringify(d));
       }
       state = d;
+      state.geminiSkills = state.geminiSkills || defaultGeminiSkills();
     } else {
       state = initialState();
       localStorage.setItem(STORAGE, JSON.stringify(state));
@@ -1361,7 +1590,10 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
   }
   if (!state.opps.some(o => o.id === 'gace-a2')) {
     state.opps.unshift(makeTemplateGACE());
-    state.active = 'gace-a2';
+    save();
+  }
+  if (!state.opps.some(o => o.id === 'ss-c1' || /seguridad social/i.test(o.name))) {
+    state.opps.splice(1, 0, makeTemplateSeguridadSocialC1());
     save();
   }
   const opp=()=>state.opps.find(x=>x.id===state.active)||state.opps[0];
@@ -1442,13 +1674,13 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
   function daysOfWeek(){const dif=(new Date().getDay()+6)%7;return Array.from({length:7},(_,i)=>relDay(i-dif))}
   function petImage(){return state.pet.image?`<img class="pet-photo" src="${esc(state.pet.image)}" alt="Mi mascota de estudio">`:avatarSVG(state.pet.prompt)}
   function journal(){const secs=elapsedToday(),goal=state.goal,ds=daysOfWeek();return `<section class="journal surface"><div class="journal-head between"><h2 class="side-title">${I('clock',19)}Mi jornada</h2><button class="status-today" data-act="planner" title="Abrir el planificador">Hoy</button></div><div class="between"><span class="daily-goal">Objetivo diario</span><button data-act="planner" aria-label="Editar objetivo diario" class="icon-btn" style="width:21px;height:20px">${I('settings',13)}</button></div><div class="daily-total" id="daily-total">${humanMins(secs/60)} <small>/ ${humanMins(goal)}</small></div><div class="progress-track daily-track"><i id="daily-progress" style="width:${Math.min(100,secs/(goal*60)*100)}%"></i></div><div class="week">${ds.map((d,i)=>{const k=dateKey(d),today=k===dateKey(),done=(state.days[k]||0)>=goal*60;return `<button class="week-day ${today?'today':''} ${done?'done':''}" data-act="planner" title="${esc(d.toLocaleDateString('es-ES',{weekday:'long'}))}: ${humanMins((state.days[k]||0)/60)}"><span>${'LMXJVSD'[i]}</span><span class="day-circle">${done?I('check',13):today?'<span style="width:7px;height:7px;background:#a08ab2;border-radius:50%"></span>':'<span style="width:3px;height:3px;background:#c4bdc4;border-radius:50%"></span>'}</span></button>`}).join('')}</div><button class="btn session-btn ${state.session?'running':''}" data-act="session">${I(state.session?'pause':'play',11)}${state.session?'Pausar sesión':'Iniciar sesión de estudio'}${state.session?'<span class="timer-readout" id="live-timer"></span>':''}</button></section>`}
-  function home(){const o=opp(),studied=o.topics.filter(t=>t.rounds>0).length,pct=o.topics.length?Math.round(100*studied/o.topics.length):0,recent=state.recent.filter(r=>r.opp===o.id&&topic(r.topic)).slice(0,2);const day=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});return `<div class="page"><section class="page-intro home-head"><div><div class="eyebrow intro-kicker">Tu espacio de estudio</div><h1>Mi escritorio${titleDoodle}</h1><p>Un tema, un repaso y un paso más hacia tu plaza.</p></div><div class="intro-actions"><span class="today-label">${I('calendar',14)}${esc(day.charAt(0).toUpperCase()+day.slice(1))}</span><button class="btn" data-act="new-opp" aria-label="Nueva oposición">${I('plus',15)}Nueva oposición</button></div></section><div class="desk-grid"><div class="desk-main"><section class="opposition-panel"><div><button class="active-opp" data-act="switch-opp"><i class="dot"></i> OPOSICIÓN ACTIVA ${I('down',11)}</button><h2 class="opp-name">${esc(o.name)}</h2><div class="opp-meta"><span>${I('folder',13)}${esc(o.short||'Grupo '+o.group)}</span><span>${I('layers',13)}${o.blocks.length} bloques</span><span>${I('file',13)}${o.topics.length} temas oficiales</span></div><div class="opp-actions"><button class="btn primary" data-act="continue">Continuar estudio ${I('arrow',14)}</button><button class="btn sm" onclick="studyAgendaModal()" style="background:#fff;border:1.5px solid #d9d1f0;color:#553396;font-weight:600">📅 Mi Agenda y Calendario</button><button class="text-btn" data-act="open-bases">Bases oficiales ${I('external',12)}</button><button class="btn sm" data-act="${o.id==='gace-a2'?'switch-to-c1':'switch-to-gace'}" style="margin-left:8px;background:#f0eef9;color:#6e48aa;border:1px solid #d9d1f0">${o.id==='gace-a2'?'🏢 Ver Admin C1':'🎯 Activar GACE A2 (58 temas)'}</button></div></div>${notebookArt()}<div class="hero-progress"><div class="progress-info"><span>Progreso del temario</span><span><b>${pct}%</b> <span style="opacity:.65">·</span> ${studied} de ${o.topics.length} temas</span></div><div class="progress-track"><i style="width:${pct}%"></i></div></div></section><section><div class="section-heading"><h2>Herramientas de estudio</h2><span class="section-note">Tu mesa de trabajo</span></div><div class="tool-grid">${tools.map(([k,l,d,c])=>`<button class="tool-tile ${c}" data-go="${k}"><span class="tile-arrow">${I('upRight',15)}</span>${toolArt(artKey(k))}<h3>${l}</h3><p>${d}</p></button>`).join('')}</div></section><section><div class="section-heading"><h2>Últimos apuntes</h2><button class="text-btn" data-go="library">Ver temario ${I('arrow',13)}</button></div><div class="recent-list surface">${recent.length?recent.map(r=>{const t=topic(r.topic);return `<button class="recent-row" data-act="read" data-id="${esc(t.id)}"><span class="file-icon">${I('file',19)}</span><span class="spacer"><span class="recent-title">${esc(t.title)}</span><span class="recent-meta" style="display:block">Bloque ${t.b+1} · ${esc(o.blocks[t.b])}</span></span>${stateLabel(t)}${I('right',14)}</button>`}).join(''):`<button class="recent-row" data-act="import"><span class="file-icon">${I('upload')}</span>Importa tus primeros apuntes ${I('arrow',14)}</button>`}</div></section></div><aside class="desk-side">${journal()}<section class="pet-panel surface"><div class="pet-header"><div><div class="eyebrow">Tu compañero de estudio</div><h2>${esc(state.pet.name)}</h2></div><button class="icon-btn" data-act="pet-settings" aria-label="Personalizar OpoPet">${I('settings',17)}</button></div>${petImage()}<p class="pet-quote">“${esc(petLine('tip'))}”</p><button class="btn" data-act="quick">${I('sparkle',15)}Pregunta rápida</button></section><button class="surface notice-link" data-go="boe"><span class="notice-art">${I('news',20)}</span><span class="spacer"><h3>Convocatorias</h3><p>BOE y boletines autonómicos</p></span>${I('right',14)}</button></aside></div></div>`}
+  function home(){const o=opp(),studied=o.topics.filter(t=>t.rounds>0).length,pct=o.topics.length?Math.round(100*studied/o.topics.length):0,recent=state.recent.filter(r=>r.opp===o.id&&topic(r.topic)).slice(0,2);const day=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});return `<div class="page"><section class="page-intro home-head"><div><div class="eyebrow intro-kicker">Tu espacio de estudio</div><h1>Mi escritorio${titleDoodle}</h1><p>Un tema, un repaso y un paso más hacia tu plaza.</p></div><div class="intro-actions"><span class="today-label">${I('calendar',14)}${esc(day.charAt(0).toUpperCase()+day.slice(1))}</span><button class="btn" data-act="new-opp" aria-label="Nueva oposición">${I('plus',15)}Nueva oposición</button></div></section><div class="desk-grid"><div class="desk-main"><section class="opposition-panel"><div><button class="active-opp" data-act="switch-opp"><i class="dot"></i> OPOSICIÓN ACTIVA ${I('down',11)}</button><h2 class="opp-name">${esc(o.name)}</h2><div class="opp-meta"><span>${I('folder',13)}${esc(o.short||'Grupo '+o.group)}</span><span>${I('layers',13)}${o.blocks.length} bloques</span><span>${I('file',13)}${o.topics.length} temas oficiales</span></div><div class="opp-actions"><button class="btn primary" data-act="continue">Continuar estudio ${I('arrow',14)}</button><button class="btn sm" onclick="studyAgendaModal()" style="background:#fff;border:1.5px solid #d9d1f0;color:#553396;font-weight:600">📅 Mi Agenda y Calendario</button><button class="text-btn" data-act="open-bases">Bases oficiales ${I('external',12)}</button><button class="btn sm" data-act="${o.id==='gace-a2'?'switch-to-c1':'switch-to-gace'}" style="margin-left:8px;background:#f0eef9;color:#6e48aa;border:1px solid #d9d1f0">${o.id==='gace-a2'?'🏢 Ver Admin C1':'🎯 Activar GACE A2 (58 temas)'}</button><button class="btn sm" data-act="${/seguridad\s+social/i.test(o.name)?'switch-to-gace':'switch-to-ss-c1'}" style="margin-left:6px;background:#eef6fc;color:#1e40af;border:1px solid #bfdbfe">${/seguridad\s+social/i.test(o.name)?'🎯 Cambiar a GACE A2':'🛡️ Seguridad Social C1 (36 temas)'}</button></div></div>${notebookArt()}<div class="hero-progress"><div class="progress-info"><span>Progreso del temario</span><span><b>${pct}%</b> <span style="opacity:.65">·</span> ${studied} de ${o.topics.length} temas</span></div><div class="progress-track"><i style="width:${pct}%"></i></div></div></section><section><div class="section-heading"><h2>Herramientas de estudio</h2><span class="section-note">Tu mesa de trabajo</span></div><div class="tool-grid">${tools.map(([k,l,d,c])=>`<button class="tool-tile ${c}" data-go="${k}"><span class="tile-arrow">${I('upRight',15)}</span>${toolArt(artKey(k))}<h3>${l}</h3><p>${d}</p></button>`).join('')}</div></section><section><div class="section-heading"><h2>Últimos apuntes</h2><button class="text-btn" data-go="library">Ver temario ${I('arrow',13)}</button></div><div class="recent-list surface">${recent.length?recent.map(r=>{const t=topic(r.topic);return `<button class="recent-row" data-act="read" data-id="${esc(t.id)}"><span class="file-icon">${I('file',19)}</span><span class="spacer"><span class="recent-title">${esc(t.title)}</span><span class="recent-meta" style="display:block">Bloque ${t.b+1} · ${esc(o.blocks[t.b])}</span></span>${stateLabel(t)}${I('right',14)}</button>`}).join(''):`<button class="recent-row" data-act="import"><span class="file-icon">${I('upload')}</span>Importa tus primeros apuntes ${I('arrow',14)}</button>`}</div></section></div><aside class="desk-side">${journal()}<section class="pet-panel surface"><div class="pet-header"><div><div class="eyebrow">Tu compañero de estudio</div><h2>${esc(state.pet.name)}</h2></div><button class="icon-btn" data-act="pet-settings" aria-label="Personalizar OpoPet">${I('settings',17)}</button></div>${petImage()}<p class="pet-quote">“${esc(petLine('tip'))}”</p><button class="btn" data-act="quick">${I('sparkle',15)}Pregunta rápida</button></section><button class="surface notice-link" data-go="boe"><span class="notice-art">${I('news',20)}</span><span class="spacer"><h3>Convocatorias</h3><p>BOE y boletines autonómicos</p></span>${I('right',14)}</button></aside></div></div>`}
   function petLine(type){const dict={Motivadora:{tip:'Poquito a poco, cada repaso te acerca a tu plaza.',good:'¡Bien hecho! Ese concepto ya es un poco más tuyo.',bad:'Un fallo también enseña. Repasa la explicación y vuelve a intentarlo.'},Estricta:{tip:'Primero comprende el artículo. Después, memoriza el plazo.',good:'Respuesta correcta. Mantén el ritmo.',bad:'Revisa el artículo y distingue el plazo de su cómputo.'},'Sarcástica con los plazos':{tip:'Los plazos no se estudian solos. Ya se lo he preguntado.',good:'¡Exacto! Hoy el calendario está de tu parte.',bad:'El BOE no acepta un «casi». Vamos a repasar esa regla.'}};return (dict[state.pet.personality]||dict.Motivadora)[type]}
   function petReact(ok){clearTimeout(petTimer);$('.pet-bubble')?.remove();const n=document.createElement('div');n.className='pet-bubble '+(ok?'celebrate':'missed');n.setAttribute('role','status');n.innerHTML=petImage()+`<div><b>${esc(state.pet.name)}</b><p>${esc(petLine(ok?'good':'bad'))}</p></div>`;($('#modal').open?$('#modal'):document.body).append(n);n.onclick=()=>n.remove();petTimer=setTimeout(()=>n.remove(),4400)}
   function heading(title,sub,actions='',kicker='Mi espacio de estudio'){return `<div class="page-intro module-head"><div><div class="eyebrow intro-kicker">${esc(kicker)}</div><h1>${esc(title)}</h1><p>${esc(sub)}</p></div>${actions?`<div class="intro-actions">${actions}</div>`:''}</div>`}
   const btn=(label,act,ico='',cl='')=>`<button type="button" class="btn ${cl}" data-act="${act}">${ico?I(ico,15):''}${label}</button>`;
-  function switchOpp(){modal('Mis oposiciones',`<p>Cada oposición tiene su propio temario oficial, preguntas y repasos:</p><div class="set-list">${state.opps.map(o=>`<button data-act="choose-opp" data-id="${esc(o.id)}" class="${o.id===opp().id?'is-active':''}">${I('book',22)}<span class="spacer"><b>${esc(o.name)}</b><small>${esc(o.group)} · ${o.blocks.length} bloques · ${o.topics.length} temas oficiales</small></span>${o.id===opp().id?I('check'):''}</button>`).join('')}</div><div class="modal-actions">${btn('Nueva oposición','new-opp','plus','primary')}</div>`)}
-  function newOpp(){modal('Nueva oposición',`<p>Configura tu cuaderno de oposición o utiliza las plantillas oficiales del Estado:</p><form id="new-opp-form" class="stack"><label class="field"><span>Nombre de la oposición</span><input name="name" required maxlength="100" placeholder="Ej. Gestión de la Administración Civil del Estado (GACE A2)" value="Gestión de la Administración Civil del Estado (GACE A2)"></label><div class="form-grid compact"><label class="field"><span>Subgrupo</span><select name="group">${['A1','A2','B','C1','C2','AP','Otro'].map(x=>`<option ${x==='A2'?'selected':''}>${x}</option>`).join('')}</select></label><label class="field"><span>Nombre corto</span><input name="short" maxlength="20" placeholder="Ej. GACE A2" value="GACE A2"></label></div><label class="field"><span>Plantilla oficial inicial</span><select name="template"><option value="gace" selected>GACE A2 · 58 temas oficiales en 6 bloques (INAP)</option><option value="c1">Administrativo del Estado C1 · 43 temas oficiales</option><option value="empty">Temario en blanco / personalizado</option></select></label><label class="field"><span>Importar temas <small>(opcional)</small></span><textarea name="topics" placeholder="# Bloque I. Organización del Estado\nTema 1. La Constitución Española\nTema 4. La Corona..."></textarea><small>Un tema por línea. Usa # para bloques o pega JSON.</small></label><label class="field"><span>O elige un archivo TXT / JSON</span><input type="file" name="syllabusFile" accept=".txt,.json,text/plain,application/json"></label><div class="modal-error" id="modal-error"></div><div class="row" style="justify-content:flex-end">${btn('Cancelar','close')}<button class="btn primary" type="submit">${I('plus',15)}Crear oposición</button></div></form>`)}
+  function switchOpp(){modal('Mis oposiciones',`<p>Cada oposición tiene su propio temario oficial, normativa y repasos:</p><div class="set-list">${state.opps.map(o=>`<button data-act="choose-opp" data-id="${esc(o.id)}" class="${o.id===opp().id?'is-active':''}">${I('book',22)}<span class="spacer"><b>${esc(o.name)}</b><small>${esc(o.group)} · ${o.blocks.length} bloques · ${o.topics.length} temas oficiales</small></span>${o.id===opp().id?I('check'):''}</button>`).join('')}</div><div class="modal-actions" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:space-between"><div class="row wrap" style="gap:6px">${btn('Seguridad Social C1','switch-to-ss-c1','check','soft')}${btn('GACE A2','switch-to-gace','check','soft')}</div>${btn('Nueva oposición','new-opp','plus','primary')}</div>`)}
+  function newOpp(){modal('Nueva oposición',`<p>Configura tu cuaderno de oposición o utiliza las plantillas oficiales del Estado:</p><form id="new-opp-form" class="stack"><label class="field"><span>Nombre de la oposición</span><input name="name" required maxlength="100" placeholder="Ej. Administrativo de la Seguridad Social C1" value="Administrativo de la Seguridad Social C1"></label><div class="form-grid compact"><label class="field"><span>Subgrupo</span><select name="group">${['A1','A2','B','C1','C2','AP','Otro'].map(x=>`<option ${x==='C1'?'selected':''}>${x}</option>`).join('')}</select></label><label class="field"><span>Nombre corto</span><input name="short" maxlength="20" placeholder="Ej. SS C1" value="SS C1"></label></div><label class="field"><span>Plantilla oficial inicial</span><select name="template"><option value="ss-c1" selected>Seguridad Social C1 · 36 temas oficiales en 2 bloques (INSS / TGSS)</option><option value="gace">GACE A2 · 58 temas oficiales en 6 bloques (INAP)</option><option value="c1">Administrativo del Estado C1 · 43 temas oficiales</option><option value="c2">Auxiliar Administrativo del Estado C2 · 28 temas oficiales</option><option value="empty">Temario en blanco / personalizado</option></select></label><label class="field"><span>Importar temas <small>(opcional)</small></span><textarea name="topics" placeholder="# Bloque I. Organización del Estado\nTema 1. La Constitución Española\nTema 4. La Corona..."></textarea><small>Un tema por línea. Usa # para bloques o pega JSON.</small></label><label class="field"><span>O elige un archivo TXT / JSON</span><input type="file" name="syllabusFile" accept=".txt,.json,text/plain,application/json"></label><div class="modal-error" id="modal-error"></div><div class="row" style="justify-content:flex-end">${btn('Cancelar','close')}<button class="btn primary" type="submit">${I('plus',15)}Crear oposición</button></div></form>`)}
   function parseSyllabus(text){const bs=[],ts=[];let b='Temario general';function add(title,block,content=''){if(typeof title!=='string'||!title.trim())return;const bn=String(block||b).trim();if(!bs.includes(bn))bs.push(bn);ts.push({id:uid(),title:title.trim().slice(0,200),b:bs.indexOf(bn),text:String(content||'').slice(0,200000),rounds:0,errors:0,source:'',assets:[],updated:0})}if(text.trim().startsWith('[')||text.trim().startsWith('{')){let js;try{js=JSON.parse(text)}catch{throw Error('El JSON no es válido. Comprueba las comillas y las comas.')}const arr=Array.isArray(js)?js:js.temas||js.topics;if(!Array.isArray(arr))throw Error('El JSON debe contener una lista de temas.');arr.slice(0,500).forEach(t=>typeof t==='string'?add(t,b):add(t?.titulo||t?.title,t?.bloque||t?.block,t?.texto||t?.text))}else{for(const line of text.split('\n').slice(0,600)){if(line.trim().startsWith('#'))b=line.replace(/^\s*#+\s*/,'').trim()||b;else add(line.replace(/^\s*[-*]\s*/,''),b)}}return {blocks:bs.length?bs:['Temario general'],topics:ts}}
   function planModal(){const ds=daysOfWeek(),sum=ds.reduce((v,d)=>v+(dateKey(d)===dateKey()?elapsedToday():state.days[dateKey(d)]||0),0);modal('Mi planificador',`<p>Un objetivo sostenible para los siete días de la semana.</p><div class="between"><b>Esta semana</b><span class="tag">${humanMins(sum/60)} de ${humanMins(state.goal*7)}</span></div><div class="stack" style="gap:0;margin:10px 0 19px">${ds.map(d=>{const s=dateKey(d)===dateKey()?elapsedToday():(state.days[dateKey(d)]||0);return `<div class="history-row"><span>${esc(d.toLocaleDateString('es-ES',{weekday:'long',day:'numeric'}))}</span><span>${humanMins(s/60)} / ${humanMins(state.goal)}</span></div>`}).join('')}</div><form id="goal-form" class="stack"><label class="field"><span>Objetivo diario en minutos</span><input required name="goal" type="number" min="5" max="720" value="${state.goal}"></label><button class="btn primary">Guardar planificación</button></form>`)}
   function studyAgendaModal() {
@@ -1877,7 +2109,75 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
       }
     ];
 
-    const officialLawsList = isGACE ? gaceLaws : c1Laws;
+    const isSS = isTopicSeguridadSocial(opp()) || opp().id.startsWith('ss-') || /seguridad social/i.test(opp().name);
+    const ssLaws = [
+      {
+        short: 'LGSS (RDL 8/2015)',
+        name: 'Texto Refundido de la Ley General de la Seguridad Social',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724',
+        desc: 'Norma sustantiva fundamental: Principios generales, Régimen General, Regímenes Especiales (RETA, Mar, Minería), Cotización, Recaudación y Acción Protectora.',
+        topicsCovered: 'Bloque II · Temas 11 al 36 (Seguridad Social: Afiliación, Cotización, Jubilación, IT, Maternidad, Desempleo, IMV)',
+        keyArticles: 'Art. 16 (Afiliación y altas/bajas), Art. 19-27 (Cotización), Art. 34-40 (Recaudación), Art. 169 (Incapacidad temporal), Art. 204 (Jubilación), Art. 216 (Viudedad).'
+      },
+      {
+        short: 'RD 84/1996',
+        name: 'Reglamento General de Inscripción de Empresas y Afiliación, Altas y Bajas',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-1996-3988',
+        desc: 'Actos de encuadramiento: Inscripción empresarial previa, Afiliación única y vitalicia, plazos de altas previas (hasta 60 días antes) y bajas en 3 días naturales.',
+        topicsCovered: 'Bloque II · Temas 13 y 14 (Inscripción, Afiliación, Altas y Bajas)',
+        keyArticles: 'Art. 32 (Alta previa hasta 60 días antes del inicio), Art. 37 (Plazo de 3 días naturales para bajas y variaciones de datos).'
+      },
+      {
+        short: 'RD 1415/2004',
+        name: 'Reglamento General de Recaudación de la Seguridad Social',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2004-12095',
+        desc: 'Procedimiento recaudatorio de cuotas: Período voluntario de ingreso, aplazamientos, recargos por ingreso extemporáneo, vía de apremio, providencia de apremio y embargos.',
+        topicsCovered: 'Bloque II · Temas 17 y 18 (Gestión Recaudatoria y Vía Ejecutiva)',
+        keyArticles: 'Art. 56 (Ingreso hasta el último día del mes siguiente), Art. 10 (Recargo del 10% o 20%), Art. 84 (Providencia de apremio y embargo TGSS).'
+      },
+      {
+        short: 'RD 2064/1995',
+        name: 'Reglamento General de Cotización y Liquidación de Otros Derechos de la SS',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-1996-1774',
+        desc: 'Bases y tipos de cotización, contingencias comunes y profesionales, topes mínimos y máximos, horas extraordinarias y liquidación mediante el Sistema RED.',
+        topicsCovered: 'Bloque II · Temas 15 y 16 (Cotización y Liquidación)',
+        keyArticles: 'Art. 9 (Nacimiento de la obligación de cotizar), Art. 13 (Composición de la base de cotización).'
+      },
+      {
+        short: 'LRJS (Ley 36/2011)',
+        name: 'Ley Reguladora de la Jurisdicción Social (LRJS)',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2011-15936',
+        desc: 'Procedimiento ante los Juzgados de lo Social y Tribunales Superiores de Justicia: Reclamación administrativa previa en materia de prestaciones de Seguridad Social.',
+        topicsCovered: 'Bloque II · Tema 36 (Régimen de Recursos e Impugnación de Actos)',
+        keyArticles: 'Art. 71 (Reclamación previa administrativa en 30 días hábiles ante el INSS/TGSS y 45 días para resolver).'
+      },
+      {
+        short: 'Ley 19/2021',
+        name: 'Ley por la que se establece el Ingreso Mínimo Vital (IMV)',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2021-21006',
+        desc: 'Prestación no contributiva de la Seguridad Social: Unidad de convivencia, requisitos de vulnerabilidad económica, cómputo de rentas y gestión por el INSS.',
+        topicsCovered: 'Bloque II · Tema 34 (Ingreso Mínimo Vital y Prestaciones No Contributivas)',
+        keyArticles: 'Arts. 4-10 (Beneficiarios y unidades de convivencia), Arts. 11-16 (Condiciones de vulnerabilidad).'
+      },
+      {
+        short: 'CE 1978',
+        name: 'Constitución Española de 1978',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229',
+        desc: 'Norma suprema del Estado: Art. 41 CE (Mandato constitucional de régimen público de Seguridad Social) y organización de los poderes del Estado.',
+        topicsCovered: 'Bloque I · Temas 1 al 5 (Organización del Estado)',
+        keyArticles: 'Art. 41 CE (Régimen público de Seguridad Social), Art. 14 (Igualdad), Art. 103 (Administración Pública).'
+      },
+      {
+        short: 'Ley 39/2015',
+        name: 'LPACAP · Procedimiento Administrativo Común de las AAPP',
+        boe: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-10565',
+        desc: 'Régimen de los actos administrativos, cómputo de plazos hábiles, notificaciones electrónicas y silencio administrativo.',
+        topicsCovered: 'Bloque I · Temas 6 al 10 (Derecho Administrativo)',
+        keyArticles: 'Art. 21 (Obligación de resolver), Art. 30 (Cómputo de plazos), Art. 47 (Nulidad), Art. 68 (Subsanación).'
+      }
+    ];
+
+    const officialLawsList = isSS ? ssLaws : (isGACE ? gaceLaws : c1Laws);
 
     return `
       <section class="surface workspace stack" style="gap:16px">
@@ -2185,12 +2485,63 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
   function summarize(text){const total=words(text).length,budget=Math.floor(total*.28);if(!budget)return [];if(text===noteProcedure)return ['Subsanación: 10 días; desistimiento previa resolución si no se subsana.','Días hábiles: excluir sábados, domingos y festivos. Inicio: día siguiente.','Audiencia: entre 10 y 15 días.','Alzada: superior jerárquico. Interposición contra acto expreso: un mes; resolución: tres meses.','Reposición: mismo órgano. Resolución y notificación: un mes.'];const pieces=sentences(text).flatMap(s=>s.split(/;\s*|:\s+(?=[A-ZÁÉÍÓÚ])/)).map((s,i)=>({s:s.replace(/^(?:En primer lugar,? |Cabe destacar que |Es importante señalar que |Por otra parte,? |Como hemos visto,? )/i,'').trim(),i})).filter(x=>words(x.s).length>=3);pieces.forEach(x=>{x.score=(x.s.match(keyRX)||[]).length*5+(/\b(debe|plazo|competent|requisito|define|consiste|principio|excep|función|efecto)/i.test(x.s)?3:0)+(/\d/.test(x.s)?1:0)});let left=budget;const out=[];for(const x of pieces.sort((a,b)=>b.score-a.score||a.i-b.i)){const ws=words(x.s);if(ws.length<=left&& !out.some(y=>y.s===x.s)){out.push(x);left-=ws.length}if(left<3)break}if(!out.length&&pieces.length){const x=pieces[0];out.push({i:x.i,s:x.s})}return out.sort((a,b)=>a.i-b.i).map(x=>x.s)}
   function isTopicConstitutional(t) {
     if (!t) return false;
-    return t.id === 't1' && (!t.text || t.text === officialAcademyNotes.t1);
+    const oppId = opp().id || '';
+    return oppId === 'gace-a2' && t.id === 't1' && (!t.text || t.text === officialAcademyNotes.t1);
   }
 
   function isTopicRightsT2(t) {
     if (!t) return false;
-    return t.id === 't2' && (!t.text || t.text === officialAcademyNotes.t2);
+    const oppId = opp().id || '';
+    return oppId === 'gace-a2' && t.id === 't2' && (!t.text || t.text === officialAcademyNotes.t2);
+  }
+
+  function isTopicSeguridadSocial(t) {
+    if (!t) return false;
+    const title = (t.title || '').toLowerCase();
+    const oppName = (opp().name || '').toLowerCase();
+    const oppId = (opp().id || '');
+    return oppId.startsWith('ss-') || /seguridad social/i.test(oppName) || /seguridad social|afiliaci[oó]n|cotizaci[oó]n|recaudaci[oó]n|incapacidad|jubilaci[oó]n|viudedad|prestaci[oó]n|desempleo|reta|tgss|inss|ism|imv|lgss/i.test(title);
+  }
+
+  function getTopicSeguridadSocialTables(t) {
+    return [
+      {
+        title: 'Cuadro 1: Matriz de Plazos Oficiales en la Seguridad Social (LGSS y Reglamentos)',
+        heads: ['Trámite / Acto', 'Sujeto Responsable', 'Plazo Legal de Examen', 'Consecuencia / Ojo al Tribunal'],
+        widths: [0.22, 0.22, 0.26, 0.30],
+        rows: [
+          ['Alta de Trabajadores (RGSS)', 'Empresario', 'PREVIO al inicio (hasta 60 d antes)', 'Extemporánea no tiene efectos retroactivos salvo ITSS.'],
+          ['Bajas y Variaciones de Datos', 'Empresario', '3 DÍAS NATURALES tras el cese', '🔴 ¡TRAMPA!: Días naturales. Si no se da baja, subsiste obligación de cotizar.'],
+          ['Ingreso de Cuotas (Per. Voluntario)', 'Empresario / Sujeto obligado (TGSS)', 'Hasta el último día del mes siguiente', 'Superado el plazo, recargo del 10% (con transmisión) o 20% (sin transmisión).'],
+          ['Reclamación Previa Administrativa', 'Interesado frente a la Entidad Gestora', '30 DÍAS HÁBILES desde notificación', 'Vía preceptiva previa a la demanda judicial ante el Juzgado de lo Social (LRJS).'],
+          ['Resolución de Reclamación Previa', 'INSS / TGSS / ISM', '45 DÍAS HÁBILES (90 d en revisión de grado)', 'Silencio administrativo negativo (desestimatorio).']
+        ]
+      },
+      {
+        title: 'Cuadro 2: Prestaciones Económicas del Sistema (Cuantías, Porcentajes y Duración)',
+        heads: ['Prestación Económica', 'Hecho Causante', 'Cuantía / Base Reguladora', 'Entidad Gestora y Duración'],
+        widths: [0.22, 0.24, 0.26, 0.28],
+        rows: [
+          ['Incapacidad Temporal (Común)', 'Enfermedad común o accidente no laboral', 'Días 1-3: 0%. Días 4-20: 60%. Día 21+: 75%', 'INSS / Mutua (365 d + prórroga 180 d). Carencia: 180 d en 5 años.'],
+          ['Incapacidad Temporal (Profesional)', 'Accidente de trabajo o enfermedad profesional', '75% de la base reguladora desde el día siguiente', 'INSS / Mutua (365 d + 180 d). ¡NO exige período de carencia previo!'],
+          ['Nacimiento y Cuidado de Menor', 'Parto, adopción o acogimiento familiar', '100% de la base reguladora (contingencias comunes)', 'INSS (16 semanas por progenitor, 6 obligatorias tras el parto).'],
+          ['Jubilación Ordinaria Contributiva', 'Cumplimiento de edad legal y cese laboral', '50% (15 años) hasta 100% según meses cotizados', 'INSS (Pensión vitalicia, revalorizable anualmente según IPC).'],
+          ['Pensión de Viudedad', 'Fallecimiento de cónyuge o pareja de hecho', '52% general (elevable a 60% o 70% con cargas familiares)', 'INSS (Vitalicia, compatible con rentas de trabajo).']
+        ]
+      },
+      {
+        title: 'Cuadro 3: Estructura y Distribución de Competencias (Entidades Gestoras y Servicios)',
+        heads: ['Organismo de la Seguridad Social', 'Naturaleza Jurídica', 'Competencias Exclusivas', 'Adscripción Ministerial'],
+        widths: [0.24, 0.22, 0.28, 0.26],
+        rows: [
+          ['INSS (Instituto Nacional SS)', 'Entidad Gestora con personalidad jurídica', 'Reconocimiento y pago de prestaciones económicas (Jubilación, IT, Viudedad, IMV)', 'Ministerio de Inclusión, Seguridad Social y Migraciones.'],
+          ['TGSS (Tesorería General SS)', 'Servicio Común con personalidad jurídica', 'Titular del patrimonio único, afiliación, cotización, recaudación voluntaria y ejecutiva', 'Secretaría de Estado de la Seguridad Social y Pensiones.'],
+          ['ISM (Instituto Social de la Marina)', 'Entidad Gestora especial', 'Protección social y médica integral de trabajadores del mar y pesca', 'Ministerio de Inclusión, Seguridad Social y Migraciones.'],
+          ['GISS (Gerencia de Informática)', 'Servicio Común (adscrito a TGSS)', 'Desarrollo de sistemas informáticos, telecomunicaciones y ciberseguridad de la SS', 'Dirección General de la Tesorería General (TGSS).'],
+          ['Mutuas Colaboradoras con la SS', 'Asociaciones privadas de empresarios sin lucro', 'Gestión de accidentes de trabajo, enfermedades profesionales e IT común colaborada', 'Bajo la dirección y tutela del Ministerio de Inclusión y SS.']
+        ]
+      }
+    ];
   }
 
   function getTopicRightsT2Tables(t) {
@@ -2360,6 +2711,9 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     if (isTopicRightsT2(t)) {
       return getTopicRightsT2Tables(t)[0].rows;
     }
+    if (isTopicSeguridadSocial(t)) {
+      return getTopicSeguridadSocialTables(t)[0].rows;
+    }
     if(t.text===noteProcedure)return [['Subsanación','Órgano tramitador','10 días','Desistimiento previa resolución'],['Audiencia','Órgano instructor','10 a 15 días','Alegaciones y documentos'],['Alzada (acto expreso)','Superior jerárquico','1 mes para interponer; 3 meses para resolver','Silencio desestimatorio, salvo art. 24.1'],['Reposición','Mismo órgano','1 mes para resolver','Recurso potestativo']];
     const dynTables = buildDynamicTables(t);
     if (dynTables.length && dynTables[0].rows.length) return dynTables[0].rows;
@@ -2416,6 +2770,13 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     if (isTopicRightsT2(t)) {
       return getTopicRightsT2Tables(t);
     }
+    if (isTopicSeguridadSocial(t)) {
+      if (!t.text || t.text.trim().length < 50) {
+        return getTopicSeguridadSocialTables(t);
+      }
+      const dyn = buildDynamicTables(t);
+      return (dyn && dyn.length) ? dyn : getTopicSeguridadSocialTables(t);
+    }
     if (t.text && t.text.trim().length > 20) {
       return buildDynamicTables(t);
     }
@@ -2448,7 +2809,21 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
       };
     }
 
-    if (id === 't1' || /constituci[oó]n/i.test(title)) {
+    if (/seguridad social|afiliaci[oó]n|cotizaci[oó]n|recaudaci[oó]n|incapacidad|jubilaci[oó]n|viudedad|prestaci[oó]n|desempleo|reta|tgss|inss|ism|imv|lgss/i.test(title) || (opp().id && opp().id.startsWith('ss-')) || /seguridad social/i.test(opp().name || '')) {
+      return {
+        url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724',
+        title: 'Real Decreto Legislativo 8/2015: Ley General de la Seguridad Social (LGSS)',
+        code: 'BOE-A-2015-11724',
+        laws: [
+          { title: 'Real Decreto Legislativo 8/2015 (LGSS Consolidada)', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724', articles: 'Arts. 7-12 (Campo de aplicación), Arts. 16-18 (Afiliación, altas/bajas), Arts. 19-27 (Cotización), Arts. 34-40 (Recaudación), Arts. 169-234 (Régimen General y Prestaciones: IT, Jubilación, Viudedad)' },
+          { title: 'Real Decreto 84/1996 (Reglamento General de Inscripción y Afiliación)', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1996-3988', articles: 'Plazos de afiliación y alta previa (hasta 60 días antes) y bajas (3 días naturales)' },
+          { title: 'Real Decreto 1415/2004 (Reglamento General de Recaudación de la SS)', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2004-12095', articles: 'Periodo voluntario (último día del mes siguiente), aplazamientos, recargos y vía de apremio' },
+          { title: 'Ley 19/2021 del Ingreso Mínimo Vital (IMV)', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2021-21006', articles: 'Régimen de la prestación no contributiva, requisitos de unidad de convivencia y gestión' }
+        ]
+      };
+    }
+
+    if (/constituci[oó]n/i.test(title) || (opp().id === 'gace-a2' && id === 't1')) {
       return {
         url: 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229',
         title: 'Constitución Española de 1978 (BOE-A-1978-31229)',
@@ -2790,7 +3165,7 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
           <section class="surface reader-col">
             <div class="reader-head">
               <div class="tabs">
-                ${[['outline', '🌳 Esquema de Llaves { }'], ['table', '⚖️ Cuadros y Tablas'], ['summary', '🎯 Resumen Anti-Paja'], ['tools', 'Practicar']].map(([k, l]) => `
+                ${[['outline', '📋 Esquema y Pizarra'], ['table', '⚖️ Cuadros y Tablas'], ['summary', '🎯 Resumen Anti-Paja'], ['tools', 'Practicar']].map(([k, l]) => `
                   <button class="tab ${readerTab === k ? 'selected' : ''}" data-act="reader-tab" data-id="${k}">${l}</button>
                 `).join('')}
               </div>
@@ -2813,6 +3188,7 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
                   <option value="serif" ${currentFontMode === 'serif' ? 'selected' : ''}>Clásica (Lora)</option>
                   <option value="mono" ${currentFontMode === 'mono' ? 'selected' : ''}>Mecanografía</option>
                 </select>
+                <button class="btn sm soft" data-act="gemini-skills" style="padding:2px 8px;font-size:11px" title="Configurar mis Habilidades Gemini">✨ Habilidades Gemini</button>
               </div>
             </div>
 
@@ -2889,15 +3265,91 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
   }
   function basesModal(){const o=opp();modal('Bases de mi oposición',`<p>Ancla la convocatoria oficial a este cuaderno. Podrás abrirla desde la cabecera de tu oposición.</p><form id="bases-form" class="stack"><label class="field"><span>Enlace a las bases</span><input type="url" name="url" value="${esc(o.baseURL||'')}" placeholder="https://www.boe.es/..."></label><label class="field"><span>O adjunta las bases en PDF</span><input type="file" name="file" accept=".pdf,application/pdf"><small>${o.basePdf?'Hay un PDF anclado. El archivo nuevo lo sustituirá.':'El PDF quedará disponible sin conexión.'}</small></label>${o.basePdf?'<label class="checkline"><input type="checkbox" name="remove">Quitar el PDF anclado</label>':''}<button class="btn primary">${I('pin',14)}Guardar bases</button></form>`)}
   async function openBases(){const o=opp();if(o.basePdf){modal('Bases oficiales',`<div class="pdf-host document-body" data-asset="${esc(o.basePdf)}"><span class="loading"></span></div><div class="modal-actions">${btn('Cambiar bases','bases','pin','sm')}</div>`,true);await openPdfHost(o.basePdf)}else if(safeURL(o.baseURL))window.open(safeURL(o.baseURL),'_blank','noopener,noreferrer');else basesModal()}
+  function geminiSkillsModal() {
+    state.geminiSkills = state.geminiSkills || defaultGeminiSkills();
+    modal('✨ Mis Habilidades y Prompts de Gemini', `
+      <div class="stack" style="gap:14px">
+        <div class="notice" style="background:#eef6fc;border-color:#b8dbf7">
+          🤖 <strong>Personalización de Habilidades Gemini:</strong> Transfiere o personaliza aquí tus prompts e instrucciones de Gemini. El motor aplicará estas pautas para estructurar tus Resúmenes Anti-Paja, Esquemas de Pizarra y Cuadros Comparativos a partir de cualquier tema oficial o apunte que subas.
+        </div>
+        <form id="gemini-skills-form" class="stack" style="gap:14px">
+          <label class="field">
+            <span>🎯 1. Habilidad de Resumen Anti-Paja (Prompt del Sistema)</span>
+            <textarea name="summary" rows="5" required style="font-family:monospace;font-size:12px;line-height:1.5">${esc(state.geminiSkills.summary || '')}</textarea>
+            <small class="muted">Define cómo extraer ideas fuerza, artículos de cita obligatoria y preguntas trampa de examen.</small>
+          </label>
+          <label class="field">
+            <span>📋 2. Habilidad de Esquema de Pizarra / Clase (Novolex)</span>
+            <textarea name="scheme" rows="5" required style="font-family:monospace;font-size:12px;line-height:1.5">${esc(state.geminiSkills.scheme || '')}</textarea>
+            <small class="muted">Define cómo estructurar las ramas, destacar [PLAZO: ...], [TRAMPA: ...] y [MAYORÍA: ...].</small>
+          </label>
+          <label class="field">
+            <span>⚖️ 3. Habilidad de Cuadros y Tablas Comparativas</span>
+            <textarea name="tables" rows="5" required style="font-family:monospace;font-size:12px;line-height:1.5">${esc(state.geminiSkills.tables || '')}</textarea>
+            <small class="muted">Define la extracción de matrices de plazos, órganos competentes y cómputos temporales.</small>
+          </label>
+          <div class="modal-actions" style="margin-top:8px">
+            <button class="btn soft" type="button" data-act="restore-gemini-skills">↺ Restaurar predeterminados</button>
+            <button class="btn" type="button" onclick="closeModal()">Cancelar</button>
+            <button class="btn primary" type="submit">${I('sparkle', 14)} Guardar mis Habilidades Gemini</button>
+          </div>
+        </form>
+      </div>
+    `);
+  }
+
+  function restoreDefaultGeminiSkills() {
+    state.geminiSkills = defaultGeminiSkills();
+    save();
+    toast('Habilidades Gemini restauradas a los valores recomendados.');
+    geminiSkillsModal();
+  }
+
+  function aiSettings() {
+    modal('Ajustes de Inteligencia Artificial y Gemini', `
+      <div class="stack" style="gap:14px">
+        <p class="small muted">Configura el modelo y gestiona tus habilidades personalizadas para generar resúmenes, esquemas y casos prácticos.</p>
+        <div class="row wrap" style="gap:8px;margin-bottom:8px">
+          <button class="btn primary sm" type="button" data-act="gemini-skills">${I('sparkle', 12)} Configurar Habilidades Gemini</button>
+        </div>
+        <form id="ai-settings-form" class="stack" style="gap:12px">
+          <label class="field">
+            <span>Modelo predeterminado</span>
+            <input name="model" required value="${esc(state.model || 'gemini-1.5-flash')}">
+            <small class="muted">Ej. gemini-1.5-flash, gpt-4o-mini, gpt-4o</small>
+          </label>
+          <label class="field">
+            <span>Clave de API opcional (OpenAI o Google AI)</span>
+            <input name="key" type="password" autocomplete="off" placeholder="${apiKey ? '••••••••••••••••' : 'Pega tu clave si deseas usar llamadas directas'}" value="">
+            <small class="muted">${apiKey ? 'Clave activa en esta sesión de navegador.' : 'No requerida para usar el analizador local de oposiciones.'}</small>
+          </label>
+          <div class="modal-actions">
+            ${apiKey ? `<button class="btn soft" type="button" data-act="forget-key">Olvidar clave</button>` : ''}
+            <button class="btn" type="button" onclick="closeModal()">Cerrar</button>
+            <button class="btn primary" type="submit">Guardar ajustes</button>
+          </div>
+        </form>
+      </div>
+    `);
+  }
+
   const boeCache=new Map();
-  function bulletin(){return `<div class="page">${heading('Convocatorias oficiales e INAP','Consulta los boletines oficiales o añade la oposición de una amiga.',btn('Mis bases ancladas','bases','pin'),'Observatorio de convocatorias')}
+  function bulletin(){
+    const o = opp();
+    const isSS = /seguridad social|inss|tgss/i.test(o.name) || o.id.startsWith('ss-');
+    return `<div class="page">${heading('Convocatorias oficiales e INAP','Consulta los boletines oficiales, convocatorias de la Seguridad Social o añade la oposición de una amiga.',btn('Mis bases ancladas','bases','pin'),'Observatorio de convocatorias')}
 <div class="row wrap" style="gap:10px;margin-bottom:16px">
+  ${isSS ? `
+    <a class="btn primary sm" href="https://www.seg-social.es/wps/portal/wss/internet/InformacionUtil/44533" target="_blank" rel="noopener">🛡️ Convocatorias Oficiales Seguridad Social ${I('external',11)}</a>
+  ` : ''}
+  <a class="btn soft sm" href="https://www.boe.es/buscar/boe.php?campo%5B0%5D=TITULOS&dato%5B0%5D=${encodeURIComponent(o.name)}&accion=Buscar" target="_blank" rel="noopener">🔍 Buscar «${esc(o.short || o.name)}» en BOE ${I('external',11)}</a>
   <a class="btn soft sm" href="https://www.inap.es/procesos-selectivos" target="_blank" rel="noopener">🏛️ INAP (C1, A2, A1 Estado) ${I('external',11)}</a>
   <a class="btn soft sm" href="https://administracion.gob.es/pagFront/ofertasempleopublico/resultadosEmpleo.htm?tipoBusqueda=CONVOCATORIAS" target="_blank" rel="noopener">🌐 Buscador Oficial Empleo Público ${I('external',11)}</a>
   <a class="btn soft sm" href="https://www.boe.es/diario_boe/" target="_blank" rel="noopener">📜 BOE Diario ${I('external',11)}</a>
-  <button class="btn sm primary" data-act="new-opp">${I('plus',11)} Añadir otra oposición (para mí o una amiga)</button>
+  <button class="btn sm soft" data-act="paste-syllabus">${I('upload',11)} Pegar Convocatoria / Temario</button>
+  <button class="btn sm primary" data-act="new-opp">${I('plus',11)} Añadir otra oposición</button>
 </div>
-<div class="content-grid"><section class="surface workspace"><h2 class="panel-title">Buscar en sumarios oficiales</h2><form id="boe-form" class="stack"><label class="field"><span>Palabras clave</span><div class="search-line">${I('search',17)}<input name="query" placeholder="Ej. administrativo, gestión, hacienda..."></div></label><div class="form-grid"><label class="field"><span>Boletín oficial</span><select name="source" id="bulletin-source"><option value="boe">BOE · Estado</option><option value="bocm">BOCM · Madrid</option><option value="dog">DOG · Galicia</option><option value="boja">BOJA · Andalucía</option></select></label><label class="field"><span>Fecha del sumario</span><input type="date" name="date" required max="${dateKey()}" value="${dateKey()}"></label></div><button class="btn primary">${I('search',15)}Buscar en el boletín</button></form><div id="boe-results" style="margin-top:20px" aria-live="polite"><div class="notice">Busca en el sumario oficial del día elegido. Para consultar el archivo histórico, utiliza el buscador de la sede.</div></div></section><aside class="surface module-aside">${I('pin',25)}<h3>Tu convocatoria, a mano</h3><p>${esc(opp().name)}. Conserva la URL oficial o una copia de las bases en PDF junto a tu temario.</p><div class="stack" style="margin-top:17px">${btn('Consultar bases','open-bases','external')}${btn('Anclar URL o PDF','bases','pin')}</div><div class="divider"></div><p class="tiny">Las fechas y requisitos válidos son los publicados por el organismo convocante. Consulta siempre la versión oficial.</p></aside></div></div>`}
+<div class="content-grid"><section class="surface workspace"><h2 class="panel-title">Buscar en sumarios oficiales</h2><form id="boe-form" class="stack"><label class="field"><span>Palabras clave</span><div class="search-line">${I('search',17)}<input name="query" placeholder="Ej. administrativo, gestión, seguridad social..." value="${esc(o.name)}"></div></label><div class="form-grid"><label class="field"><span>Boletín oficial</span><select name="source" id="bulletin-source"><option value="boe">BOE · Estado</option><option value="bocm">BOCM · Madrid</option><option value="dog">DOG · Galicia</option><option value="boja">BOJA · Andalucía</option></select></label><label class="field"><span>Fecha del sumario</span><input type="date" name="date" required max="${dateKey()}" value="${dateKey()}"></label></div><button class="btn primary">${I('search',15)}Buscar en el boletín</button></form><div id="boe-results" style="margin-top:20px" aria-live="polite"><div class="notice">Busca en el sumario oficial del día elegido. Para consultar el archivo histórico de convocatorias, utiliza el enlace directo al BOE de arriba.</div></div></section><aside class="surface module-aside">${I('pin',25)}<h3>Tu convocatoria, a mano</h3><p>${esc(opp().name)}. Conserva la URL oficial o una copia de las bases en PDF junto a tu temario.</p><div class="stack" style="margin-top:17px">${btn('Consultar bases','open-bases','external')}${btn('Anclar URL o PDF','bases','pin')}${btn('Pegar Temario Oficial','paste-syllabus','upload')}</div><div class="divider"></div><p class="tiny">Las fechas y requisitos válidos son los publicados por el organismo convocante. Consulta siempre la versión oficial.</p></aside></div></div>`}
   async function searchBulletin(form){
     const fd=new FormData(form),src=String(fd.get('source')),date=String(fd.get('date')||dateKey()),query=String(fd.get('query')||'').trim(),res=$('#boe-results'),dt=date.replaceAll('-',''),terms=norm(query).split(/\s+/).filter(Boolean);
     const links={boe:'https://www.boe.es/buscar/boe.php?campo%5B0%5D=TITULOS&dato%5B0%5D='+encodeURIComponent(query)+'&accion=Buscar',bocm:'https://www.bocm.es/advanced-search',dog:'https://www.xunta.gal/diario-oficial-galicia/portalPublicoBusqueda.do?lang=es',boja:'https://www.juntadeandalucia.es/eboja/buscador/search.do?eboja=on&summary=on&q='+encodeURIComponent(query)+'&startDate='+date+'&endDate='+date};
@@ -4529,10 +4981,10 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
 
   function formatLeafContent(s) {
     let out = esc(s);
-    out = out.replace(/\[TRAMPA(?::\s*([^\]]+))?\]/gi, '<span class="badge-trampa">🔴 TRAMPA TRIBUNAL</span> $1');
-    out = out.replace(/\[MAYORÍA(?::\s*([^\]]+))?\]/gi, '<span class="badge-mayoria">🟣 MAYORÍA</span> $1');
-    out = out.replace(/\[PLAZO(?::\s*([^\]]+))?\]/gi, '<span class="badge-plazo">⏱️ PLAZO</span> $1');
-    out = out.replace(/\[LEY(?::\s*([^\]]+))?\]/gi, '<span class="badge-norma">📜 LEY ORGÁNICA</span> $1');
+    out = out.replace(/\[TRAMPA(?::\s*([^\]]+))?\]/gi, (m, g1) => '<span class="badge-trampa">🔴 TRAMPA TRIBUNAL</span> ' + (g1 ? '<strong>' + g1.trim() + '</strong>' : ''));
+    out = out.replace(/\[MAYORÍA(?::\s*([^\]]+))?\]/gi, (m, g1) => '<span class="badge-mayoria">🟣 MAYORÍA</span> ' + (g1 ? '<strong>' + g1.trim() + '</strong>' : ''));
+    out = out.replace(/\[PLAZO(?::\s*([^\]]+))?\]/gi, (m, g1) => '<span class="badge-plazo">⏱️ PLAZO</span> ' + (g1 ? '<strong>' + g1.trim() + '</strong>' : ''));
+    out = out.replace(/\[LEY(?::\s*([^\]]+))?\]/gi, (m, g1) => '<span class="badge-norma">📜 LEY APLICABLE</span> ' + (g1 ? '<strong>' + g1.trim() + '</strong>' : ''));
     return highlight(out);
   }
 
@@ -4659,6 +5111,13 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     if (isTopicRightsT2(t)) {
       return getTopicRightsT2Tree();
     }
+    if (isTopicSeguridadSocial(t)) {
+      if (!t.text || t.text.trim().length < 50) {
+        return getTopicSeguridadSocialTree(t);
+      }
+      const dyn = buildDynamicNovolexTree(t);
+      return dyn || getTopicSeguridadSocialTree(t);
+    }
 
     if (t && t.text && t.text.trim().length > 20) {
       return buildDynamicNovolexTree(t);
@@ -4764,6 +5223,86 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     };
   }
 
+  function getTopicSeguridadSocialTree(t) {
+    return {
+      title: (t && t.title) ? t.title : 'EL SISTEMA DE LA SEGURIDAD SOCIAL ESPAÑOLA (LGSS)',
+      metrics: 'RDL 8/2015 · Gestión, Afiliación, Cotización y Prestaciones',
+      tier1: [
+        {
+          name: 'RÉGIMEN CONSTITUCIONAL Y ENTIDADES GESTORAS',
+          category: 'PARTE I · ORGANIZACIÓN',
+          subbranches: [
+            {
+              name: 'Principios Rectores (Art. 41 CE)',
+              items: [
+                'Art. 41 CE: Los poderes públicos mantendrán un régimen público de Seguridad Social para todos los ciudadanos.',
+                '[LEY: GARANTÍA DE ASISTENCIA Y PRESTACIONES] Prestaciones sociales suficientes ante situaciones de necesidad, especialmente en caso de desempleo.',
+                '[TRAMPA: ASISTENCIA Y PRESTACIONES COMPLEMENTARIAS] El Art. 41 CE establece que las prestaciones complementarias serán libres (privadas/voluntarias).'
+              ]
+            },
+            {
+              name: 'Entidades Gestoras y Servicios Comunes (LGSS)',
+              items: [
+                'INSS: Entidad Gestora con personalidad jurídica para la gestión y reconocimiento de prestaciones económicas contributivas (Jubilación, IT, Viudedad, IMV).',
+                'TGSS: [TRAMPA: SERVICIO COMÚN TITULAR DEL PATRIMONIO ÚNICO] Competencia exclusiva en principio de Unidad de Caja, afiliación, altas/bajas y recaudación.',
+                'ISM: Entidad Gestora para la protección integral del Régimen Especial de Trabajadores del Mar.',
+                'Mutuas Colaboradoras: Asociaciones privadas de empresarios sin ánimo de lucro colaboradoras en contingencias profesionales e IT común.'
+              ]
+            }
+          ]
+        },
+        {
+          name: 'RELACIÓN JURÍDICA: AFILIACIÓN, ALTAS, BAJAS Y COTIZACIÓN',
+          category: 'PARTE II · GESTIÓN Y OBLIGACIONES',
+          subbranches: [
+            {
+              name: 'Inscripción y Afiliación (RD 84/1996)',
+              items: [
+                'Inscripción de Empresa: Acto administrativo preceptivo previo al inicio de actividades con trabajadores por cuenta ajena.',
+                'Afiliación del Trabajador: Acto administrativo único y vitalicio para toda la vida del trabajador en el sistema.',
+                '[PLAZO: ALTA DE TRABAJADORES PREVIA] Obligatoria y preceptiva con carácter previo al inicio de la actividad laboral (hasta con [PLAZO: 60 días naturales de antelación]).',
+                '[PLAZO: COMUNICACIÓN DE BAJAS Y VARIACIONES] En el plazo perentorio de [PLAZO: 3 días naturales] siguientes al cese laboral.',
+                '[TRAMPA: RESPONSABILIDAD SUBSIDIARIA / SOLIDARIA] Si no se cursa el alta previa, la empresa asume la responsabilidad total de las prestaciones causadas.'
+              ]
+            },
+            {
+              name: 'Obligación y Cómputo de la Cotización (Arts. 19-27 LGSS)',
+              items: [
+                'Nacimiento de la Obligación: Nace con el inicio de la prestación laboral y no se extingue por el cese efectivo si no se ha solicitado la baja en plazo.',
+                'Sujeto Responsable: El empresario descuenta la cuota obrera en la nómina e ingresa la cuota patronal y obrera ante la TGSS.',
+                '[PLAZO: PERÍODO VOLUNTARIO DE INGRESO] Hasta el [PLAZO: último día del mes natural siguiente] al de su devengo.',
+                '[TRAMPA: RECARGOS POR FALTA DE INGRESO] 10% si se presentan documentos de cotización en plazo; 20% si se ingresan sin transmitir o fuera de plazo voluntario.'
+              ]
+            }
+          ]
+        },
+        {
+          name: 'ACCIÓN PROTECTORA Y RÉGIMEN DE IMPUGNACIÓN',
+          category: 'PARTE III · PRESTACIONES Y RECURSOS',
+          subbranches: [
+            {
+              name: 'Prestaciones Contributivas (IT, Jubilación, Desempleo)',
+              items: [
+                'Incapacidad Temporal: Contingencia común (días 1-3: 0%; 4-20: 60%; 21+: 75%). Profesional: 75% desde el día siguiente. [TRAMPA: ¡Sin carencia en laboral!].',
+                '[PLAZO: DURACIÓN MÁXIMA DE IT] [PLAZO: 365 días] prorrogables excepcionalmente por otros [PLAZO: 180 días] por el INSS (máximo 545 días).',
+                'Nacimiento y Cuidado de Menor: [PLAZO: 16 semanas] con subsidio del 100% de la base reguladora.',
+                'Jubilación: Exige edad legal y período mínimo de cotización de 15 años (carencia genérica), con 2 años en los últimos 15 (carencia específica).'
+              ]
+            },
+            {
+              name: 'Procedimiento de Reclamación Previa (Art. 71 LRJS)',
+              items: [
+                '[PLAZO: RECLAMACIÓN PREVIA ADMINISTRATIVA] Plazo perentorio de [PLAZO: 30 días hábiles] ante la Entidad Gestora (INSS/TGSS) antes de acudir a los Juzgados de lo Social.',
+                '[PLAZO: PLAZO DE RESOLUCIÓN POR LA ENTIDAD] La entidad gestora dispone de [PLAZO: 45 días hábiles] para resolver (o 30 días en prestaciones de pago único).',
+                '[TRAMPA: SILENCIO ADMINISTRATIVO NEGATIVO] Transcurrido el plazo sin resolución expresa, la reclamación se entiende desestimada por silencio, abriéndose el plazo de 30 días para demandar ante el Juzgado de lo Social.'
+              ]
+            }
+          ]
+        }
+      ]
+    };
+  }
+
   function buildDynamicNovolexTree(t) {
     if (!t) return null;
     const raw = String(t.text || '').trim();
@@ -4853,77 +5392,147 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     };
   }
 
-  function generateBracketTreeHTML(t) {
+  let schemeViewMode = 'class'; // 'class' | 'brackets'
+
+  function generateSchemeHTML(t) {
     if (!t) return '';
     const tree = getNovolexTree(t);
     if (!tree) return '';
 
-    return `
-      <div class="bracket-tree-wrapper">
-        <div class="row between wrap" style="margin-bottom:14px;border-bottom:1px solid var(--line);padding-bottom:10px">
-          <div class="row small">
-            <span class="font-bold" style="color:var(--deep);font-size:14px">🌳 Cuadro Sinóptico de Llaves { } · Estilo Academia Novolex</span>
-            <span class="tag" style="background:#f0eef9;color:#553396;border-color:#d9d1f0">Estructura Jerárquica Multidimensional</span>
-          </div>
-          <div class="row" style="gap:6px">
-            <button class="btn sm soft" onclick="generateSelectedScheme()">${I('sparkle',12)} Esquema de texto seleccionado</button>
-            <button class="btn sm" onclick="window.print()">${I('download', 12)} Imprimir / PDF</button>
+    const toolbarHTML = `
+      <div class="row between wrap" style="margin-bottom:14px;border-bottom:1px solid var(--line);padding-bottom:10px;gap:8px">
+        <div class="row wrap" style="gap:6px">
+          <button class="btn sm ${schemeViewMode === 'class' ? 'primary' : 'soft'}" data-act="set-scheme-view" data-id="class">
+            📋 Esquema de Pizarra (Novolex)
+          </button>
+          <button class="btn sm ${schemeViewMode === 'brackets' ? 'primary' : 'soft'}" data-act="set-scheme-view" data-id="brackets">
+            🌳 Cuadro de Llaves { }
+          </button>
+          <button class="btn sm soft" data-act="gemini-skills" title="Configurar mis Habilidades y Prompts de Gemini">
+            ✨ Mis Habilidades Gemini
+          </button>
+        </div>
+        <div class="row wrap" style="gap:6px">
+          <button class="btn sm soft" onclick="generateSelectedScheme()">${I('sparkle',12)} Esquema de selección</button>
+          <button class="btn sm" onclick="window.print()">${I('download', 12)} Imprimir / PDF</button>
+        </div>
+      </div>
+    `;
+
+    if (schemeViewMode === 'brackets') {
+      return `
+        <div class="bracket-tree-wrapper">
+          ${toolbarHTML}
+          <div class="bracket-tree-container">
+            <!-- RAÍZ DEL ESQUEMA -->
+            <div class="bracket-root-card">
+              <div class="bracket-root-sub">OPOSICIÓN OFICIAL · ${opp().short || 'GACE A2'}</div>
+              <div class="bracket-root-title">${esc(tree.title)}</div>
+              <div class="bracket-root-badge">${esc(tree.metrics)}</div>
+            </div>
+
+            <!-- LLAVE PRINCIPAL ELÁSTICA -->
+            ${svgBrace()}
+
+            <!-- TIER 1 COLUMN (PARTES / BLOQUES) -->
+            <div class="bracket-tier1-col">
+              ${tree.tier1.map(t1 => `
+                <div class="bracket-tier1-row">
+                  <!-- TIER 1 CARD -->
+                  <div class="bracket-tier1-card">
+                    <span class="tier1-tag">${esc(t1.category)}</span>
+                    <span class="tier1-title">${esc(t1.name)}</span>
+                  </div>
+
+                  <!-- LLAVE TIER 2 -->
+                  ${svgBrace()}
+
+                  <!-- TIER 2 COLUMN (TÍTULOS / CAPÍTULOS) -->
+                  <div class="bracket-tier2-col">
+                    ${t1.subbranches.map(t2 => `
+                      <div class="bracket-tier2-row">
+                        <!-- TIER 2 CARD -->
+                        <div class="bracket-tier2-card">
+                          <span class="tier2-title">${esc(t2.name)}</span>
+                        </div>
+
+                        <!-- LLAVE TIER 3 -->
+                        ${svgBrace()}
+
+                        <!-- TIER 3 COLUMN (ARTÍCULOS / REGLAS / PLAZOS) -->
+                        <div class="bracket-tier3-col">
+                          ${t2.items.map(it => `
+                            <div class="bracket-tier3-leaf">
+                              ${formatLeafContent(it)}
+                            </div>
+                          `).join('')}
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
           </div>
         </div>
+      `;
+    }
 
-        <div class="bracket-tree-container">
-          <!-- RAÍZ DEL ESQUEMA -->
-          <div class="bracket-root-card">
-            <div class="bracket-root-sub">OPOSICIÓN OFICIAL · ${opp().short || 'GACE A2'}</div>
-            <div class="bracket-root-title">${esc(tree.title)}</div>
-            <div class="bracket-root-badge">${esc(tree.metrics)}</div>
+    return `
+      <div class="class-scheme-wrapper stack" style="gap:16px">
+        ${toolbarHTML}
+
+        <div class="class-scheme-header surface" style="padding:16px 20px;border:1.5px solid #d9d1f0;border-radius:12px;background:linear-gradient(135deg, #fdfbf7 0%, #f4f0fa 100%)">
+          <div class="row between wrap" style="gap:8px;margin-bottom:8px">
+            <span class="badge" style="background:#553396;color:#fff;font-weight:700;font-size:11px">ACADEMIA NOVOLEX · ESQUEMA DE CLASE SISTEMATIZADO</span>
+            <span class="tiny muted font-mono">${esc(tree.metrics)}</span>
           </div>
+          <h2 style="font-size:18px;margin:0 0 6px 0;color:#2b1b42;font-weight:800">${esc(tree.title)}</h2>
+          <p class="small muted" style="margin:0">Esquema estructurado en pizarra para estudio intensivo. Plazos, quórums y trampas frecuentes de tribunal calificador destacados con mnemotecnia visual.</p>
+        </div>
 
-          <!-- LLAVE PRINCIPAL ELÁSTICA -->
-          ${svgBrace()}
-
-          <!-- TIER 1 COLUMN (PARTES / BLOQUES) -->
-          <div class="bracket-tier1-col">
-            ${tree.tier1.map(t1 => `
-              <div class="bracket-tier1-row">
-                <!-- TIER 1 CARD -->
-                <div class="bracket-tier1-card">
-                  <span class="tier1-tag">${esc(t1.category)}</span>
-                  <span class="tier1-title">${esc(t1.name)}</span>
+        <div class="class-scheme-blocks stack" style="gap:16px">
+          ${tree.tier1.map((t1, t1Idx) => {
+            const colors = [
+              { border: '#75618e', bg: '#f9f6fc', title: '#46276b', tagBg: '#ebe3f6', tagColor: '#553396' },
+              { border: '#3182ce', bg: '#f2f7fc', title: '#23538a', tagBg: '#dbeafe', tagColor: '#1e40af' },
+              { border: '#b7791f', bg: '#fcf8ec', title: '#805315', tagBg: '#fef3c7', tagColor: '#92400e' }
+            ];
+            const theme = colors[t1Idx % colors.length];
+            return `
+              <div class="class-block-card surface" style="border:1.5px solid ${theme.border};border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.03)">
+                <div style="background:${theme.bg};padding:12px 18px;border-bottom:1px solid ${theme.border};display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+                  <div class="row" style="gap:10px">
+                    <span style="background:${theme.tagBg};color:${theme.tagColor};font-weight:700;font-size:11px;padding:3px 8px;border-radius:6px;letter-spacing:0.5px">${esc(t1.category)}</span>
+                    <strong style="color:${theme.title};font-size:15px;font-weight:800">${esc(t1.name)}</strong>
+                  </div>
+                  <span class="tiny muted font-mono">${t1.subbranches.length} divisiones de examen</span>
                 </div>
 
-                <!-- LLAVE TIER 2 -->
-                ${svgBrace()}
-
-                <!-- TIER 2 COLUMN (TÍTULOS / CAPÍTULOS) -->
-                <div class="bracket-tier2-col">
-                  ${t1.subbranches.map(t2 => `
-                    <div class="bracket-tier2-row">
-                      <!-- TIER 2 CARD -->
-                      <div class="bracket-tier2-card">
-                        <span class="tier2-title">${esc(t2.name)}</span>
-                      </div>
-
-                      <!-- LLAVE TIER 3 -->
-                      ${svgBrace()}
-
-                      <!-- TIER 3 COLUMN (ARTÍCULOS / REGLAS / PLAZOS) -->
-                      <div class="bracket-tier3-col">
-                        ${t2.items.map(it => `
-                          <div class="bracket-tier3-leaf">
-                            ${formatLeafContent(it)}
-                          </div>
+                <div class="class-block-body" style="padding:16px;display:grid;grid-template-columns:repeat(auto-fit, minmax(290px, 1fr));gap:14px">
+                  ${t1.subbranches.map(sub => `
+                    <div class="class-subbranch-card" style="background:#faf8f5;border:1px solid #ebd9c7;border-left:4px solid ${theme.border};border-radius:8px;padding:12px 14px">
+                      <h4 style="margin:0 0 10px 0;font-size:13.5px;color:#332924;font-weight:700;display:flex;align-items:center;gap:6px">
+                        <span>📌</span> ${esc(sub.name)}
+                      </h4>
+                      <ul style="margin:0;padding-left:18px;font-size:12.5px;line-height:1.65;color:#443e39;display:flex;flex-direction:column;gap:8px">
+                        ${sub.items.map(it => `
+                          <li>${formatLeafContent(it)}</li>
                         `).join('')}
-                      </div>
+                      </ul>
                     </div>
                   `).join('')}
                 </div>
               </div>
-            `).join('')}
-          </div>
+            `;
+          }).join('')}
         </div>
       </div>
     `;
+  }
+
+  function generateBracketTreeHTML(t) {
+    return generateSchemeHTML(t);
   }
 
   function generateSelectedScheme() {
@@ -5178,8 +5787,9 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     const tables = getTopicTables(t);
     const hasNotes = t.text && t.text.trim().length > 10;
     const isT2 = isTopicRightsT2(t);
+    const isSS = isTopicSeguridadSocial(t);
 
-    if (!tables.length || (!hasNotes && !isT2)) {
+    if (!tables.length || (!hasNotes && !isT2 && !isSS)) {
       return `
         <div class="empty-state surface" style="padding:32px 20px;border-radius:12px;border:1.5px dashed var(--line);text-align:center">
           <div style="font-size:38px;margin-bottom:12px">⚖️</div>
@@ -5363,7 +5973,7 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
     return `
       <div class="summary-container stack" style="gap:14px">
         <div class="notice row between" style="background:#fdf7e7;border-color:#f5e5ba;padding:12px 16px;border-radius:10px">
-          <span>🎯 <strong>Resumen Anti-Paja Dinámico · ${esc(t.title)}:</strong> Síntesis extraída directamente de tus apuntes con los datos y plazos de mayor probabilidad en el examen.</span>
+          <span>🎯 <strong>Resumen Anti-Paja ${isTopicSeguridadSocial(t) ? 'Oficial · Seguridad Social (RDL 8/2015)' : 'Dinámico'} · ${esc(t.title)}:</strong> Síntesis de alta fidelidad con los artículos, plazos y trampas más probables en el examen.</span>
           <button class="btn sm soft" data-act="regenerate-analysis" title="Reanalizar apuntes">${I('sparkle',12)} Actualizar</button>
         </div>
 
@@ -5445,7 +6055,60 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
       return getTopicRightsT2Summary();
     }
 
+    if (isTopicSeguridadSocial(t) && (!t.text || t.text.trim().length < 50)) {
+      return getTopicSeguridadSocialSummary(t);
+    }
+
     return buildDynamicExecutiveSummary(t);
+  }
+
+  function getTopicSeguridadSocialSummary(t) {
+    const title = (t && t.title) ? t.title : 'Seguridad Social';
+    return `
+      <div class="summary-container stack" style="gap:14px">
+        <div class="notice row between" style="background:#eef6fc;border-color:#b8dbf7;padding:12px 16px;border-radius:10px">
+          <span>🎯 <strong>Resumen Anti-Paja Oficial · Seguridad Social (RDL 8/2015 LGSS):</strong> Datos literales, plazos perentorios y trampas que siempre caen en los exámenes del INSS y TGSS.</span>
+        </div>
+
+        <div class="surface" style="padding:16px;border:1.5px solid #d9d1f0;border-radius:12px;">
+          <h4 style="margin:0 0 10px 0;color:var(--deep)">1. Ideas Fuerza de Examen (LGSS y Art. 41 CE)</h4>
+          <ul style="margin:0 0 16px 0;padding-left:20px;font-size:13px;line-height:1.7;color:#3b3534">
+            <li><strong>Mandato Constitucional (Art. 41 CE):</strong> Régimen público de Seguridad Social para todos los ciudadanos ante estados de necesidad, especialmente desempleo. Las prestaciones complementarias son libres.</li>
+            <li><strong>Principio de Unidad de Caja:</strong> La Tesorería General de la Seguridad Social (TGSS) es titular exclusiva de todos los bienes, derechos y recursos financieros del sistema. Ninguna otra entidad puede disponer de su patrimonio.</li>
+            <li><strong>Campo de Aplicación:</strong> Régimen General (trabajadores por cuenta ajena) y Regímenes Especiales (RETA trabajadores autónomos, Trabajadores del Mar, Minería del Carbón, Funcionarios Civiles -clases pasivas y mutualidades-).</li>
+            <li><strong>Obligación de Cotizar:</strong> Nace desde el inicio del trabajo efectivo. La cotización es indisponible: son nulos los pactos en que el trabajador asuma el pago de cuotas a cargo del empresario.</li>
+          </ul>
+
+          <h4 style="margin:16px 0 10px 0;color:var(--deep)">2. Artículos Clave y Plazos de Cita Obligatoria</h4>
+          <div class="stack" style="gap:8px">
+            <div style="background:#faf8f5;padding:9px 12px;border-radius:8px;border-left:3px solid #553396;">
+              <strong style="color:#514064">Art. 16 LGSS y RD 84/1996 (Altas y Bajas):</strong>
+              <span style="font-size:13px">Las altas de los trabajadores son <strong>preceptivas y previas</strong> al inicio de la relación laboral (hasta 60 días antes). Las bajas y variaciones de datos deben comunicarse en el plazo de <strong>3 días naturales</strong>.</span>
+            </div>
+            <div style="background:#faf8f5;padding:9px 12px;border-radius:8px;border-left:3px solid #553396;">
+              <strong style="color:#514064">Art. 56 LGSS y RD 1415/2004 (Plazo de Recaudación Voluntaria):</strong>
+              <span style="font-size:13px">El ingreso de las cuotas de la Seguridad Social en período voluntario debe realizarse <strong>hasta el último día del mes natural siguiente</strong> al de su devengo.</span>
+            </div>
+            <div style="background:#faf8f5;padding:9px 12px;border-radius:8px;border-left:3px solid #553396;">
+              <strong style="color:#514064">Art. 169 LGSS (Duración de la Incapacidad Temporal):</strong>
+              <span style="font-size:13px">Duración máxima de <strong>365 días</strong>, prorrogables expresamente por el INSS por otros <strong>180 días</strong> cuando se prevea la curación (límite máximo de 545 días). A los 365 días la competencia es exclusiva del INSS.</span>
+            </div>
+            <div style="background:#faf8f5;padding:9px 12px;border-radius:8px;border-left:3px solid #553396;">
+              <strong style="color:#514064">Art. 71 LRJS (Reclamación Previa Administrativa):</strong>
+              <span style="font-size:13px">Plazo de <strong>30 días hábiles</strong> para interponer la reclamación previa ante el INSS o TGSS. La administración tiene <strong>45 días hábiles</strong> para resolver; si no lo hace, opera el silencio negativo para acudir al Juzgado de lo Social.</span>
+            </div>
+          </div>
+
+          <h4 style="margin:18px 0 10px 0;color:#8c3c3c">3. Preguntas Trampa Frecuentes del Tribunal Calificador</h4>
+          <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.7;color:#443d39">
+            <li><strong>¿Quién reconoce las pensiones de incapacidad permanente y jubilación?</strong> El <strong>INSS</strong>, jamás la TGSS. La TGSS recauda e inscribe, pero no gestiona prestaciones contributivas sanitarias ni económicas ordinarias.</li>
+            <li><strong>¿El cómputo para la baja es en días hábiles o naturales?</strong> Son <strong>3 DÍAS NATURALES</strong>. Esta es una de las trampas más repetidas en exámenes tipo test.</li>
+            <li><strong>¿Se exige carencia previa en caso de accidente de trabajo o enfermedad profesional?</strong> <strong>NO</strong>. Para las contingencias profesionales rige el principio de automatismo de las prestaciones sin período previo de carencia cotizada.</li>
+            <li><strong>¿Qué efecto tiene un alta comunicada el mismo día pero horas después del inicio del trabajo?</strong> Es extemporánea y no surte efectos retroactivos; la empresa responde de los accidentes ocurridos antes del momento del alta.</li>
+          </ul>
+        </div>
+      </div>
+    `;
   }
 
   function matchTopicForFile(filename) {
@@ -5683,6 +6346,26 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
       case 'flip-card':flashFlipped=true;renderRoute(false);break;
       case 'rate-card':rateCard(id);break;
       case 'new-card':newCard();break;
+      case 'gemini-skills':geminiSkillsModal();break;
+      case 'restore-gemini-skills':restoreDefaultGeminiSkills();break;
+      case 'set-scheme-view':schemeViewMode=id||'class';renderRoute(false);break;
+      case 'switch-to-ss-c1':{
+        const found=state.opps.find(o=>o.id==='ss-c1'||/seguridad\s+social/i.test(o.name));
+        if(found){
+          state.active=found.id;
+        }else{
+          const newSS=makeTemplateSeguridadSocialC1();
+          state.opps.push(newSS);
+          state.active=newSS.id;
+        }
+        resetContext();
+        save();
+        closeModal();
+        go('library');
+        toast('¡Oposición activa: Seguridad Social C1 (36 temas)!');
+        petReact(true);
+        break;
+      }
       case 'ai-settings':aiSettings();break;
       case 'forget-key':apiKey='';closeModal();toast('Clave eliminada de esta sesión.');break;
       case 'ai-questions':aiModal('questions');break;
@@ -5731,8 +6414,15 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
         case 'new-opp-form':{
           const f=fd.get('syllabusFile');if(f?.size>3*1024*1024)throw Error('La lista de temas debe ocupar menos de 3 MB.');const raw=f?.size?await f.text():String(fd.get('topics')||'');
           const tmpl = fd.get('template');
+          const nameInput = String(fd.get('name')).trim();
           let o;
-          if(tmpl==='gace'&&!raw.trim()){
+          if ((tmpl === 'ss-c1' || /seguridad\s+social|inss|tgss/i.test(nameInput)) && !raw.trim()) {
+            o = makeTemplateSeguridadSocialC1();
+            o.id = uid();
+          } else if(tmpl==='c2'&&!raw.trim()){
+            o = makeTemplateAuxiliarC2();
+            o.id = uid();
+          } else if(tmpl==='gace'&&!raw.trim()){
             o=makeTemplateGACE();
             o.id=uid();
           } else if(tmpl==='c1'&&!raw.trim()){
@@ -5743,7 +6433,7 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
             o={blocks:parsed.blocks,topics:parsed.topics,template:false,questions:[],cards:[],baseURL:'',basePdf:'',lastTopic:parsed.topics[0]?.id||''};
           }
           o.id=o.id||uid();
-          o.name=String(fd.get('name')).trim();
+          o.name=nameInput;
           if(!o.name)throw Error('Escribe el nombre de la oposición.');
           o.group=String(fd.get('group'));
           o.short=String(fd.get('short')||'').trim()||o.group;
@@ -5752,8 +6442,21 @@ Por Ley Orgánica para investigaciones de bandas armadas o elementos terroristas
           resetContext();
           save();
           closeModal();
-          go('home');
-          toast('¡Oposición «'+o.name+'» lista con '+o.topics.length+' temas!');
+          go('library');
+          toast('¡Oposición «'+o.name+'» lista con '+o.topics.length+' temas oficiales!');
+          petReact(true);
+          break;
+        }
+        case 'gemini-skills-form':{
+          state.geminiSkills = {
+            summary: String(fd.get('summary') || '').trim(),
+            scheme: String(fd.get('scheme') || '').trim(),
+            tables: String(fd.get('tables') || '').trim()
+          };
+          save();
+          closeModal();
+          renderRoute(false);
+          toast('¡Habilidades y Prompts de Gemini guardados y aplicados!');
           petReact(true);
           break;
         }
