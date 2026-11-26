@@ -4449,9 +4449,9 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
     toast('Enlace de tu Gema guardado correctamente.');
   }
 
-  async function connectAndLaunchGemini(topicId, type) {
+  function buildTopicGeminiPrompt(topicId, type) {
     const t = topic(topicId);
-    if (!t) return toast('Tema no encontrado.');
+    if (!t) return '';
     const isSummary = type === 'summary';
     const systemPrompt = isSummary ? (state.geminiSkills?.summary || '') : (state.geminiSkills?.scheme || '');
     const raw = String(t.text || '').trim();
@@ -4459,15 +4459,48 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
     const textToInclude = raw || (`Materia oficial: ${info.law}
 Concepto clave: ${info.def}
 Artículos de examen: ${info.articles.join(' | ')}`);
-    const fullPrompt = `${systemPrompt}
 
-=========================
-DOCUMENTO ORIGINAL DEL TEMA:
+    if (isSummary) {
+      return `ORDEN PRINCIPAL PARA GEMINI:
+Actúa como un preparador experto de oposiciones. Transforma de inmediato el tema oficial que te adjunto en formato de APUNTES OPOSICIONES PASTEL, siguiendo rigurosamente todas las instrucciones y reglas visuales que te indico a continuación:
+
+${systemPrompt}
+
+=======================================================
+DOCUMENTO OFICIAL DEL TEMA A TRANSFORMAR:
 Título: ${t.title}
 Oposición: ${opp().name}
-=========================
+=======================================================
 
-${textToInclude}`;
+${textToInclude}
+
+=======================================================
+INSTRUCCIÓN FINAL:
+Genera ahora el resultado completo aplicando al 100% las especificaciones anteriores (código semántico de 6 colores pastel: Verde para leyes/artículos, Lila para principios, Naranja para procesos, Azul para órganos/personas, Rosa para subprocesos/plazos detonantes y Amarillo para destacados; tablas claras y dibujillos de libreta en boceto). Conserva íntegro el 100% del temario sin omitir artículos ni plazos.`;
+    } else {
+      return `ORDEN PRINCIPAL PARA GEMINI:
+Actúa como un preparador experto de oposiciones. Genera un ESQUEMA ULTRACOMPACTO DE REPASO RÁPIDO PARA EXAMEN de MÁXIMO 2 PÁGINAS A4 a partir del tema que te adjunto, siguiendo rigurosamente las instrucciones y reglas que te indico a continuación:
+
+${systemPrompt}
+
+=======================================================
+DOCUMENTO OFICIAL DEL TEMA A CONDENSAR:
+Título: ${t.title}
+Oposición: ${opp().name}
+=======================================================
+
+${textToInclude}
+
+=======================================================
+INSTRUCCIÓN FINAL:
+Genera ahora el esquema de repaso que quepa estrictamente en un MÁXIMO DE 2 PÁGINAS A4, preservando todos los plazos, artículos, mayorías, órganos y excepciones clave para examen tipo test, con los subrayados en 7 tonos pastel y tablas compactas.`;
+    }
+  }
+
+  async function connectAndLaunchGemini(topicId, type) {
+    const t = topic(topicId);
+    if (!t) return toast('Tema no encontrado.');
+    const fullPrompt = buildTopicGeminiPrompt(topicId, type);
 
     try {
       await navigator.clipboard.writeText(fullPrompt);
@@ -4488,7 +4521,7 @@ ${textToInclude}`;
     if (badge) {
       badge.style.display = 'inline-block';
     }
-    toast('📋 ¡Tema copiado! Pega con Ctrl+V en tu Gemini y dale a Enviar.');
+    toast('📋 ¡Tema e instrucciones copiados! Pega con Ctrl+V en Gemini.');
   }
 
   async function pullGeminiResult(topicId, type) {
@@ -4584,18 +4617,25 @@ ${textToInclude}`;
 
     modal(`✨ Conectar con mi Gemini · ${esc(skillTitle)}`, `
       <div class="stack" style="gap:16px">
-        <p class="small muted" style="margin:0">
-          Usa tu propia cuenta personal de Google Gemini directamente, <strong>sin claves de API ni configuraciones técnicas</strong>:
-        </p>
+        <!-- AVISO DE COMPATIBILIDAD TOTAL PARA AMIGAS -->
+        <div class="surface" style="padding:14px 16px;border:1.5px solid #c4b5fd;border-radius:12px;background:#f5f3ff">
+          <div class="row" style="gap:8px;align-items:center;color:#5b21b6">
+            <span style="font-size:18px">👭</span>
+            <strong style="font-size:13.5px">¡Totalmente compatible para ti y tus amigas!</strong>
+          </div>
+          <p class="small muted" style="margin:6px 0 0;line-height:1.5">
+            Tus amigas <strong>NO necesitan tener creada ninguna habilidad previa ni configurar nada</strong> en su cuenta de Google. Al pulsar el botón de abajo, la web copia automáticamente <strong>toda la orden y las normas de estilo completas</strong> junto con el temario. Cualquier persona con una cuenta normal de Google solo tiene que pulsar «Abrir en mi Gemini», pegar con <strong>Ctrl+V</strong> y darle a Enviar.
+          </p>
+        </div>
 
         <!-- PASO 1: CONECTAR Y ABRIR GEMINI -->
         <div class="surface" style="padding:16px;border:2px solid #d8b4fe;border-radius:12px;background:#faf5ff">
           <div class="row" style="gap:8px;margin-bottom:8px;align-items:center">
             <span style="background:#7e22ce;color:#fff;border-radius:50%;width:24px;height:24px;display:grid;place-items:center;font-weight:700;font-size:12px">1</span>
-            <strong style="color:#581c87;font-size:13.5px">Paso 1: Abrir tu Gemini con este tema preparado</strong>
+            <strong style="color:#581c87;font-size:13.5px">Paso 1: Abrir Gemini con el tema e instrucciones preparados</strong>
           </div>
           <p class="tiny muted" style="margin:0 0 12px 32px">
-            Al pulsar el botón, copiamos automáticamente el tema con las instrucciones exactas de tu habilidad y abrimos tu Gemini:
+            Copia automáticamente el tema junto a todas las reglas de formato (código de colores pastel, límites y tablas) y abre Gemini:
           </p>
           <div style="padding-left:32px;display:flex;align-items:center;flex-wrap:wrap;gap:10px">
             <button class="btn primary" onclick="connectAndLaunchGemini('${esc(t.id)}', '${esc(type)}')" style="font-size:13px;padding:9px 18px;display:inline-flex;align-items:center;gap:8px">
@@ -4614,7 +4654,7 @@ ${textToInclude}`;
             <strong style="color:#065f46;font-size:13.5px">Paso 2: Traer la respuesta a tu Cuaderno</strong>
           </div>
           <p class="tiny muted" style="margin:0 0 12px 32px">
-            Cuando Gemini termine, copia su respuesta (con el botón de copiar de Gemini o seleccionando) y pulsa aquí:
+            Cuando Gemini termine, copia su respuesta y pulsa aquí (la aplicación lo recoge y monta los apuntes al momento):
           </p>
           <div class="stack" style="gap:10px;padding-left:32px">
             <button class="btn primary" onclick="pullGeminiResult('${esc(t.id)}', '${esc(type)}')" style="background:#059669;border-color:#059669;font-size:13px;padding:9px 18px;display:inline-flex;align-items:center;gap:8px;align-self:flex-start">
@@ -4622,7 +4662,7 @@ ${textToInclude}`;
             </button>
             
             <div id="bridge-manual-fallback" style="display:none;margin-top:6px" class="stack">
-              <span class="tiny muted">O pega manualmente el texto aquí:</span>
+              <span class="tiny muted">O pega manualmente el texto aquí si el navegador lo solicita:</span>
               <textarea id="bridge-paste-input" rows="4" placeholder="Pega aquí la respuesta de Gemini..." style="width:100%;font-size:12px;padding:8px;border-radius:6px;border:1px solid #ccc;font-family:inherit"></textarea>
               <button class="btn sm primary" onclick="applyBridgeManualPaste('${esc(t.id)}', '${esc(type)}')" style="align-self:flex-start;background:#059669;border-color:#059669;margin-top:4px">
                 💾 Guardar en mi Cuaderno
@@ -4634,11 +4674,11 @@ ${textToInclude}`;
         <!-- VINCULAR GEMA PERSONALIZADA -->
         <details style="border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff">
           <summary style="font-weight:600;font-size:12px;cursor:pointer;color:#6b21a8">
-            💎 ¿Tienes creada una Gema en tu Gemini? (Opcional)
+            💎 ¿Tienes creada una Gema en tu Gemini? (Opcional para usuarias avanzadas)
           </summary>
           <div class="stack" style="gap:8px;margin-top:10px">
             <p class="tiny muted" style="margin:0">
-              Si has creado una Gema en tu cuenta de Gemini para «<strong>${esc(skillTitle)}</strong>», puedes pegar aquí su dirección web (ej: <code>https://gemini.google.com/gems/...</code>) para que el botón de arriba abra directamente tu Gema personalizada:
+              Si has guardado una Gema en tu cuenta personal de Gemini con el nombre «<strong>${esc(skillTitle)}</strong>», puedes poner aquí su dirección web (ej: <code>https://gemini.google.com/gems/...</code>) para abrirla directamente. Si no tienes nada creado, déjalo en blanco y funcionará igual de bien.
             </p>
             <div class="row wrap" style="gap:8px">
               <input type="url" id="custom-gem-url-input" placeholder="https://gemini.google.com/gems/..." value="${esc(isCustom ? targetUrl : '')}" style="flex:1;min-width:220px;font-size:12px;padding:6px 10px;border:1px solid #ccc;border-radius:6px">
@@ -4652,6 +4692,7 @@ ${textToInclude}`;
     `, true);
   }
 
+  window.buildTopicGeminiPrompt = buildTopicGeminiPrompt;
   window.getGeminiTargetUrl = getGeminiTargetUrl;
   window.saveCustomGemUrl = saveCustomGemUrl;
   window.connectAndLaunchGemini = connectAndLaunchGemini;
