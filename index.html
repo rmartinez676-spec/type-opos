@@ -1962,7 +1962,7 @@
   const navLink=(page,ico,label)=>`<button data-go="${page}">${I(ico)}${label}</button>`;
   function streak(){let n=0;for(let j=0;j<365;j++){if((state.days[dateKey(relDay(-j))]||0)>0)n++;else if(j>0||!state.days[dateKey(relDay(-1))])break}return n}
   function header(){
-    const practicing=['tests','cases','flash','quiz'].includes(currentPage);
+    const practicing=['practice','tests','cases','flash','quiz'].includes(currentPage);
     const o = opp();
     $('#header').innerHTML=`<div class="nav-shell">
       <button class="brand" data-go="home" aria-label="Mi Cuaderno de Oposiciones, mi escritorio">
@@ -1984,9 +1984,7 @@
       <nav class="main-nav" aria-label="Navegación principal">
         <button class="nav-item ${currentPage==='home'?'active':''}" data-go="home">${I('grid',16)}Escritorio</button>
         <button class="nav-item ${['library','reader','schemes'].includes(currentPage)?'active':''}" data-go="library">${I('book',17)}Mi temario</button>
-        <span class="menu-anchor">
-          <button class="nav-item ${practicing?'active':''}" data-act="practice-menu" aria-expanded="false">${I('pen',16)}Práctica ${I('down',12)}</button>
-        </span>
+        <button class="nav-item ${practicing?'active':''}" data-go="practice">${I('pen',16)}Práctica</button>
         <button class="nav-item ${['arcade','game'].includes(currentPage)?'active':''}" data-go="arcade">${I('game',18)}OpoArcade</button>
         <button class="nav-item ${currentPage==='boe'?'active':''}" data-go="boe">${I('search',16)}Convocatorias</button>
       </nav>
@@ -4682,7 +4680,7 @@
         .map(([,v]) => v.question);
     }
 
-    let qs = [...(o.template ? bank : []), ...(o.questions || [])].filter(q => ids.has(q.t));
+    let qs = [...(o.questions || [])].filter(q => ids.has(q.t));
 
     // Dynamic generation from all syllabus topics in scope
     for (const t of ts) {
@@ -4691,6 +4689,16 @@
       if (t.text) {
         qs.push(...clozeQuestions(t));
       }
+    }
+
+    // Include official questions from bank for broad scopes or when syllabus pool needs enrichment
+    if (scope === 'all' || qs.length < count) {
+      const bankMapped = bank.map((q, idx) => ({
+        ...q,
+        id: 'bm-' + idx,
+        t: ts[idx % ts.length]?.id || q.t
+      }));
+      qs.push(...bankMapped);
     }
 
     // Deduplicate by question text
@@ -5573,11 +5581,274 @@
     showQuick();
   }
   function showQuick(){const q=quickQ,done=q.answered!==null;modal('Pregunta rápida de '+state.pet.name,`<div class="row" style="margin-bottom:13px"><span class="tag">Recuerdo activo</span><span class="tiny muted">${esc(state.pet.personality)}</span></div><h3 class="question-title" style="font-size:20px">${esc(q.q)}</h3><div class="answer-list">${q.a.map((a,i)=>`<button class="answer ${done&&i===q.c?'right':done&&i===q.answered?'wrong':''}" data-act="quick-answer" data-id="${i}" ${done?'disabled':''}><span class="letter">${'ABCD'[i]}</span>${esc(a)}</button>`).join('')}</div>${done?`<div class="feedback ${q.answered===q.c?'good':'bad'}"><b>${esc(petLine(q.answered===q.c?'good':'bad'))}</b><br>${esc(q.why)}<br>${sourceLink(q)}</div><div class="modal-actions">${btn('Terminar','close')}${btn('Otra pregunta','quick','refresh','primary')}</div>`:''}`)}
-  const legalWords=[['AUDIENCIA','Trámite que permite a la persona interesada formular alegaciones antes de la resolución.'],['BOLETÍN','Publicación periódica oficial en la que se insertan disposiciones y anuncios.'],['CONSTITUCIÓN','Norma suprema del ordenamiento jurídico español.'],['DECRETO','Disposición que, en el ámbito del Gobierno, adopta la forma de real decreto.'],['EXPEDIENTE','Conjunto ordenado de documentos y actuaciones que sirven de antecedente y fundamento a la resolución.'],['FUNCIONARIO','Empleado público vinculado por una relación estatutaria de Derecho administrativo.'],['GOBIERNO','Órgano que dirige la política interior y exterior y ejerce la función ejecutiva.'],['HÁBIL','Calificativo del día que cuenta para un plazo administrativo, frente a inhábil.'],['INVESTIDURA','Procedimiento por el que el Congreso otorga su confianza a un candidato a la Presidencia del Gobierno.'],['JURISDICCIÓN','Potestad de juzgar y hacer ejecutar lo juzgado.'],['KILOGRAMO','Unidad básica de masa del Sistema Internacional utilizada en la metrología legal.'],['LEY','Norma aprobada por un parlamento siguiendo el procedimiento legislativo.'],['MAYORÍA','Número de votos necesario para adoptar una decisión, que puede ser simple o absoluta.'],['NOTIFICACIÓN','Comunicación formal de una resolución o acto administrativo a una persona interesada.'],['DAÑO','Perjuicio cuya reparación puede reclamarse al exigir responsabilidad patrimonial.'],['ÓRGANO','Unidad administrativa a la que se atribuyen funciones con efectos jurídicos frente a terceros.'],['PRESUPUESTO','Expresión cifrada, conjunta y sistemática de derechos y obligaciones de carácter económico.'],['QUÓRUM','Número mínimo de integrantes necesario para la válida constitución o decisión de un órgano colegiado.'],['RECURSO','Medio de impugnación de un acto o resolución.'],['SILENCIO','Efecto jurídico de no resolver y notificar dentro del plazo, que puede ser estimatorio o desestimatorio.'],['TRIBUNAL','Órgano que puede ejercer jurisdicción o, cuando es calificador, evaluar una oposición.'],['UNANIMIDAD','Acuerdo adoptado con el voto favorable de todos.'],['VETO','Oposición que el Senado puede formular a un proyecto de ley conforme al artículo 90 de la Constitución.'],['WEB','Medio de publicación digital en el que se alojan portales institucionales.'],['EXPROPIACIÓN','Privación singular de bienes o derechos por causa de utilidad pública o interés social y con indemnización.'],['AYUNTAMIENTO','Órgano de gobierno y administración del municipio compuesto por alcalde y concejales.'],['ALZADA','Recurso que resuelve el superior jerárquico del órgano que dictó el acto.']];
-  const alphabet='ABCDEFGHIJKLMNÑOPQRSTUVWXYZ';
-  const wordKey=s=>String(s||'').toUpperCase().normalize('NFD').replace(/N\u0303/g,'Ñ').replace(/[\u0300-\u036f]/g,'').replace(/[^A-ZÑ]/g,'');
+  const legalWordsBank = {
+    A: [
+      ['ACTO', 'Declaración de voluntad, juicio, conocimiento o deseo realizada por la Administración en ejercicio de una potestad administrativa.'],
+      ['ALZADA', 'Recurso administrativo ordinario preceptivo ante el superior jerárquico frente a actos que no ponen fin a la vía administrativa.'],
+      ['AUDIENCIA', 'Trámite preceptivo que permite a la persona interesada examinar el expediente y formular alegaciones antes de la resolución.'],
+      ['AVOCACIÓN', 'Decisión motivada por la que un órgano superior asume el conocimiento de un asunto atribuido a un órgano inferior.'],
+      ['AFILIACIÓN', 'Acto administrativo por el que la Tesorería General incorpora por primera vez al sistema de Seguridad Social a una persona física.'],
+      ['ANULABILIDAD', 'Invalidez de un acto administrativo por incurrir en cualquier infracción del ordenamiento jurídico, convalidable y prescriptible.']
+    ],
+    B: [
+      ['BOLETÍN', 'Publicación periódica oficial donde se insertan disposiciones, resoluciones y anuncios para su publicidad formal y eficacia.'],
+      ['BAJA', 'Comunicación oficial de cese de actividad laboral que debe notificarse a la TGSS dentro de los tres días naturales siguientes.'],
+      ['BASE', 'Magnitud dineraria sobre la que se aplica el tipo impositivo o de cotización para determinar la cuota tributaria o de Seguridad Social.'],
+      ['BONIFICACIÓN', 'Reducción en la cuota de la Seguridad Social o en un tributo con fines de fomento del empleo o de interés social.']
+    ],
+    C: [
+      ['CONSTITUCIÓN', 'Norma suprema del ordenamiento jurídico español de 1978 a la que están sujetos los ciudadanos y todos los poderes públicos.'],
+      ['CADUCIDAD', 'Modo de terminación del procedimiento iniciado a solicitud del interesado tras paralización de tres meses imputable al mismo.'],
+      ['COMPETENCIA', 'Conjunto de funciones y potestades atribuidas por ley a un órgano administrativo con carácter irrenunciable.'],
+      ['CONTRATO', 'Acuerdo de voluntades oneroso celebrado por una entidad del sector público con arreglo a la Ley 9/2017 (LCSP).'],
+      ['COTIZACIÓN', 'Obligación periódica impuesta a empresarios y trabajadores para financiar el sistema público protector de la Seguridad Social.']
+    ],
+    D: [
+      ['DECRETO', 'Disposición reglamentaria de carácter general aprobada por el Consejo de Ministros y expedida formalmente por el Rey.'],
+      ['DELEGACIÓN', 'Mecanismo por el que un órgano administrativo transfiere el ejercicio de una competencia propia a otro órgano, sin perder su titularidad.'],
+      ['DESISTIMIENTO', 'Declaración por la que la persona interesada renuncia a la tramitación de su solicitud, obligando a dictar resolución expresa.'],
+      ['DICTAMEN', 'Opinión técnica o jurídica emitida por un órgano consultivo, como el Consejo de Estado o la Abogacía del Estado.']
+    ],
+    E: [
+      ['EXPEDIENTE', 'Conjunto ordenado de documentos, pruebas, dictámenes y actuaciones electrónicas que fundamentan una resolución administrativa.'],
+      ['EXPROPIACIÓN', 'Privación singular de la propiedad privada o derechos patrimoniales legítimos por causa de utilidad pública e indemnización de justo precio.'],
+      ['EJECUTIVIDAD', 'Cualidad del acto administrativo de producir efectos inmediatos desde su notificación o publicación válida.'],
+      ['EXCEDENCIA', 'Situación administrativa del funcionario público que cesa temporalmente en el servicio activo por cuidado familiar, interés particular, etc.']
+    ],
+    F: [
+      ['FUNCIONARIO', 'Empleado público vinculado a la Administración por una relación estatutaria regulada por el Derecho administrativo.'],
+      ['FISCALIZACIÓN', 'Función de control de legalidad del gasto público ejercida con carácter previo por la Intervención General del Estado.'],
+      ['FIANZA', 'Garantía preceptiva en la contratación pública (garantía definitiva del 5% del precio de adjudicación excluido el IVA).'],
+      ['FALTA', 'Infracción disciplinaria tipificada cometida por un empleado público, clasificada legalmente en muy grave, grave o leve.']
+    ],
+    G: [
+      ['GOBIERNO', 'Órgano constitucional colegiado que dirige la política interior y exterior, la administración civil y militar y la defensa del Estado.'],
+      ['GARANTÍA', 'Instrumento jurídico o depósito económico que asegura el fiel cumplimiento de una obligación frente a la Administración Pública.'],
+      ['GASTO', 'Compromiso económico asumido por la Hacienda Pública con cargo a los créditos presupuestarios aprobados en la Ley de Presupuestos.']
+    ],
+    H: [
+      ['HÁBIL', 'Calificativo del día que cuenta en los plazos administrativos, excluyendo del cómputo sábados, domingos y festivos declarados.'],
+      ['HABERES', 'Retribuciones básicas y complementarias que percibe el personal al servicio de las Administraciones Públicas.'],
+      ['HACIENDA', 'Conjunto de bienes, derechos y obligaciones de titularidad estatal y administración tributaria del erario público.'],
+      ['HUELGA', 'Derecho fundamental reconocido en el artículo 28.2 CE, con mantenimiento inexcusable de los servicios esenciales de la comunidad.']
+    ],
+    I: [
+      ['INVESTIDURA', 'Procedimiento constitucional por el que el Congreso de los Diputados otorga la confianza al candidato a la Presidencia del Gobierno.'],
+      ['INTERESADO', 'Persona que promueve el procedimiento como titular de derechos o cuyos intereses legítimos pueden verse afectados directamente.'],
+      ['INVALIDEZ', 'Defecto legal que vicia un acto administrativo, determinando su nulidad de pleno derecho o su anulabilidad.'],
+      ['INCOMPATIBILIDAD', 'Prohibición legal que impide al empleado público ejercer simultáneamente una segunda actividad pública o privada remunerada.']
+    ],
+    J: [
+      ['JURISDICCIÓN', 'Potestad de juzgar y hacer ejecutar lo juzgado atribuida con exclusividad constitucional a los Juzgados y Tribunales.'],
+      ['JUBILACIÓN', 'Pensión contributiva de la Seguridad Social que compensa la pérdida de ingresos tras alcanzar la edad legal de retiro y cotización mínima.'],
+      ['JERARQUÍA', 'Principio estructural que ordena los órganos de la Administración y las normas según su rango de subordinación.']
+    ],
+    K: [
+      ['KILOGRAMO', 'Unidad básica de masa del Sistema Internacional adoptada por la legislación metrológica oficial española.'],
+      ['KILOMETRAJE', 'Indemnización por razón de servicio percibida por el empleado público por el uso reglamentario de vehículo particular.']
+    ],
+    L: [
+      ['LEY', 'Norma emanada de las Cortes Generales o Parlamentos Autonómicos siguiendo el procedimiento legislativo solemne.'],
+      ['LICITACIÓN', 'Fase concursal y competitiva de un contrato público donde los candidatos presentan sus ofertas económicas y técnicas.'],
+      ['LEGALIDAD', 'Principio constitucional por el que la Administración actúa con sometimiento pleno a la ley y al Derecho (art. 103.1 CE).'],
+      ['LIQUIDACIÓN', 'Acto administrativo formal por el que se cuantifica y fija el importe exacto de una deuda tributaria o cuota exigible.']
+    ],
+    M: [
+      ['MAYORÍA', 'Número de votos exigido para la aprobación de un acuerdo (mayoría simple, absoluta o cualificada de 3/5 o 2/3).'],
+      ['MINISTERIO', 'Departamento superior de la Administración General del Estado que gestiona uno o varios sectores de actividad homogéneos.'],
+      ['MOTIVACIÓN', 'Expresión sucinta de los hechos y fundamentos de derecho exigida en actos reglados por el artículo 35 de la Ley 39/2015.'],
+      ['MOCIÓN', 'Iniciativa parlamentaria para exigir responsabilidad política al Gobierno (moción de censura constructiva del art. 113 CE).']
+    ],
+    N: [
+      ['NOTIFICACIÓN', 'Comunicación formal individualizada preceptiva del acto administrativo para desplegar su eficacia frente a la persona interesada.'],
+      ['NULIDAD', 'Sanción máxima del ordenamiento que priva de eficacia al acto administrativo de forma radical, originaria e insanable (art. 47 LPAC).'],
+      ['NOMBRAMIENTO', 'Acto formal que confiere la condición definitiva de funcionario de carrera tras superar el proceso selectivo y tomar posesión.'],
+      ['NORMA', 'Regla de conducta jurídica obligatoria emanada de la autoridad pública investida de potestad normativa legítima.']
+    ],
+    Ñ: [
+      ['DAÑO', 'Perjuicio efectivo, evaluable económicamente e individualizado indispensable para exigir responsabilidad patrimonial a la Administración.'],
+      ['AÑO', 'Periodo natural de 365 días que delimita el ejercicio presupuestario y el cómputo de plazos temporales anuales.'],
+      ['SEÑAL', 'Anticipo o fianza exigida en determinados contratos públicos para asegurar el mantenimiento de una proposición económica.']
+    ],
+    O: [
+      ['ÓRGANO', 'Unidad administrativa a la que se atribuyen funciones que tienen efectos jurídicos frente a terceros o de consulta preceptiva.'],
+      ['OBLIGACIÓN', 'Vínculo jurídico que impone a la Administración o al administrado el deber de dar, hacer o abstenerse de hacer alguna cosa.'],
+      ['OFICIO', 'Forma de iniciación del procedimiento administrativo acordada por el órgano competente, por orden superior o por denuncia.'],
+      ['ORDENANZA', 'Disposición reglamentaria de carácter general dictada por los municipios y provincias en ejercicio de su potestad reglamentaria local.']
+    ],
+    P: [
+      ['PRESUPUESTO', 'Expresión cifrada, conjunta y sistemática de los derechos y obligaciones a liquidar por el Estado en un año natural.'],
+      ['PLAZO', 'Espacio de tiempo legal fijado para la realización de un trámite administrativo o la interposición de un recurso.'],
+      ['PRESCRIPCIÓN', 'Extinción de un derecho, acción o potestad sancionadora por el transcurso ininterrumpido del tiempo legalmente fijado.'],
+      ['POTESTAD', 'Poder jurídico atribuido por el ordenamiento jurídico a la Administración para el cumplimiento de los fines de interés general.'],
+      ['PENSIÓN', 'Prestación económica periódica del sistema de Seguridad Social ante contingencias de vejez, viudedad o incapacidad.']
+    ],
+    Q: [
+      ['QUÓRUM', 'Número mínimo de integrantes exigido por la ley para la válida constitución y adopción de acuerdos de un órgano colegiado.'],
+      ['QUEJA', 'Mecanismo administrativo frente a defectos de tramitación procesal que impliquen paralización o infracción de plazos.'],
+      ['QUERELLA', 'Declaración formal ante el juzgado o tribunal por la que se ejercita la acción penal haciéndose parte acusadora en el proceso.']
+    ],
+    R: [
+      ['RECURSO', 'Medio de impugnación formal interpuesto por la persona interesada contra un acto que lesione sus derechos o intereses legítimos.'],
+      ['REPOSICIÓN', 'Recurso potestativo que se interpone ante el mismo órgano que dictó el acto cuando este pone fin a la vía administrativa.'],
+      ['RESOLUCIÓN', 'Acto administrativo que decide sobre el fondo de las cuestiones planteadas y pone término al procedimiento.'],
+      ['REGISTRO', 'Oficina oficial electrónica y presencial que da fe fehaciente de la entrada y salida de documentos oficiales con fecha y hora.'],
+      ['RESPONSABILIDAD', 'Deber de la Administración de indemnizar lesiones causadas a particulares por el funcionamiento de servicios públicos (art. 106.2 CE).']
+    ],
+    S: [
+      ['SILENCIO', 'Ficción legal por la que el transcurso del plazo sin resolver y notificar produce efecto estimatorio o desestimatorio.'],
+      ['SUBSANACIÓN', 'Trámite preceptivo por el que se concede a la persona interesada diez días hábiles para corregir defectos en su solicitud.'],
+      ['SUSPENSIÓN', 'Cesación temporal motivada de los efectos y ejecutividad de un acto administrativo impugnado para evitar perjuicios irreparables.'],
+      ['SANCIONADOR', 'Procedimiento contradictorio y garantista regulado en la Ley 39/2015 para determinar la comisión de una infracción legal.']
+    ],
+    T: [
+      ['TRIBUNAL', 'Órgano colegiado de carácter calificador e independiente encargado de evaluar las pruebas selectivas de una oposición.'],
+      ['TREBEP', 'Texto Refundido de la Ley del Estatuto Básico del Empleado Público (aprobado por Real Decreto Legislativo 5/2015).'],
+      ['TRÁMITE', 'Cada una de las diligencias, actuaciones o pasos procesales que integran la instrucción de un expediente administrativo.'],
+      ['TRANSPARENCIA', 'Principio rector de publicidad activa y derecho de acceso a la información pública regulado en la Ley 19/2013.'],
+      ['TESORERÍA', 'Servicio común de la Seguridad Social titular del patrimonio único que gestiona la recaudación y la caja única.']
+    ],
+    U: [
+      ['UNANIMIDAD', 'Acuerdo adoptado con el voto favorable de todos los miembros componentes del órgano colegiado sin ningún voto discrepante.'],
+      ['URGENCIA', 'Tramitación abreviada del procedimiento administrativo que reduce a la mitad los plazos ordinarios de resolución.'],
+      ['UNIÓN', 'Comunidad supranacional (Unión Europea) a la que España cedió competencias derivadas de la Constitución mediante ley orgánica.']
+    ],
+    V: [
+      ['VETO', 'Facultad del Senado para rechazar por mayoría absoluta un proyecto de ley aprobado previamente por el Congreso (art. 90 CE).'],
+      ['VACACIONES', 'Derecho del empleado público a un descanso anual retribuido de veintidós días hábiles como mínimo por año de servicios.'],
+      ['VALIDEZ', 'Conformidad jurídica de un acto administrativo con el ordenamiento al respetar todos los requisitos de fondo y forma.'],
+      ['VIUDEDAD', 'Pensión contributiva de supervivencia de la Seguridad Social reconocida al cónyuge supérstite con vínculo matrimonial válido.']
+    ],
+    W: [
+      ['WEB', 'Sede electrónica institucional accesible con garantías de seguridad técnica, autenticidad y confidencialidad.'],
+      ['WARRANT', 'Título valor financiero transferible reconocido en el mercado regulado que confiere el derecho de compra o venta a plazo.']
+    ],
+    X: [
+      ['EXPROPIACIÓN', 'Contiene la X: Privación singular de la propiedad por causa de utilidad pública o interés social mediante justo precio.'],
+      ['EXPEDIENTE', 'Contiene la X: Unidad documental básica donde se tramitan las actuaciones del procedimiento administrativo.'],
+      ['EXCLUSIÓN', 'Contiene la X: Decisión motivada por la que se aparta a un aspirante de un proceso selectivo por falta de requisitos exigidos.']
+    ],
+    Y: [
+      ['AYUNTAMIENTO', 'Contiene la Y: Institución de gobierno y administración del municipio presidida por el alcalde y los concejales elegidos.'],
+      ['LEYES', 'Contiene la Y: Normas aprobadas por el Parlamento con rango jerárquico superior a las disposiciones reglamentarias del Gobierno.'],
+      ['PROYECTO', 'Contiene la Y: Texto legislativo formalmente aprobado por el Consejo de Ministros y remitido al Congreso de los Diputados.']
+    ],
+    Z: [
+      ['ALZADA', 'Contiene la Z: Recurso ordinario interpuesto ante el superior jerárquico frente a actos que no agotan la vía administrativa.'],
+      ['PLAZO', 'Contiene la Z: Término temporal fijado legalmente para cumplir una obligación, subsanar defectos o presentar un recurso.'],
+      ['RAZÓN', 'Contiene la Z: Motivo o fundamento de Derecho que justifica la actuación de la Administración y sustenta la motivación del acto.']
+    ]
+  };
+
+  const legalWords = Object.values(legalWordsBank).map(arr => arr[0]);
+  const alphabet = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ';
+  const wordKey = s => String(s || '').toUpperCase().normalize('NFD').replace(/N\u0303/g, 'Ñ').replace(/[\u0300-\u036f]/g, '').replace(/[^A-ZÑ]/g, '');
+
+  const sopaWordsBank = [
+    'SILENCIO', 'ALZADA', 'TREBEP', 'PRESUPUESTO', 'INVESTIDURA', 'QUORUM', 'DECRETO', 'SUBSANACION',
+    'CADUCIDAD', 'FUNCIONARIO', 'DELEGACION', 'NOTIFICACION', 'INVALIDEZ', 'JURISDICCION', 'INTERESADO',
+    'PRESCRIPCION', 'AVOCACION', 'SUBVENCION', 'DESISTIMIENTO', 'RESOLUCION', 'CONCURSO', 'CONTRATO',
+    'COTIZACION', 'EXPEDIENTE', 'EXPROPIACION', 'AUDIENCIA', 'AFILIACION', 'JUBILACION', 'REPOSICION',
+    'ESTATUTO', 'MINISTERIO', 'DICTAMEN', 'GARANTIA', 'HABILIDAD', 'HACIENDA', 'INFRACCION', 'SANCION',
+    'SENADO', 'CONGRESO', 'TRIBUNAL', 'UNANIMIDAD', 'VIUDEDAD', 'MUTUALIDAD', 'FISCALIZACION', 'REGISTRO',
+    'AMBITO', 'LEGALIDAD', 'RECURSO', 'MOTIVACION', 'REQUISITO'
+  ];
   const games=[['rosco','El Rosco de la Opo','Una vuelta al abecedario para poner a prueba tu vocabulario jurídico.','lilac'],['sopa','Sopa de letras','Encuentra los conceptos de tu temario entre las letras del tablero.','butter'],['fighter','Street Opositor Fighter','El Opositor contra el Tribunal. Cada respuesta decide el combate.','peach']];
   function gameArt(kind){if(kind==='rosco')return `<svg class="tool-art" viewBox="0 0 60 49" aria-hidden="true">${Array.from('ABCDEFGHJKLM', (l,i)=>{const a=i*Math.PI/6,x=30+Math.sin(a)*18,y=24-Math.cos(a)*18;return `<circle cx="${x}" cy="${y}" r="5.4" fill="${i<4?'#b5caae':'#c8b5da'}" stroke="#6d5b78" stroke-width="1"/><text x="${x}" y="${y+2}" text-anchor="middle" font-family="Arial" font-size="6" fill="#524454">${l}</text>`}).join('')}<text x="30" y="29" text-anchor="middle" font-family="Georgia" font-size="17" fill="#6d557a">A</text></svg>`;if(kind==='sopa')return `<svg class="tool-art" viewBox="0 0 60 49" aria-hidden="true"><g transform="rotate(-5 30 24)"><rect x="7" y="4" width="45" height="40" rx="3" fill="#fff6d8" stroke="#8c795b"/><path d="M13 12h31" stroke="#d4cf89" stroke-width="7"/>${['P L A Z O','R O L E Y','M I B O A','S E D E R'].map((s,i)=>`<text x="12" y="${14+i*8}" font-family="monospace" font-size="7" fill="#786349">${s}</text>`).join('')}</g></svg>`;return toolArt('arcade')}
+  
+  function practiceView() {
+    const o = opp();
+    const testsCount = state.history ? state.history.length : 0;
+    const avgScore = testsCount ? Math.round(state.history.reduce((a, b) => a + (b.score || 0), 0) / testsCount) : 0;
+    const mistakesCount = Object.keys(state.mistakes || {}).filter(k => k.startsWith(o.id + ':') && state.mistakes[k].count > 0).length;
+    const flashPending = Object.values(state.srs || {}).filter(c => (c.due || 0) <= Date.now()).length;
+
+    return `
+      <div class="page">
+        ${heading('Centro Oficial de Práctica y Exámenes', 'Entrenamiento intensivo: tests con penalización oficial, supuestos prácticos, repaso espaciado y juegos interactivos.', null, o.name)}
+
+        <div class="stat-grid" style="margin-bottom:24px">
+          <div class="stat-card">
+            <span class="stat-num">${testsCount}</span>
+            <span class="stat-label">Tests realizados</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num">${avgScore}%</span>
+            <span class="stat-label">Nota media en tests</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num">${mistakesCount}</span>
+            <span class="stat-label">Preguntas en repaso</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num">${flashPending}</span>
+            <span class="stat-label">Flashcards pendientes</span>
+          </div>
+        </div>
+
+        <div class="game-picks" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px">
+          <div class="game-pick lilac surface" style="display:flex;flex-direction:column;justify-content:space-between;padding:22px;border-radius:14px;border:1.5px solid #d8b4fe;background:#fff">
+            <div>
+              <div style="font-size:32px;margin-bottom:8px">📝</div>
+              <h3 style="font-size:18px;margin:0 0 6px 0;color:var(--deep)">Tests de Examen y Simulacros</h3>
+              <p class="muted small" style="margin:0 0 16px 0;line-height:1.5">Tests por tema, simulacros oficiales de examen (100 preguntas con penalización de un tercio) y test inteligente de preguntas falladas.</p>
+            </div>
+            <div class="row wrap" style="gap:8px">
+              <button class="btn primary sm" data-go="tests">${I('play',12)} Iniciar Test o Simulacro</button>
+              <button class="btn soft sm" data-act="failed-test">${I('refresh',12)} Falladas (${mistakesCount})</button>
+            </div>
+          </div>
+
+          <div class="game-pick butter surface" style="display:flex;flex-direction:column;justify-content:space-between;padding:22px;border-radius:14px;border:1.5px solid #fde047;background:#fff">
+            <div>
+              <div style="font-size:32px;margin-bottom:8px">⚖️</div>
+              <h3 style="font-size:18px;margin:0 0 6px 0;color:var(--deep)">Supuestos Prácticos</h3>
+              <p class="muted small" style="margin:0 0 16px 0;line-height:1.5">Casos prácticos de expediente administrativo: recursos de alzada, plazos perentorios, contratos públicos y gestión de personal.</p>
+            </div>
+            <div class="row wrap" style="gap:8px">
+              <button class="btn primary sm" data-go="cases">${I('scale',12)} Resolver Supuesto Práctico</button>
+            </div>
+          </div>
+
+          <div class="game-pick peach surface" style="display:flex;flex-direction:column;justify-content:space-between;padding:22px;border-radius:14px;border:1.5px solid #fdba74;background:#fff">
+            <div>
+              <div style="font-size:32px;margin-bottom:8px">🗂️</div>
+              <h3 style="font-size:18px;margin:0 0 6px 0;color:var(--deep)">Flashcards con Repaso Espaciado</h3>
+              <p class="muted small" style="margin:0 0 16px 0;line-height:1.5">Algoritmo Leitner/SM-2 de memoria activa para consolidar conceptos jurídicos, plazos críticos y preceptos normativos.</p>
+            </div>
+            <div class="row wrap" style="gap:8px">
+              <button class="btn primary sm" data-go="flash">${I('cards',12)} Practicar Flashcards</button>
+            </div>
+          </div>
+
+          <div class="game-pick mint surface" style="display:flex;flex-direction:column;justify-content:space-between;padding:22px;border-radius:14px;border:1.5px solid #86efac;background:#fff">
+            <div>
+              <div style="font-size:32px;margin-bottom:8px">⚡</div>
+              <h3 style="font-size:18px;margin:0 0 6px 0;color:var(--deep)">Esquemas y Pizarra Visual</h3>
+              <p class="muted small" style="margin:0 0 16px 0;line-height:1.5">Esquemas de doble hoja pastel, cuadros sinópticos de plazos perentorios y comparativas entre órganos y leyes.</p>
+            </div>
+            <div class="row wrap" style="gap:8px">
+              <button class="btn primary sm" data-go="schemes">${I('layers',12)} Abrir Esquemas y Tablas</button>
+            </div>
+          </div>
+
+          <div class="game-pick surface" style="display:flex;flex-direction:column;justify-content:space-between;padding:22px;border-radius:14px;border:1.5px solid #c4b5fd;background:#fff;grid-column:1/-1">
+            <div class="row between wrap" style="gap:14px;align-items:center">
+              <div>
+                <div style="font-size:32px;margin-bottom:8px">🎮</div>
+                <h3 style="font-size:18px;margin:0 0 6px 0;color:var(--deep)">OpoArcade: El Rosco, Sopa de Letras y Street Oppositor</h3>
+                <p class="muted small" style="margin:0;max-width:620px;line-height:1.5">Aprende jugando: completa El Rosco con vocabulario jurídico dinámico, encuentra palabras en la Sopa de Letras o enfréntate al Tribunal en Street Oppositor Fighter.</p>
+              </div>
+              <div class="row wrap" style="gap:8px">
+                <button class="btn primary sm" data-go="arcade">${I('game',14)} Entrar a OpoArcade</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   function arcadeView() {
     const o = opp();
     return `
@@ -5656,8 +5927,92 @@
     }
     return custom;
   }
-  function roscoData(){const custom=gameGlossary(),used=new Set();return [...alphabet].map((letter,i)=>{const v=custom.find(x=>!used.has(x.term)&&wordKey(x.term).startsWith(letter))||custom.find(x=>!used.has(x.term)&&wordKey(x.term).includes(letter));if(v)used.add(v.term);return {letter,term:v?.term||legalWords[i][0],def:v?.def||legalWords[i][1],source:v?topic(gameSource).title:'Glosario jurídico',status:'pending'}})}
-  function makeWordGrid(){const t=topic(gameSource),terms=gameGlossary().map(x=>wordKey(x.term)),source=[...new Set([...terms,...(t?words(t.text).filter(x=>/^[\p{L}]{6,12}$/u.test(x)).map(wordKey):[]),'SILENCIO','ALZADA','TREBEP','PRESUPUESTO','INVESTIDURA','QUORUM'])].filter(x=>x.length>=4&&x.length<=12).slice(0,6).sort((a,b)=>b.length-a.length),dirs=[[1,0],[0,1],[1,1],[-1,1],[-1,0],[0,-1],[1,-1]],size=12;let grid,placements;for(let attempt=0;attempt<15;attempt++){grid=Array(144).fill('');placements=[];for(const w of source){let placed=false;for(let j=0;j<220&&!placed;j++){const [dx,dy]=dirs[Math.floor(Math.random()*dirs.length)],x=Math.floor(Math.random()*size),y=Math.floor(Math.random()*size),endX=x+(w.length-1)*dx,endY=y+(w.length-1)*dy;if(endX<0||endX>=size||endY<0||endY>=size)continue;const cells=[...w].map((_,k)=>(y+k*dy)*size+x+k*dx);if(cells.every((c,k)=>!grid[c]||grid[c]===w[k])){cells.forEach((c,k)=>grid[c]=w[k]);placements.push({word:w,cells,found:false});placed=true}}}if(placements.length===source.length)break}if(placements.length!==source.length){grid=Array(144).fill('');placements=source.map((word,i)=>{const cells=[...word].map((_,k)=>i*12+k);cells.forEach((v,j)=>grid[v]=word[j]);return {word,cells,found:false}})}return {grid:grid.map(c=>c||alphabet[Math.floor(Math.random()*alphabet.length)]),placements,anchor:null}}
+  function roscoData() {
+    const custom = gameGlossary();
+    const used = new Set();
+
+    return [...alphabet].map((letter, i) => {
+      // 1. Check custom glossary
+      const customMatch = custom.find(x => !used.has(x.term) && (wordKey(x.term).startsWith(letter) || wordKey(x.term).includes(letter)));
+      if (customMatch && Math.random() > 0.4) {
+        used.add(customMatch.term);
+        return {
+          letter,
+          term: customMatch.term,
+          def: customMatch.def,
+          source: topic(gameSource)?.title || 'Glosario del temario',
+          status: 'pending'
+        };
+      }
+
+      // 2. Pick random item from legalWordsBank for this letter
+      const bankItems = legalWordsBank[letter] || [];
+      const unusedBank = bankItems.filter(item => !used.has(item[0]));
+      const pick = unusedBank.length ? unusedBank[Math.floor(Math.random() * unusedBank.length)] : bankItems[0] || legalWords[i];
+
+      used.add(pick[0]);
+      return {
+        letter,
+        term: pick[0],
+        def: pick[1],
+        source: 'Diccionario Jurídico Oficial',
+        status: 'pending'
+      };
+    });
+  }
+
+  function makeWordGrid() {
+    const t = topic(gameSource);
+    const terms = gameGlossary().map(x => wordKey(x.term));
+    const topicWords = t && t.text ? words(t.text).filter(x => /^[\p{L}]{6,11}$/u.test(x)).map(wordKey) : [];
+
+    // Gather and shuffle candidates from sopaWordsBank, custom terms and topic text
+    const pool = [...new Set([...sopaWordsBank, ...terms, ...topicWords])].filter(w => w.length >= 5 && w.length <= 11);
+    const shuffledPool = shuffle(pool);
+    const source = shuffledPool.slice(0, 6).sort((a, b) => b.length - a.length);
+
+    const dirs = [[1,0],[0,1],[1,1],[-1,1],[-1,0],[0,-1],[1,-1]];
+    const size = 12;
+    let grid, placements;
+
+    for (let attempt = 0; attempt < 25; attempt++) {
+      grid = Array(144).fill('');
+      placements = [];
+      for (const w of source) {
+        let placed = false;
+        for (let j = 0; j < 240 && !placed; j++) {
+          const [dx, dy] = dirs[Math.floor(Math.random() * dirs.length)];
+          const x = Math.floor(Math.random() * size);
+          const y = Math.floor(Math.random() * size);
+          const endX = x + (w.length - 1) * dx;
+          const endY = y + (w.length - 1) * dy;
+          if (endX < 0 || endX >= size || endY < 0 || endY >= size) continue;
+          const cells = [...w].map((_, k) => (y + k * dy) * size + x + k * dx);
+          if (cells.every((c, k) => !grid[c] || grid[c] === w[k])) {
+            cells.forEach((c, k) => grid[c] = w[k]);
+            placements.push({ word: w, cells, found: false });
+            placed = true;
+          }
+        }
+      }
+      if (placements.length === source.length) break;
+    }
+
+    if (placements.length !== source.length) {
+      grid = Array(144).fill('');
+      placements = source.map((word, i) => {
+        const cells = [...word].map((_, k) => i * 12 + k);
+        cells.forEach((v, j) => grid[v] = word[j]);
+        return { word, cells, found: false };
+      });
+    }
+
+    return {
+      grid: grid.map(c => c || alphabet[Math.floor(Math.random() * alphabet.length)]),
+      placements,
+      anchor: null
+    };
+  }
   function gameRecord(type,score){const k=opp().id+':'+type,old=state.records[k];state.records[k]={best:old?(type==='sopa'?Math.min(old.best,score):Math.max(old.best,score)):score,plays:(old?.plays||0)+1};save()}
   function launchGame(type) {
     const now = Date.now();
@@ -6661,84 +7016,227 @@
     return res;
   }
 
+  function getTopicLegalSubjectInfo(t) {
+    const titleNorm = norm(t?.title || '');
+    const blockNorm = norm(opp().blocks[t?.b || 0] || '');
+
+    if (titleNorm.includes('constituc') || titleNorm.includes('corona') || titleNorm.includes('cortes') || titleNorm.includes('gobierno') || titleNorm.includes('defensor') || titleNorm.includes('poder judicial')) {
+      return {
+        law: 'Constitución Española de 1978 (arts. 1 a 169)',
+        def: 'La Constitución es la norma suprema del ordenamiento jurídico español que fundamenta el Estado social y democrático de Derecho, proclama los valores superiores (libertad, justicia, igualdad y pluralismo político) y organiza los poderes públicos.',
+        articles: [
+          '[LEY: Art. 1.2 CE] La soberanía nacional reside en el pueblo español, del que emanan los poderes del Estado.',
+          '[LEY: Art. 9.3 CE] Principio de legalidad, jerarquía normativa, publicidad, irretroactividad de disposiciones sancionadoras no favorables o restrictivas de derechos, seguridad jurídica e interdicción de la arbitrariedad.',
+          '[LEY: Art. 14 CE] Principio de igualdad formal ante la ley sin discriminación por nacimiento, raza, sexo, religión u opinión.',
+          '[LEY: Art. 53 CE] Niveles de protección constitucional: tutela ordinaria, recurso de amparo (arts. 14 a 29 y 30.2) y reserva de ley orgánica.',
+          '[LEY: Arts. 167 y 168 CE] Procedimientos ordinario (3/5 de cada Cámara) y agravado de reforma constitucional (2/3 de cada Cámara, disolución inmediata, ratificación por 2/3 y referéndum preceptivo).'
+        ],
+        table: [
+          ['Órgano Constitucional', 'Composición', 'Mayoría / Renovación', 'Función Principal'],
+          ['Congreso de los Diputados', '350 Diputados (mín. 300, máx. 400)', 'Elegidos por 4 años por sufragio universal', 'Iniciativa legislativa, investidura y control político'],
+          ['Senado', 'Cámara de representación territorial', 'Elegidos por 4 años (provinciales y autonómicos)', 'Segunda lectura, veto (mayoría absoluta) y enmiendas'],
+          ['Tribunal Constitucional', '12 Magistrados nombrados por el Rey', 'Mandato 9 años, renovación por tercios cada 3 años', 'Control de constitucionalidad, amparo y conflictos'],
+          ['Consejo General del Poder Judicial', 'Presidente del TS + 20 Vocales', 'Mandato 5 años por mayoría de 3/5 de las Cámaras', 'Órgano de gobierno de Jueces y Magistrados (no jurisdiccional)']
+        ],
+        traps: [
+          '[TRAMPA: Veto del Senado] Si el Senado veta un proyecto de ley por mayoría absoluta, el Congreso puede levantarlo inmediatamente por mayoría absoluta o transcurridos dos meses por mayoría simple.',
+          '[TRAMPA: Mayoría de Investidura] Art. 99 CE: Mayoría absoluta en primera votación; pasadas 48 horas, se somete a segunda votación donde basta mayoría simple.',
+          '[TRAMPA: Amparo Constitucional] Solo son susceptibles de amparo ante el TC el art. 14 y la Sección 1.ª del Capítulo II del Título I (arts. 15 a 29), más la objeción de conciencia del art. 30.2.'
+        ]
+      };
+    }
+
+    if (titleNorm.includes('seguridad social') || titleNorm.includes('afiliac') || titleNorm.includes('cotizac') || titleNorm.includes('jubilac') || titleNorm.includes('incapacidad') || titleNorm.includes('tgss') || titleNorm.includes('inss')) {
+      return {
+        law: 'Real Decreto Legislativo 8/2015 (Texto Refundido de la Ley General de la Seguridad Social - LGSS)',
+        def: 'El sistema de la Seguridad Social garantiza a los trabajadores y familiares o asimilados a su cargo la protección adecuada frente a contingencias y situaciones legalmente contempladas (enfermedad, accidente, vejez, desempleo y viudedad).',
+        articles: [
+          '[LEY: Art. 7 LGSS] Campo de aplicación: nivel contributivo (españoles y extranjeros que residan o se encuentren legalmente en España y ejerzan actividad profesional) y no contributivo.',
+          '[LEY: Art. 16 LGSS] Afiliación: acto administrativo único, vitalicio y obligatorio para todo el territorio nacional.',
+          '[LEY: Art. 104 LGSS] Sujetos obligados y responsables del pago de cotizaciones: el empresario es el responsable del ingreso de las cuotas propias y de las de sus trabajadores.',
+          '[LEY: Art. 169 LGSS] Incapacidad temporal: duración máxima de 365 días, prorrogables por 180 días adicionales si se prevé curación.',
+          '[LEY: Art. 205 LGSS] Jubilación ordinaria contributiva: periodo mínimo de cotización genérica de 15 años, con 2 años cotizados dentro de los 15 años inmediatamente anteriores.'
+        ],
+        table: [
+          ['Figura / Trámite SS', 'Entidad Competente', 'Plazo de Comunicación', 'Efectos de Incumplimiento'],
+          ['Alta de Trabajador', 'Tesorería General (TGSS)', 'Con carácter previo al inicio de la actividad', 'Infracción grave, alta de oficio y derivación de responsabilidad'],
+          ['Baja y Variación de Datos', 'Tesorería General (TGSS)', '3 días naturales siguientes al cese laboral', 'Continúa la obligación de cotizar hasta que la TGSS actúe de oficio'],
+          ['Prórroga de IT (180 días)', 'Instituto Nacional (INSS)', 'Al agotar los 365 días naturales', 'Competencia exclusiva del INSS (inspección médica y EVI)'],
+          ['Pensión de Jubilación', 'Instituto Nacional (INSS)', 'Imprescriptible (salvo retroactividad 3 meses)', 'Abono vitalicio en 14 pagas anuales']
+        ],
+        traps: [
+          '[TRAMPA: Cómputo en Seguridad Social] Los plazos de altas y bajas se computan en DÍAS NATURALES (bajas en 3 días naturales; altas previas al inicio del trabajo).',
+          '[TRAMPA: Competencia TGSS vs INSS] La TGSS gestiona la caja única, afiliación, altas, bajas, liquidación y recaudación. El INSS reconoce el derecho económico a las prestaciones (IT, IP, Jubilación, Maternidad/Paternidad).',
+          '[TRAMPA: Automatismo de Prestaciones] En accidentes de trabajo y enfermedades profesionales rige el automatismo: el trabajador tiene derecho a la prestación aunque el empresario no lo haya dado de alta ni cotizado.'
+        ]
+      };
+    }
+
+    if (titleNorm.includes('personal') || titleNorm.includes('trebep') || titleNorm.includes('funcionario') || titleNorm.includes('empleado publico') || titleNorm.includes('situaciones administrativas')) {
+      return {
+        law: 'Real Decreto Legislativo 5/2015 (TREBEP - Estatuto Básico del Empleado Público)',
+        def: 'El TREBEP establece las bases del régimen estatutario de los funcionarios públicos incluidos en su ámbito de aplicación y las normas aplicables al personal laboral al servicio de las Administraciones Públicas.',
+        articles: [
+          '[LEY: Art. 8 TREBEP] Clases de empleados públicos: funcionarios de carrera, funcionarios interinos, personal laboral (fijo, por tiempo indefinido o temporal) y personal eventual.',
+          '[LEY: Art. 50 TREBEP] Vacaciones: 22 días hábiles como mínimo por año completo de servicios, incrementables por antigüedad.',
+          '[LEY: Art. 85 TREBEP] Situaciones administrativas: servicio activo, servicios especiales, servicio en otras Administraciones, excedencia y suspensión de funciones.',
+          '[LEY: Art. 95 TREBEP] Infracciones muy graves: tipicidad tasada (incumplimiento del deber de fidelidad a la CE, discriminación, acoso, etc.).',
+          '[LEY: Art. 97 TREBEP] Prescripción de infracciones: muy graves (3 años), graves (2 años), leves (6 meses).'
+        ],
+        table: [
+          ['Situación Administrativa', 'Reserva de Puesto', 'Cómputo de Antigüedad / Trienios', 'Derechos Retributivos'],
+          ['Servicio Activo', 'Puesto definitivo desempeñado', 'Sí computa plenamente', 'Retribuciones básicas y complementarias del puesto'],
+          ['Servicios Especiales', 'Reserva del puesto de trabajo en la misma localidad', 'Sí computa trienios y promoción', 'Retribuciones del cargo público desempeñado'],
+          ['Excedencia Interés Particular', 'No reserva (derecho preferente al reingreso)', 'No computa trienios ni ascensos', 'Sin retribución alguna'],
+          ['Excedencia Cuidado Familiar', '2 años reserva de puesto (3.er año en misma localidad)', 'Sí computa trienios y antigüedad', 'Sin retribución (salvo cotización a efectos de SS)']
+        ],
+        traps: [
+          '[TRAMPA: Prescripción de Sanciones] Las sanciones impuestas prescriben: muy graves a los 3 años, graves a los 2 años, leves al año. No confundir con la prescripción de infracciones (leves prescriben a los 6 meses).',
+          '[TRAMPA: Servicios Especiales] Diputados, Senadores y miembros del Gobierno pasan a servicios especiales, manteniendo reserva de puesto y computando antigüedad.',
+          '[TRAMPA: Vacaciones Ininterrumpidas] Los 22 días hábiles son el mínimo general. Los sábados NO computan como día hábil de vacaciones.'
+        ]
+      };
+    }
+
+    if (titleNorm.includes('contrat') || titleNorm.includes('lcsp') || titleNorm.includes('licitac') || titleNorm.includes('pliego')) {
+      return {
+        law: 'Ley 9/2017 de Contratos del Sector Público (LCSP)',
+        def: 'Regula la contratación del sector público con el fin de garantizar la libertad de acceso a las licitaciones, publicidad, no discriminación, igualdad de trato y eficiente utilización de los fondos públicos.',
+        articles: [
+          '[LEY: Art. 12 LCSP] Contratos sujetos a regulación armonizada (SARA): contratos de obras, suministros o servicios de valor estimado superior a los umbrales comunitarios.',
+          '[LEY: Art. 118 LCSP] Contratos menores: valor estimado inferior a 40.000 € en obras e inferior a 15.000 € en servicios y suministros.',
+          '[LEY: Art. 107 LCSP] Garantía definitiva: con carácter general, 5% del precio final ofertado (excluido el IVA).',
+          '[LEY: Art. 29 LCSP] Plazo de duración de los contratos: máximo 5 años (incluidas prórrogas) con carácter general en suministros y servicios.',
+          '[LEY: Art. 44 LCSP] Recurso especial en materia de contratación: preceptivo y gratuito ante el Tribunal Administrativo Central de Recursos Contractuales (TACRC).'
+        ],
+        table: [
+          ['Tipo de Contrato', 'Umbral de Contrato Menor', 'Garantía Exigible', 'Duración Máxima General'],
+          ['Obras', 'Valor estimado inferior a 40.000 €', '5% de adjudicación definitiva', 'Según proyecto (menor máx. 1 año)'],
+          ['Suministros', 'Valor estimado inferior a 15.000 €', '5% de adjudicación definitiva', 'Máximo 5 años (incluidas prórrogas)'],
+          ['Servicios', 'Valor estimado inferior a 15.000 €', '5% de adjudicación definitiva', 'Máximo 5 años (incluidas prórrogas)'],
+          ['Concesión de Servicios', 'No admite contrato menor', '5% de adjudicación definitiva', 'Hasta 25 o 40 años según inversión']
+        ],
+        traps: [
+          '[TRAMPA: Duración de Contratos Menores] Los contratos menores no pueden tener una duración superior a 1 año ni ser objeto de prórroga en ningún caso.',
+          '[TRAMPA: Cuantía de Garantía Definitiva] La garantía definitiva es el 5% del importe de adjudicación EXCLUIDO EL IVA, no del presupuesto base de licitación.',
+          '[TRAMPA: Fraccionamiento Ilegal] Prohibición tajante de fraccionar contratos para eludir los requisitos de publicidad o los procedimientos abiertos o restringidos.'
+        ]
+      };
+    }
+
+    if (titleNorm.includes('presupuest') || titleNorm.includes('lgp') || titleNorm.includes('gasto') || titleNorm.includes('credito') || titleNorm.includes('contabilidad')) {
+      return {
+        law: 'Ley 47/2003 General Presupuestaria (LGP) y Ley Orgánica 2/2012 de Estabilidad Presupuestaria',
+        def: 'La Ley General Presupuestaria regula el régimen presupuestario, económico-financiero, de contabilidad y de control de la gestión del sector público estatal.',
+        articles: [
+          '[LEY: Art. 34 LGP] Ejercicio presupuestario: coincide estrictamente con el año natural (del 1 de enero al 31 de diciembre).',
+          '[LEY: Art. 73 LGP] Fases de ejecución del gasto: Autorización (A), Disposición o Compromiso (D), Reconocimiento de la Obligación (O) y Propuesta de Pago (P).',
+          '[LEY: Art. 40 LGP] Principio de especialidad de los créditos: especialidad cualitativa (destino específico), cuantitativa (límite dinerario) y temporal (ejercicio corriente).',
+          '[LEY: Art. 51 LGP] Modificaciones presupuestarias: transferencias, generaciones, ampliaciones, créditos extraordinarios y suplementos de crédito.',
+          '[LEY: Art. 134 CE] Elaboración del presupuesto: corresponde en exclusiva al Gobierno y su examen, enmienda y aprobación a las Cortes Generales.'
+        ],
+        table: [
+          ['Fase de Gasto', 'Significado Jurídico', 'Documento Contable', 'Órgano Decisor'],
+          ['A: Autorización', 'Acuerdo de realizar un gasto por importe estimado', 'Documento A', 'Ministro o Director del Organismo'],
+          ['D: Disposición', 'Vínculo jurídico formal con tercero (contrato/adjudicación)', 'Documento D', 'Órgano de contratación competente'],
+          ['O: Reconocimiento', 'Declaración de exigibilidad de la deuda (obra ejecutada)', 'Documento OK / O', 'Órgano gestor con fiscalización previa'],
+          ['P: Propuesta de Pago', 'Solicitud formal a la Dirección General del Tesoro', 'Documento P', 'Ordenador de pagos del departamento']
+        ],
+        traps: [
+          '[TRAMPA: Orden de Fases de Gasto] El orden cronológico inalterable es siempre ADOP: Autorización -> Disposición -> Reconocimiento de obligación -> Propuesta de pago.',
+          '[TRAMPA: Prórroga Presupuestaria] Si no se aprueba la Ley de Presupuestos antes del primer día del ejercicio, quedan automáticamente prorrogados los del año anterior (art. 134.4 CE).',
+          '[TRAMPA: Fondo de Contingencia] Destinado exclusivamente a financiar necesidades imprevistas no discrecionales de carácter no presupuestario (2% del límite de gasto no financiero).'
+        ]
+      };
+    }
+
+    // Default: Procedimiento Administrativo Común (Ley 39/2015 y Ley 40/2015)
+    return {
+      law: 'Ley 39/2015 del Procedimiento Administrativo Común y Ley 40/2015 de Régimen Jurídico',
+      def: 'Regula los requisitos de validez y eficacia de los actos administrativos, los derechos de las personas interesadas, la tramitación del procedimiento electrónico y el régimen de responsabilidad patrimonial pública.',
+      articles: [
+        '[LEY: Art. 30 LPAC] Cómputo de plazos: los señalados por días se entienden hábiles (excluyendo sábados, domingos y festivos) salvo previsión legal expresa.',
+        '[LEY: Art. 47 LPAC] Nulidad de pleno derecho: actos que lesionen derechos y libertades susceptibles de amparo, dictados por órgano manifiestamente incompetente por razón de materia o territorio, de contenido imposible o constitutivos de infracción penal.',
+        '[LEY: Art. 48 LPAC] Anulabilidad: cualquier otra infracción del ordenamiento jurídico, incluso la desviación de poder.',
+        '[LEY: Art. 68 LPAC] Subsanación y mejora: plazo de diez días hábiles ampliable motivadamente hasta cinco días más.',
+        '[LEY: Art. 121 y 122 LPAC] Recurso de alzada: plazo de interposición de un mes ante actos expresos, resolviéndose por el superior jerárquico en un plazo máximo de tres meses.',
+        '[LEY: Art. 124 LPAC] Recurso potestativo de reposición: plazo de un mes ante el mismo órgano que dictó el acto, resolviéndose en un mes máximo.'
+      ],
+      table: [
+        ['Figura Jurídica', 'Órgano Competente', 'Plazo Legal', 'Efectos del Incumplimiento'],
+        ['Subsanación de Solicitud', 'Órgano instructor', '10 días hábiles (ampliable 5)', 'Desistimiento de la petición por resolución'],
+        ['Notificación Electrónica', 'Sede electrónica administrativa', '10 días naturales sin acceso', 'Rechazo legal de la notificación formal'],
+        ['Recurso de Alzada', 'Superior jerárquico del autor', '1 mes (acto expreso) / 3 meses resolver', 'Desestimación presunta por silencio administrativo'],
+        ['Recurso de Reposición', 'Mismo órgano que dictó el acto', '1 mes interponer / 1 mes resolver', 'Desestimación presunta por silencio administrativo'],
+        ['Silencio General', 'Órgano competente para resolver', '3 meses (salvo norma con rango de ley)', 'Estimatorio en solicitudes / Desestimatorio si hay recursos']
+      ],
+      traps: [
+        '[TRAMPA: Notificaciones Electrónicas] La notificación electrónica se entiende rechazada a los DIEZ DÍAS NATURALES desde su puesta a disposición sin que se acceda a su contenido (art. 43.2 LPAC).',
+        '[TRAMPA: Defectos de Forma] El defecto de forma solo determina la anulabilidad cuando el acto carezca de los requisitos formales indispensables para alcanzar su fin o dé lugar a indefensión de los interesados (art. 48.2 LPAC).',
+        '[TRAMPA: Plazo del Recurso de Reposición] El plazo para resolver y notificar la resolución del recurso de reposición es de UN MES (art. 124.2 LPAC), no tres meses.'
+      ]
+    };
+  }
+
   function generateInternalApuntesPastel(t) {
     if (!t) return '';
+    const info = getTopicLegalSubjectInfo(t);
     const raw = String(t.text || '').trim();
-    if (!raw) return '';
-    const lines = raw.split(/\n+/).map(l => l.trim()).filter(Boolean);
-    const sections = parseTextIntoSections(raw, t.title);
-
-    // Extract Articles
-    const artMatches = [];
-    const artRegex = /(?:Arts?(?:[íi]culos?|\.)?\s*\d+(?:\s*(?:al?|y|-)\s*\d+)?(?:\s+(?:de\s+la\s+|del\s+)?(?:CE|LPAC|LRJSP|TREBEP|LCSP|LGP|LOTC|LOPJ|LGSS|Ley\s+[\d/]+|[A-Z]{3,}))?[^.;\n]{0,140})/gi;
-    const seenArt = new Set();
-    for (const l of lines) {
-      const matches = [...l.matchAll(artRegex)];
-      for (const m of matches) {
-        const art = m[0].trim();
-        const key = art.toLowerCase().slice(0, 24);
-        if (!seenArt.has(key)) {
-          seenArt.add(key);
-          artMatches.push(art);
-        }
-      }
-    }
-
-    // Traps and Deadlines
-    const traps = [];
-    for (const l of lines) {
-      if (/\b(?:días?|mes(?:es)?|años?|horas?)\b/i.test(l)) {
-        const m = l.match(/(?:\d+|un|una|dos|tres|cuatro|cinco|diez|quince|veintidós|72)\s+(?:días?(?:\s+(?:hábiles|naturales))?|mes(?:es)?|años?|horas?)/i);
-        if (m && traps.length < 5) {
-          traps.push('[PLAZO: ' + m[0] + '] Trámite de examen: ' + l.slice(0, 140));
-        }
-      }
-      if (/\b(?:en ningún caso|no podrá|no se podrá|prohibid[oa]|salvo|excepto|imprescriptible|imposible|indefensión|desviación)\b/i.test(l) && traps.length < 6) {
-        traps.push('[TRAMPA: Excepción / Prohibición] ' + l.slice(0, 150));
-      }
-    }
 
     let md = '# 📝 APUNTES OPOSICIONES PASTEL · ' + t.title + '\n';
-    md += '> 📌 **Tema Oficial:** ' + t.title + ' | **Oposición:** ' + opp().name + ' | **Metodología:** Apuntes Pastel para Estudio en Papel\n\n';
+    md += '> 📌 **Tema Oficial:** ' + t.title + ' | **Oposición:** ' + opp().name + ' | **Metodología:** Ficha Magistral de Estudio en Papel\n\n';
 
-    md += '## 📑 1. ÍNDICE Y MAPA CONCEPTUAL DEL TEMA\n';
-    sections.forEach((s, idx) => {
-      md += '* **Epígrafe ' + (idx + 1) + ':** ' + s.title + '\n';
+    md += '## 💡 1. IDEA FUERZA, NATURALEZA JURÍDICA Y PRINCIPIOS RECTORES\n';
+    md += '> 🏛️ **Marco Normativo Central:** ' + info.law + '\n\n';
+    md += '* **Concepto Fundamental:** ' + info.def + '\n';
+    md += '* **Ámbito de Aplicación:** Vincula con fuerza de ley a todas las Administraciones Públicas (AGE, Comunidades Autónomas, Entidades Locales y Sector Público Institucional).\n';
+    md += '* **Principios Informadores de Examen:** Legalidad y tipicidad, seguridad jurídica, jerarquía normativa, eficacia administrativa, proporcionalidad y motivación de actos.\n\n';
+
+    md += '## 📜 2. MARCO NORMATIVO Y PRECEPTOS DE CITA OBLIGATORIA EN EXAMEN\n';
+    info.articles.forEach(art => {
+      md += '> ' + art + '\n\n';
     });
+
+    md += '## 📋 3. ESTRUCTURA ANALÍTICA Y ELEMENTOS ESENCIALES\n';
+    md += '### A. Requisitos Subjetivos de Validez\n';
+    md += '* **Competencia Administrativa:** Irrenunciable (art. 8 LRJSP). Se ejerce por los órganos que la tienen atribuida como propia, salvo delegación o avocación debidamente publicadas.\n';
+    md += '* **Imparcialidad y Deber de Abstención:** Motivos tasados en el art. 23 LRJSP (interés personal, parentesco hasta 4.º grado de consanguinidad o 2.º de afinidad, amistad íntima o enemistad manifiesta).\n\n';
+
+    md += '### B. Requisitos Objetivos y Teleológicos\n';
+    md += '* **Licitud y Determinación:** El contenido de los actos ha de ser determinado y adecuado a los fines perseguidos por el ordenamiento jurídico.\n';
+    md += '* **Motivación Preceptiva (art. 35 LPAC):** Obligatoria en actos que limiten derechos, resuelvan recursos, se separen del criterio seguido en actuaciones precedentes o en procedimientos de urgencia.\n\n';
+
+    md += '### C. Requisitos Formales y Procedimentales\n';
+    md += '* **Fases Oficiales:** 1) Iniciación (de oficio o a solicitud de persona interesada) -> 2) Instrucción y Alegaciones -> 3) Finalización (resolución expresa, desistimiento o renuncia).\n\n';
+
+    md += '## ⚖️ 4. CUADRO COMPARATIVO DE EXAMEN\n';
+    const tbl = info.table;
+    md += '| ' + tbl[0].join(' | ') + ' |\n';
+    md += '| ' + tbl[0].map(() => ':---').join(' | ') + ' |\n';
+    for (let r = 1; r < tbl.length; r++) {
+      md += '| ' + tbl[r].map(c => esc(c).replace(/\|/g, '/')).join(' | ') + ' |\n';
+    }
     md += '\n';
 
-    md += '## 💡 2. DESARROLLO DE EPÍGRAFES Y CONCEPTOS CLAVE (SIN PAJA)\n';
-    sections.forEach((s, idx) => {
-      md += '### ' + (idx + 1) + '. ' + s.title + '\n';
-      const items = s.lines.length ? s.lines : ['Contenido analizado de ' + s.title];
-      items.forEach(l => {
-        md += '* ' + highlightJuridicalTerms(l) + '\n';
-      });
-      md += '\n';
+    md += '## ⏱️ 5. CÓMPUTOS, PLAZOS CRÍTICOS Y MAYORÍAS\n';
+    md += '* [PLAZO: 10 días hábiles] Plazo general de subsanación de defectos y aportación de documentos (art. 68 LPAC).\n';
+    md += '* [PLAZO: 1 mes] Interposición de recursos de alzada y potestativo de reposición frente a actos expresos.\n';
+    md += '* [PLAZO: 3 meses] Plazo máximo general para resolver y notificar en procedimientos administrativos salvo previsión legal expresa.\n';
+    md += '* [MAYORÍA: Mayoría Simple] Regla general para la válida adopción de acuerdos en órganos colegiados administrativos.\n';
+    md += '* [MAYORÍA: Mayoría Absoluta] Exigida en leyes orgánicas, vetos parlamentarios y supuestos constitucionales cualificados.\n\n';
+
+    md += '## 🔴 6. ALERTAS Y PREGUNTAS TRAMPA DEL TRIBUNAL CALIFICADOR\n';
+    info.traps.forEach(tr => {
+      md += '> 🔴 ' + tr + '\n\n';
     });
 
-    if (artMatches.length) {
-      md += '## 📜 3. PRECEPTOS Y ARTÍCULOS DE CITA OBLIGATORIA EN TEST\n';
-      artMatches.slice(0, 10).forEach(art => {
-        md += '> **[LEY: Precepto de Examen]** ' + art + '\n\n';
+    if (raw) {
+      md += '## 📑 7. NOTAS Y APUNTES DEL OPOSITOR\n';
+      const userLines = raw.split(/\n+/).map(l => l.trim()).filter(l => l.length > 5).slice(0, 8);
+      userLines.forEach(l => {
+        md += '* ' + highlightJuridicalTerms(l.slice(0, 160)) + '\n';
       });
-    }
-
-    // Cuadros Comparativos
-    const tables = getTopicTables(t);
-    if (tables && tables.length) {
-      md += '## ⚖️ 4. CUADROS COMPARATIVOS DE EXAMEN\n';
-      md += convertTablesToMarkdown(tables);
-    }
-
-    md += '## 🔴 5. PREGUNTAS TRAMPA DEL TRIBUNAL Y ALERTAS DE TEST\n';
-    if (traps.length) {
-      traps.forEach(tr => {
-        md += '> 🔴 ' + tr + '\n\n';
-      });
-    } else {
-      md += '> 🔴 **[TRAMPA: Cómputo de Plazos]** En vía administrativa los plazos fijados por días son siempre **hábiles** (salvo disposición legal en contra).\n\n';
-      md += '> 🟣 **[MAYORÍA: Quórums de Órganos Colegiados]** Acuerdos por mayoría simple salvo previsión legal expresa de mayoría absoluta o cualificada.\n\n';
+      md += '\n';
     }
 
     return md;
@@ -6746,62 +7244,83 @@
 
   function generateInternalEsquemaPastel(t) {
     if (!t) return '';
-    const raw = String(t.text || '').trim();
-    if (!raw) return '';
-    const sections = parseTextIntoSections(raw, t.title);
-
-    const mid = Math.ceil(sections.length / 2);
-    const part1 = sections.slice(0, mid);
-    const part2 = sections.slice(mid);
+    const info = getTopicLegalSubjectInfo(t);
 
     let md = '# ⚡ ESQUEMA REPASO EXAMEN PASTEL (HOJA 1 DE 2)\n';
     md += '> 📋 **HOJA 1 DE 2 · MARCO NORMATIVO, DOGMÁTICA Y CONCEPTOS CLAVE** | ' + t.title + '\n\n';
+
     md += '## 🏛️ BLOQUE I: Fundamentos y Bases Normativas\n';
-    part1.forEach((s, idx) => {
-      md += '### ' + (idx + 1) + '. ' + s.title + '\n';
-      const items = s.lines.slice(0, 6);
-      items.forEach(l => {
-        md += '* ' + tagSchemeItem(l.slice(0, 160)) + '\n';
-      });
-      md += '\n';
+    md += '### 1. Marco Jurídico y Principios Estructurales\n';
+    md += '* [LEY: ' + info.law.split('(')[0].trim() + '] Fundamento positivo obligatorio en examen oficial.\n';
+    md += '* [CONCEPTO: Definición] ' + info.def.slice(0, 140) + '...\n';
+    md += '* [CONCEPTO: Eficacia] Producción inmediata de efectos tras notificación o publicación oficial válida.\n\n';
+
+    md += '### 2. Preceptos Normativos Clave de Examen\n';
+    info.articles.slice(0, 4).forEach(art => {
+      md += '* ' + art + '\n';
     });
+    md += '\n';
+
+    md += '### 3. Clasificación y Elementos de Validez\n';
+    md += '* **Subjetivos:** Órgano competente, legitimación del interesado y causa de abstención (art. 23 LRJSP).\n';
+    md += '* **Objetivos:** Licitud de objeto y motivación preceptiva (art. 35 LPAC).\n';
+    md += '* **Formales:** Vía electrónica obligatoria para personas jurídicas y empleados públicos.\n\n';
 
     md += '---\n\n';
 
     md += '# ⚡ ESQUEMA REPASO EXAMEN PASTEL (HOJA 2 DE 2)\n';
     md += '> 📋 **HOJA 2 DE 2 · PROCEDIMIENTO, GARANTÍAS Y CUADRO EXPRÉS DE CIERRE** | ' + t.title + '\n\n';
-    md += '## ⚙️ BLOQUE II: Procedimiento, Régimen Jurídico y Garantías\n';
-    part2.forEach((s, idx) => {
-      md += '### ' + (mid + idx + 1) + '. ' + s.title + '\n';
-      const items = s.lines.slice(0, 6);
-      items.forEach(l => {
-        md += '* ' + tagSchemeItem(l.slice(0, 160)) + '\n';
-      });
-      md += '\n';
-    });
 
-    // Cuadro Exprés de Cierre
-    const tables = getTopicTables(t);
-    if (tables && tables.length) {
-      md += '### ⏱️ Cuadro Exprés de Cierre: Cifras, Plazos y Quórums de Examen\n\n';
-      const firstTable = tables[0];
-      md += '| ' + firstTable.heads.join(' | ') + ' |\n';
-      md += '| ' + firstTable.heads.map(() => ':---').join(' | ') + ' |\n';
-      firstTable.rows.slice(0, 8).forEach(r => {
-        md += '| ' + r.map(cell => String(cell).replace(/\|/g, '\\|').replace(/\n+/g, ' ')).join(' | ') + ' |\n';
-      });
-      md += '\n';
-    } else {
-      md += '### ⏱️ Cuadro Exprés de Cierre: Cifras, Plazos y Quórums de Examen\n\n';
-      md += '| Concepto / Trámite | Plazo o Mayoría | Órgano Competente | Trampa de Test |\n';
-      md += '| :--- | :--- | :--- | :--- |\n';
-      md += '| Cómputo de plazos por días | Días hábiles | Órgano instructor | Excluidos sábados, domingos y festivos |\n';
-      md += '| Invalidez de actos | Imprescriptible | Órgano competente | Nulidad radical no convalidable |\n';
-      md += '| Régimen de recursos | [PLAZO: 1 mes] | Superior jerárquico | Recurso de alzada obligatorio antes de contencioso |\n\n';
+    md += '## ⚙️ BLOQUE II: Procedimiento, Garantías y Régimen de Recursos\n';
+    md += '### 1. Fases Secuenciales del Procedimiento\n';
+    md += '* **Fase 1: Iniciación:** De oficio (acuerdo de órgano, petición razonada o denuncia) o a instancia de parte.\n';
+    md += '* **Fase 2: Ordenación e Instrucción:** Principio de celeridad, alegaciones, informes (preceptivos/facultativos) y trámite de audiencia.\n';
+    md += '* **Fase 3: Terminación:** Resolución expresa, desistimiento, renuncia o caducidad por inactividad imputable.\n\n';
+
+    md += '### 2. ⏱️ Cuadro Exprés de Cierre: Cifras, Plazos y Quórums de Examen\n\n';
+    const tbl = info.table;
+    md += '| ' + tbl[0].join(' | ') + ' |\n';
+    md += '| ' + tbl[0].map(() => ':---').join(' | ') + ' |\n';
+    for (let r = 1; r < tbl.length; r++) {
+      md += '| ' + tbl[r].map(c => esc(c).replace(/\|/g, '/')).join(' | ') + ' |\n';
     }
+    md += '\n';
+
+    md += '### 3. 🔴 Alertas Finales del Tribunal de Oposiciones\n';
+    info.traps.forEach(tr => {
+      md += '> 🔴 ' + tr + '\n\n';
+    });
 
     return md;
   }
+  
+  function openEditPastelModal(topicId, type) {
+    const t = topic(topicId);
+    if (!t) return toast('Tema no encontrado.');
+    const isSummary = type === 'summary';
+    const title = isSummary ? 'Editar Apuntes Oposiciones Pastel' : 'Editar Esquema Repaso Examen Pastel';
+    const currContent = isSummary 
+      ? (t.geminiSummary || generateInternalApuntesPastel(t))
+      : (t.geminiScheme || generateInternalEsquemaPastel(t));
+
+    modal(title, `
+      <form id="edit-pastel-form" class="stack" style="gap:12px">
+        <input type="hidden" name="topicId" value="${esc(t.id)}">
+        <input type="hidden" name="type" value="${esc(type)}">
+        <p class="small muted" style="margin:0">
+          Personaliza tus notas en formato Markdown. Se renderizarán al instante con colores pastel, tablas y llamadas de examen:
+        </p>
+        <label class="field">
+          <textarea name="content" rows="16" required style="font-family:monospace;font-size:12px;line-height:1.5">${esc(currContent)}</textarea>
+        </label>
+        <div class="modal-actions" style="margin-top:6px">
+          <button class="btn" type="button" onclick="closeModal()">Cancelar</button>
+          <button class="btn primary" type="submit">${I('save', 14)} Guardar Cambios</button>
+        </div>
+      </form>
+    `, true);
+  }
+  window.openEditPastelModal = openEditPastelModal;
 
   function copyTopicSummary(id) {
     const t = topic(id);
@@ -6874,10 +7393,11 @@
             </div>
           </span>
           <div class="row wrap" style="gap:6px">
-            <button class="btn sm soft" onclick="copyTopicScheme('${esc(t.id)}')">📋 Copiar Esquema</button>
+            <button class="btn sm soft" onclick="openEditPastelModal('${esc(t.id)}', 'scheme')">✏️ Editar Esquema</button>
+            <button class="btn sm soft" onclick="copyTopicScheme('${esc(t.id)}')">📋 Copiar</button>
             <button class="btn sm soft" onclick="printTopicPastel('${esc(t.id)}', 'scheme')">🖨️ Imprimir 2 Hojas</button>
-            <button class="btn sm soft" data-act="paste-gemini-scheme" data-id="${esc(t.id)}" title="Pegar esquema personalizado">${I('pen',12)} Pegar de Gemini</button>
-            <button class="btn sm" data-act="regenerate-pastel-scheme" data-id="${esc(t.id)}" title="Regenerar esquema interno">↺ Regenerar</button>
+            <button class="btn sm soft" data-act="paste-gemini-scheme" data-id="${esc(t.id)}" title="Pegar de Gemini">${I('sparkle',12)} Pegar Gemini</button>
+            <button class="btn sm" data-act="regenerate-pastel-scheme" data-id="${esc(t.id)}" title="Regenerar">↺ Restablecer</button>
           </div>
         </div>
         <div class="gemini-rendered-content surface" id="pastel-scheme-view-${esc(t.id)}" style="padding:24px 28px;border:1.5px solid #d8b4fe;border-radius:14px;background:#fff;line-height:1.65">
@@ -7031,10 +7551,11 @@
             </div>
           </span>
           <div class="row wrap" style="gap:6px">
-            <button class="btn sm soft" onclick="copyTopicSummary('${esc(t.id)}')">📋 Copiar Apuntes</button>
+            <button class="btn sm soft" onclick="openEditPastelModal('${esc(t.id)}', 'summary')">✏️ Editar mis Apuntes</button>
+            <button class="btn sm soft" onclick="copyTopicSummary('${esc(t.id)}')">📋 Copiar</button>
             <button class="btn sm soft" onclick="printTopicPastel('${esc(t.id)}', 'summary')">🖨️ Imprimir</button>
-            <button class="btn sm soft" data-act="paste-gemini-summary" data-id="${esc(t.id)}" title="Pegar texto personalizado">${I('pen',12)} Pegar de Gemini</button>
-            <button class="btn sm" data-act="regenerate-pastel-summary" data-id="${esc(t.id)}" title="Regenerar apuntes internos">↺ Regenerar</button>
+            <button class="btn sm soft" data-act="paste-gemini-summary" data-id="${esc(t.id)}" title="Pegar de Gemini">${I('sparkle',12)} Pegar Gemini</button>
+            <button class="btn sm" data-act="regenerate-pastel-summary" data-id="${esc(t.id)}" title="Regenerar">↺ Restablecer</button>
           </div>
         </div>
         <div class="gemini-rendered-content surface" id="pastel-summary-view-${esc(t.id)}" style="padding:24px 28px;border:1px solid #e9d5ff;border-radius:14px;background:#fff;line-height:1.65">
@@ -7194,6 +7715,7 @@
     const [page,id]=routeParts();if(page!=='game'||activeGame?.type!==id)activeGame=null;
     currentPage=page;currentSub=id;closeMenus();header();let html,title;
     switch(page){
+      case 'practice':html=practiceView();title='Centro Oficial de Práctica';break;
       case 'library':html=library();title='Mi temario';break;
       case 'reader':html=reader(id);title=topic(id)?.title||'Lector de temas';break;
       case 'schemes':html=reader(id||opp().lastTopic,true);title='Esquemas';break;
@@ -7438,7 +7960,9 @@
   }
   document.addEventListener('click',async e=>{
     const el=e.target.closest('[data-act],[data-go]');if(!el){if(!e.target.closest('.dropdown'))closeMenus();return}if(el.disabled)return;e.preventDefault();
-    if(el.dataset.go){go(el.dataset.go);return}const action=el.dataset.act;if(!action.endsWith('-menu'))closeMenus();
+    closeMenus();
+    if(el.dataset.go){go(el.dataset.go);return}
+    const action=el.dataset.act;
     try{await performAction(action,el)}catch(err){if($('#modal').open)modalError(err.message||'No se pudo completar la acción.');else toast(err.message||'No se pudo completar la acción.')}
   });
   document.addEventListener('input',e=>{if(e.target.id==='library-search'){libraryQuery=e.target.value;$('#topic-list').innerHTML=topicList()}});
@@ -7511,7 +8035,23 @@
           await generateTopicWithGemini(tid, kind);
           break;
         }
-        case 'paste-gemini-output-form': {
+        case 'edit-pastel-form':{
+          const tid = String(fd.get('topicId') || '');
+          const typ = String(fd.get('type') || 'summary');
+          const content = String(fd.get('content') || '').trim();
+          const t = topic(tid);
+          if (t) {
+            if (typ === 'summary') t.geminiSummary = content;
+            else t.geminiScheme = content;
+            save();
+            closeModal();
+            renderRoute(false);
+            toast('¡Notas actualizadas y guardadas en estilo Pastel!');
+            petReact(true);
+          }
+          break;
+        }
+        case 'paste-gemini-form':{
           const c = String(fd.get('content') || '').trim();
           if (!c) throw Error('Pega el contenido antes de guardar.');
           const tid = form.dataset.tid;
