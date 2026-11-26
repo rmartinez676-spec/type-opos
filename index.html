@@ -1042,7 +1042,7 @@
   const words=s=>String(s||'').trim().split(/\s+/).filter(Boolean);
   const safeURL=s=>{try{const u=new URL(s);return ['http:','https:'].includes(u.protocol)?u.href:''}catch{return ''}};
   const officialURL=s=>{const u=safeURL(s);return u&&/(^|\.)(boe\.es|europa\.eu|bocm\.es|xunta\.gal|juntadeandalucia\.es)$/.test(new URL(u).hostname)?u:''};
-  const laws={CE:['Constitución Española','BOE-A-1978-31229'],LPAC:['Ley 39/2015','BOE-A-2015-10565'],LRJSP:['Ley 40/2015 (LRJSP)','BOE-A-2015-10566'],LCSP:['Ley 9/2017 (LCSP)','BOE-A-2017-12902'],EBEP:['RDL 5/2015 (TREBEP)','BOE-A-2015-11719'],LGP:['Ley 47/2003 (LGP)','BOE-A-2003-21614'],LGSS:['RDL 8/2015 (LGSS)','BOE-A-2015-11724'],TRANSP:['Ley 19/2013 (Transparencia)','BOE-A-2013-12887'],LOPD:['LO 3/2018 (LOPDGDD)','BOE-A-2018-16673'],TUE:['Tratado de la Unión Europea','https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:12016M/TXT'],TFUE:['Tratado de Funcionamiento de la Unión Europea','https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:12016E/TXT']};
+  const laws={CE:['Constitución Española','BOE-A-1978-31229'],LPAC:['Ley 39/2015','BOE-A-2015-10565'],LRJSP:['Ley 40/2015 (LRJSP)','BOE-A-2015-10566'],LCSP:['Ley 9/2017 (LCSP)','BOE-A-2017-12902'],EBEP:['RDL 5/2015 (TREBEP)','BOE-A-2015-11719'],LGP:['Ley 47/2003 (LGP)','BOE-A-2003-21614'],LGSS:['RDL 8/2015 (LGSS)','BOE-A-2015-11724'],TRANSP:['Ley 19/2013 (Transparencia)','BOE-A-2013-12887'],LOPD:['LO 3/2018 (LOPDGDD)','BOE-A-2018-16673'],LBRL:['Ley 7/1985 (LBRL)','BOE-A-1985-5392'],LIG:['LO 3/2007 (Igualdad)','BOE-A-2007-6115'],LCC:['Ley 7/2021 (Cambio Climático)','BOE-A-2021-8447'],TUE:['Tratado de la Unión Europea','https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:12016M/TXT'],TFUE:['Tratado de Funcionamiento de la Unión Europea','https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:12016E/TXT']};
   const blockNames=['Organización del Estado','Unión Europea','Políticas públicas','Derecho administrativo','Recursos humanos','Gestión financiera'];
   const syllabus=[['La Constitución Española','Derechos y deberes fundamentales','La Corona','Las Cortes Generales','El Gobierno y la Administración','El Poder Judicial','La Administración General del Estado','Organización territorial del Estado','La Administración local','Transparencia y acceso a la información'],['Las instituciones de la Unión Europea','El ordenamiento jurídico europeo','El Parlamento Europeo','La Comisión Europea','El Tribunal de Justicia de la Unión Europea','El presupuesto de la Unión Europea'],['El ciclo de las políticas públicas','Políticas de igualdad','La política de empleo','El sistema de Seguridad Social','Desarrollo sostenible','Protección de datos personales','Gobierno abierto','Políticas de inclusión social'],['Las fuentes del Derecho administrativo','Las personas interesadas en el procedimiento','El acto administrativo','El procedimiento administrativo común','Términos y plazos administrativos','La revisión de oficio','Los recursos administrativos','Los contratos del sector público','Preparación de los contratos','La adjudicación del contrato','Ejecución y extinción de los contratos','Responsabilidad patrimonial','La potestad sancionadora','La jurisdicción contencioso-administrativa'],['El Estatuto Básico del Empleado Público','Clases de empleados públicos','Acceso al empleo público','Provisión de puestos de trabajo','Situaciones administrativas','Derechos y deberes del personal','Las retribuciones','Régimen disciplinario','Incompatibilidades','Negociación colectiva'],['Los Presupuestos Generales del Estado','Elaboración de los presupuestos','Los créditos presupuestarios','Modificaciones presupuestarias','La ejecución del presupuesto','El procedimiento de gasto','Ordenación y realización de los pagos','La contabilidad pública','El control de la gestión financiera','Las subvenciones públicas']];
   const bank=[];
@@ -1148,6 +1148,48 @@
   fact('LGSS','177',21,'¿Cuál es la duración del permiso y prestación por nacimiento y cuidado de menor en la Seguridad Social?','16 semanas para cada uno de los progenitores|12 semanas para la madre y 4 para el otro progenitor|20 semanas acumulables entre los progenitores|10 semanas retribuidas y 6 semanas de permiso sin sueldo','La prestación por nacimiento y cuidado de menor tiene una duración de 16 semanas para cada uno de los progenitores, con carácter intransferible (art. 177 LGSS y art. 48 TREBEP).');
   fact('LGSS','205.1',21,'¿Cuántos años mínimos de cotización se exigen para causar pensión de jubilación ordinaria contributiva?','15 años cotizados, de los cuales al menos 2 deben estar dentro de los 15 inmediatamente anteriores|10 años ininterrumpidos en el Régimen General|25 años completos cotizados|20 años con al menos 5 en el tramo final','Tener cubierto un período mínimo de cotización de quince años, de los cuales al menos dos deberán estar comprendidos dentro de los quince años inmediatamente anteriores al momento de causar el derecho (art. 205.1.b LGSS).');
   fact('LGSS','172.2',21,'En prestaciones derivadas de accidente de trabajo o enfermedad profesional, ¿se exige período previo de cotización?','No se exige ningún período previo de cotización (principio de automaticidad)|Se exige estar de alta con al menos 180 días cotizados en los últimos cinco años|Se exige un año completo cotizado|Solo se exime a menores de 25 años','Para el reconocimiento de las prestaciones derivadas de accidente de trabajo o enfermedad profesional no se exigirá ningún período previo de cotización (art. 172.2 LGSS).');
+  fact('TUE','15.2',11,'¿Quién ostenta la Presidencia del Consejo Europeo?','Un Presidente elegido por el propio Consejo Europeo por un período de dos años y medio|El Presidente de la Comisión Europea|El representante del Estado miembro que ostenta la presidencia rotatoria|El Presidente del Parlamento Europeo','El Consejo Europeo elige a su Presidente por mayoría cualificada para un mandato de dos años y medio, que podrá renovarse una sola vez (art. 15.5 TUE).');
+  fact('TUE','16.4',11,'¿En qué consiste la regla de la doble mayoría para adoptar acuerdos en el Consejo de la UE?','Al menos un 55% de los Estados miembros que representen como mínimo el 65% de la población de la UE|El 50% de los Estados y el 50% de la población|Dos tercios de los Estados miembros sin requisito demográfico|Unanimidad de los Estados fundadores y mayoría simple de los restantes','La mayoría cualificada se define como un mínimo del 55% de los miembros del Consejo que representen al menos al 65% de la población de la Unión (art. 16.4 TUE).');
+  fact('TFUE','294',12,'En el procedimiento legislativo ordinario de la UE, ¿qué instituciones actúan como colegisladores en pie de igualdad?','El Parlamento Europeo y el Consejo|La Comisión Europea y el Consejo Europeo|El Consejo de la UE y el Tribunal de Justicia|El Comité Económico y Social y el Comité de las Regiones','El procedimiento legislativo ordinario consiste en la adopción conjunta por el Parlamento Europeo y el Consejo de un reglamento, directiva o decisión a propuesta de la Comisión (art. 294 TFUE).');
+  fact('TFUE','267',15,'¿Qué órgano jurisdiccional es competente con carácter exclusivo para resolver cuestiones prejudiciales sobre interpretación del Derecho de la UE?','El Tribunal de Justicia de la Unión Europea (TJUE)|El Tribunal General de la Unión Europea|El Tribunal Constitucional del Estado remitente|El Tribunal Europeo de Derechos Humanos (TEDH)','El Tribunal de Justicia de la Unión Europea es competente para pronunciarse con carácter prejudicial sobre la interpretación de los Tratados y la validez de los actos de las instituciones (art. 267 TFUE).');
+  fact('CE','59.1',3,'Cuando el Rey fuere menor de edad, ¿quién entrará a ejercer inmediatamente la Regencia?','El padre o la madre del Rey y, en su defecto, el pariente de mayor edad más próximo a suceder en la Corona|El Presidente del Gobierno en funciones|El Presidente del Tribunal Constitucional|El pariente de mayor edad que designen las Cortes Generales','Cuando el Rey fuere menor de edad, el padre o la madre del Rey y, en su defecto, el pariente de mayor edad más próximo a suceder entrará a ejercer la Regencia (art. 59.1 CE).');
+  fact('CE','60.1',3,'¿Quién nombrará al tutor del Rey menor de edad cuando no hubiese sido nombrado en testamento ni fuese tutor legítimo el padre o la madre?','Las Cortes Generales, no pudiendo acumularse los cargos de Regente y de tutor salvo en el padre, madre o ascendientes directos|El Consejo de Estado por unanimidad|El Presidente del Tribunal Supremo|El Consejo de Ministros','El tutor testamentario o legítimo (padre o madre viudos). Si no lo hubiere, las Cortes Generales nombrarán al tutor, sin que puedan acumularse Regencia y tutela salvo en ascendientes (art. 60 CE).');
+  fact('CE','62.d',3,'¿A quién corresponde según la Constitución proponer el candidato a Presidente del Gobierno y, en su caso, nombrarlo?','Al Rey, previa consulta con los representantes designados por los grupos políticos con representación parlamentaria|Al Presidente del Congreso de los Diputados|A la Mesa de las Cortes Generales en sesión conjunta|Al Tribunal Constitucional','Corresponde al Rey proponer el candidato a Presidente del Gobierno y, en su caso, nombrarlo, así como poner fin a sus funciones en los términos previstos en la Constitución (art. 62.d CE).');
+  fact('CE','70.1',4,'¿Cuál de los siguientes cargos es INELEGIBLE e INCOMPATIBLE para Diputados y Senadores según la Constitución?','Los componentes del Tribunal Constitucional, los Magistrados, Jueces y Fiscales en activo, y el Defensor del Pueblo|Los profesores de Universidad y letrados en ejercicio|Los exministros y exdiputados autonómicos|Los miembros de corporaciones locales no retribuidos','La ley electoral determinará las causas de inelegibilidad e incompatibilidad que comprenderán en todo caso a miembros del TC, altos cargos de la Administración, Defensor del Pueblo, Jueces y Fiscales en activo (art. 70.1 CE).');
+  fact('CE','72.1',4,'¿Cómo se aprueban los Reglamentos de las Cámaras de las Cortes Generales?','Por mayoría absoluta de la respectiva Cámara en una votación final sobre su totalidad|Por mayoría simple de los miembros presentes|Por tres quintos en sesión conjunta de Congreso y Senado|Por el Gobierno mediante Real Decreto legislativo','Las Cámaras establecen sus propios Reglamentos, aprueban autónomamente sus presupuestos y regulan el estatuto del personal. Su aprobación exige la mayoría absoluta de la respectiva Cámara (art. 72.1 CE).');
+  fact('CE','82.3',5,'¿Cómo debe otorgarse la delegación legislativa de las Cortes Generales en el Gobierno?','De forma expresa para materia concreta y con fijación del plazo para su ejercicio, sin que pueda subdelegarse a autoridades distintas|De forma genérica e indefinida mediante proposición de ley|Por acuerdo plenario del Senado exclusivamente|Por orden del Ministerio de la Presidencia','La delegación legislativa deberá otorgarse mediante ley de bases (para textos articulados) o ley ordinaria (para refundir textos), de forma expresa, para materia concreta y con plazo (art. 82.3 CE).');
+  fact('CE','103.1',5,'¿Cuáles son los principios constitucionales que rigen la actuación de la Administración Pública?','Eficacia, jerarquía, descentralización, desconcentración y coordinación, con sometimiento pleno a la ley y al Derecho|Oportunidad, discrecionalidad absoluta y secretismo de las actuaciones|Celeridad, informalismo vinculante y subordinación judicial exclusiva|Autonomía financiera sin control parlamentario','La Administración Pública sirve con objetividad los intereses generales y actúa de acuerdo con los principios de eficacia, jerarquía, descentralización, desconcentración y coordinación, con sometimiento pleno a la ley y al Derecho (art. 103.1 CE).');
+  fact('CE','105.b',10,'¿Qué derecho regula el artículo 105.b) de la Constitución Española?','El acceso de los ciudadanos a los archivos y registros administrativos, salvo lo que afecte a la seguridad y defensa del Estado|El derecho de sufragio activo y pasivo en elecciones locales|La inviolabilidad del domicilio de los empleados públicos|El secreto de las comunicaciones electrónicas','La ley regulará el acceso de los ciudadanos a los archivos y registros administrativos, salvo en lo que afecte a la seguridad y defensa del Estado, la averiguación de los delitos y la intimidad de las personas (art. 105.b CE).');
+  fact('CE','137',8,'¿Cómo se organiza territorialmente el Estado español según la Constitución?','En municipios, en provincias y en las Comunidades Autónomas que se constituyan, gozando todas estas entidades de autonomía para la gestión de sus respectivos intereses|En cantones y departamentos federales independientes|Únicamente en provincias supeditadas al Ministerio del Interior|En regiones con soberanía legislativa originaria','El Estado se organiza territorialmente en municipios, en provincias y en las Comunidades Autónomas que se constituyan. Todas estas entidades gozan de autonomía para la gestión de sus respectivos intereses (art. 137 CE).');
+  fact('CE','140',9,'¿Cómo garantiza la Constitución la autonomía de los municipios y su gobierno?','Su gobierno y administración corresponde a sus respectivos Ayuntamientos, integrados por los Alcaldes y los Concejales|A través de delegados del Gobierno designados por Real Decreto|Mediante comisiones gestoras provinciales dependientes de las CCAA|A través de la Cámara de Cuentas autonómica','La Constitución garantiza la autonomía de los municipios. Su gobierno y administración corresponde a los Ayuntamientos, integrados por Alcaldes y Concejales elegidos por sufragio universal (art. 140 CE).');
+  fact('CE','155.1',8,'¿Qué mayoría y en qué Cámara se exige para aprobar las medidas de ejecución forzosa del artículo 155 CE?','Mayoría absoluta del Senado previa audiencia al Presidente de la Comunidad Autónoma|Mayoría de dos tercios del Congreso de los Diputados|Mayoría simple de las Cortes Generales en sesión conjunta|Unanimidad del Consejo de Ministros sin intervención de las Cámaras','Si una CA no cumpliere las obligaciones que la Constitución u otras leyes le impongan, el Gobierno podrá adoptar las medidas necesarias con la aprobación por mayoría absoluta del Senado (art. 155.1 CE).');
+  fact('LPAC','5.1',27,'¿Quiénes tienen capacidad de obrar ante las Administraciones Públicas según el art. 3 LPAC?','Las personas físicas o jurídicas que ostenten capacidad conforme a las normas civiles y los menores de edad para el ejercicio de derechos permitidos por el ordenamiento|Únicamente las personas mayores de 18 años con plena capacidad jurídica|Solo los ciudadanos españoles inscritos en el censo electoral|Las personas que cuenten con certificado electrónico cualificado exclusivamente','Tienen capacidad de obrar las personas con capacidad conforme a las normas civiles, menores para derechos permitidos y grupos de afectados o patrimonios separados legalmente previstos (art. 3 LPAC).');
+  fact('LPAC','35.1',28,'¿Cuáles de los siguientes actos administrativos DEBEN SER MOTIVADOS obligatoriamente con sucinta referencia de hechos y fundamentos de derecho?','Los actos que limiten derechos subjetivos o intereses legítimos y los que resuelvan recursos administrativos|Todos los actos de mero trámite sin excepción|Únicamente los acuerdos de incoación del procedimiento sancionador|Los actos dictados en aplicación de facultades regladas sin margen de apreciación','El art. 35.1 LPAC exige motivar los actos que limiten derechos o intereses, resuelvan recursos, se separen del criterio seguido en actuaciones precedentes o del dictamen de órganos consultivos.');
+  fact('LPAC','39.1',28,'¿A partir de qué momento son EFICACES los actos administrativos dictados por las Administraciones Públicas?','Desde la fecha en que se dicten, salvo que en ellos se disponga otra cosa o su eficacia quede demorada a la notificación o publicación|Desde el momento en que se publiquen en el BOE en todo caso|A los veinte días de su notificación formal|Desde que recaiga sentencia firme que confirme su legalidad','Los actos de las Administraciones Públicas sujetos al Derecho Administrativo se presumirán válidos y producirán efectos desde la fecha en que se dicten, salvo demora por notificación o aprobación (art. 39.1 LPAC).');
+  fact('LPAC','41.1',29,'¿En qué plazo deben ser cursadas las notificaciones de los actos administrativos desde que fueron dictados?','En el plazo de diez días a partir de la fecha en que el acto haya sido dictado|En el plazo de tres días hábiles improrrogables|En el plazo de quince días naturales|Al mes siguiente de la firma de la resolución','Toda notificación deberá ser cursada dentro del plazo de diez días a partir de la fecha en que el acto haya sido dictado (art. 41.1 LPAC).');
+  fact('LPAC','53.1.a',27,'¿Cuál es uno de los derechos reconocidos al interesado en el procedimiento administrativo?','A conocer, en cualquier momento, el estado de la tramitación de los procedimientos en los que tengan la condición de interesados|A exigir la resolución estimatoria de su pretensión en 48 horas|A impedir la fiscalización contable de los expedientes subvencionados|A recusar al tribunal sin alegar causa legal alguna','Los interesados tienen derecho a conocer en cualquier momento el estado de la tramitación de los procedimientos, el sentido del silencio y a obtener copia de los documentos (art. 53.1.a LPAC).');
+  fact('LPAC','98.1',31,'¿Cuál es la regla general sobre la ejecutividad de los actos administrativos?','Los actos administrativos serán inmediatamente ejecutivos, salvo que se suspenda su ejecución o se trate de un procedimiento sancionador contra el que quepa algún recurso|No son ejecutivos hasta que transcurran seis meses desde su firmeza|Requieren siempre autorización previa del juez de lo contencioso|Solo son ejecutivos los actos dictados por el Consejo de Ministros','Los actos de las Administraciones Públicas sujetos al Derecho Administrativo serán inmediatamente ejecutivos, salvo casos de suspensión legal o sanciones que admitan recurso ordinario (art. 98.1 LPAC).');
+  fact('LPAC','107.1',31,'¿En qué plazo prescriben las facultades de la Administración para declarar la LESIVIDAD de actos anulables favorables para los interesados?','A los cuatro años desde que se hubiera dictado el acto administrativo|A los seis meses desde su notificación|Al año de su publicación en el diario oficial|No prescriben nunca por tratarse de dinero público','La declaración de lesividad de actos anulables favorables no podrá adoptarse una vez transcurridos cuatro años desde que se dictó el acto administrativo (art. 107.2 LPAC).');
+  fact('LRJSP','6.1',7,'¿Qué naturaleza jurídica tienen las instrucciones y órdenes de servicio dictadas por los órganos administrativos?','Son directrices internas para dirigir la actividad de sus órganos jerárquicamente dependientes y no tienen carácter reglamentario|Son reglamentos ejecutivos con eficacia vinculante para todos los ciudadanos|Son actos administrativos recurribles en alzada por los administrados|Son normas con rango de decreto legislativo','Los órganos administrativos podrán dirigir las actividades de sus órganos dependientes mediante instrucciones y órdenes de servicio, que no tienen la consideración de disposiciones reglamentarias (art. 6 LRJSP).');
+  fact('LRJSP','9.1',7,'¿Qué exige la delegación de competencias entre órganos de una misma Administración Pública?','Deberá ser publicada en el Boletín Oficial correspondiente para surtir plenos efectos|Requiere aprobación previa del Consejo de Ministros en todo caso|Requiere el consentimiento unánime de los empleados públicos adscritos|No exige ningún requisito de publicidad formal','La delegación de competencias y su revocación deberán publicarse en el BOE, en el Boletín Oficial de la Comunidad Autónoma o en el de la Provincia según la Administración (art. 9.3 LRJSP).');
+  fact('LRJSP','11.1',7,'¿En qué consiste la ENCOMIENDA DE GESTIÓN entre órganos o entidades administrativas?','En la realización de actividades de carácter material o técnico de la competencia de los órganos, por razones de eficacia o carencia de medios técnicos|En la cesión de la titularidad de la competencia decisoria sustantiva|En la transferencia patrimonial de créditos presupuestarios|En la subordinación jerárquica orgánica del ente encomendado','La realización de actividades de carácter material o técnico podrá ser encomendada por razones de eficacia o falta de medios técnicos idóneos. No supone cesión de la titularidad de la competencia (art. 11.1 LRJSP).');
+  fact('LRJSP','19.2',7,'¿A quién corresponde la representación y el ejercicio de la secretaría en los órganos colegiados?','El Secretario podrá ser un miembro del propio órgano o un empleado público al servicio de la Administración correspondiente, con voz pero sin voto si no es miembro|Obligatoriamente el Presidente del Tribunal Supremo|El funcionario con mayor antigüedad del ministerio|Un interventor de la IGAE por designación forzosa','La designación del Secretario podrá recaer en un miembro del propio órgano o en un empleado público. Si no es miembro tendrá voz pero no voto (art. 19 LRJSP).');
+  fact('LCSP','12.1',24,'¿Qué son los contratos sujetos a regulación armonizada (SARA) según la Ley de Contratos del Sector Público?','Aquellos contratos cuyo valor estimado iguala o supera los umbrales fijados periódicamente por la Unión Europea|Los contratos menores adjudicados directamente a PYMES|Cualquier contrato de obra de más de 40.000 euros sin IVA|Los convenios interadministrativos de colaboración social','Son contratos sujetos a regulación armonizada (SARA) las obras, concesiones, suministros y servicios cuyo valor estimado es igual o superior a los umbrales comunitarios comunitarios (art. 12-17 LCSP).');
+  fact('LCSP','145.1',26,'¿Cuál es el principio rector para la adjudicación de los contratos públicos según la LCSP?','La oferta que presente la mejor relación calidad-precio mediante criterios económicos y cualitativos vinculados al objeto del contrato|La oferta económica más baja sin valorar aspectos técnicos ni ambientales|La oferta del licitador con mayor experiencia acumulada en la provincia|La designación discrecional del órgano de contratación sin ponderación','La adjudicación de los contratos se realizará utilizando una pluralidad de criterios en base a la mejor relación calidad-precio (art. 145 LCSP).');
+  fact('LCSP','150.1',26,'En el procedimiento de adjudicación, ¿de qué plazo dispone el licitador propuesto para presentar la documentación y constituir la garantía definitiva?','Diez días hábiles a contar desde el siguiente a aquel en que hubiera recibido el requerimiento|Tres días naturales por tratarse de trámite urgente|Quince días hábiles improrrogables|Un mes desde la publicación de las actas de la mesa','El órgano de contratación requerirá al licitador que haya presentado la mejor oferta para que en el plazo de diez días hábiles presente la documentación exigida y constituya la garantía definitiva (art. 150.2 LCSP).');
+  fact('LCSP','211.1',27,'¿Cuál de las siguientes es una causa de RESOLUCIÓN del contrato del sector público?','El incumplimiento culpable por el contratista de las obligaciones contractuales esenciales calificadas como tales en los pliegos|La demora del contratista en la entrega por causas imputables a la Administración|El pago anticipado de las cuotas por parte de la tesorería pública|La jubilación voluntaria del director facultativo de la obra','Son causas de resolución contractual la muerte o incapacidad del contratista, la declaración de concurso, el mutuo acuerdo y el incumplimiento de obligaciones esenciales (art. 211 LCSP).');
+  fact('EBEP','14.a',35,'¿Cuál de los siguientes es un DERECHO INDIVIDUAL del empleado público consagrado en el TREBEP?','A la inamovilidad en la condición de funcionario de carrera|Al incremento automático y sin límite de sus complementos de destino|A rechazar la evaluación del desempeño de su puesto de trabajo|A prestar servicios en cualquier administración autonómica sin concurso','Los empleados públicos tienen derecho a la inamovilidad en la condición de funcionario de carrera, al desempeño efectivo de funciones y a la progresión en la carrera profesional (art. 14 TREBEP).');
+  fact('EBEP','53.1',35,'¿Qué principios éticos y de conducta deben observar los empleados públicos según el Código de Conducta del TREBEP?','Actuarán con lealtad institucional, neutralidad, imparcialidad, integridad y ejemplaridad|Actuarán conforme a sus convicciones ideológicas personales en los expedientes|Podrán aceptar regalos y dádivas de valor razonable en razón de su cargo|Gozan de inmunidad frente a reclamaciones de los ciudadanos','Los empleados públicos respetarán la Constitución, actuarán con neutralidad política, objetividad, integridad, transparencia y dedicación al servicio público (arts. 52-54 TREBEP).');
+  fact('EBEP','95.2.a',37,'¿Cuál de las siguientes conductas está tipificada expresamente como FALTA DISCIPLINARIA MUY GRAVE en el TREBEP?','El incumplimiento del deber de fidelidad a la Constitución o al respectivo Estatuto de Autonomía en el ejercicio de la función pública|La falta de asistencia injustificada durante un solo día de trabajo|El retraso leve y reiterado en el inicio de la jornada laboral|La falta de consideración puntual con un compañero de unidad','Son faltas muy graves el incumplimiento del deber de fidelidad a la Constitución o al Estatuto, la discriminación grave y el abandono del servicio (art. 95.2 TREBEP).');
+  fact('LGP','40.1',41,'¿En qué consiste el principio presupuestario de ESPECIALIDAD CUALITATIVA de los créditos?','Los créditos para gastos se destinarán exclusivamente a la finalidad específica para la que hayan sido autorizados por la Ley de Presupuestos|Los créditos no pueden superar el importe monetario total aprobado|Los créditos solo pueden ejecutarse en el mes natural de su dotación|Los créditos pueden trasladarse libremente a cualquier partida ministerial','Los créditos para gastos se destinarán exclusivamente a la finalidad específica para la que hayan sido autorizados en el Presupuesto o por las modificaciones aprobadas (art. 40 LGP).');
+  fact('LGP','51.1',42,'¿A qué órgano corresponde con carácter general autorizar las TRANSFERENCIAS DE CRÉDITO entre distintas secciones presupuestarias?','Al Ministro de Hacienda y Función Pública o al Consejo de Ministros según la cuantía y el tipo de programa|Al Presidente del Congreso de los Diputados|A la Mesa del Senado en votación secreta|Al Interventor General de la Administración del Estado de oficio','Las transferencias entre diferentes secciones presupuestarias corresponden al Consejo de Ministros o al Ministro de Hacienda según las competencias del art. 61-63 de la Ley 47/2003 (LGP).');
+  fact('LGP','113',46,'¿En qué consiste la FISCALIZACIÓN PREVIA ejercida por la Intervención General de la Administración del Estado (IGAE)?','En el control interno de legalidad de los actos de la Administración que den lugar al reconocimiento de derechos o gastos antes de que sean aprobados|En una auditoría posterior a la liquidación del ejercicio presupuestario|En la aprobación política del techo de gasto en las Cortes Generales|En la inspección tributaria sobre los contribuyentes del IRPF','La función interventora tiene por objeto controlar, antes de que sean aprobados, los actos que den lugar al reconocimiento de derechos o a la realización de gastos (art. 148 LGP).');
+  fact('LBRL','20.1.b',9,'En los municipios de más de 5.000 habitantes, ¿cuál de los siguientes órganos es de existencia OBLIGATORIA?','La Comisión Especial de Cuentas y la Junta de Gobierno Local|El Consejo Económico y Social Municipal|La Comisión Mixta de Coordinación Policial|El Defensor del Ciudadano Municipal','En los municipios con población superior a 5.000 habitantes es obligatoria la Junta de Gobierno Local, así como la Comisión Especial de Cuentas en todos los municipios (art. 20 LBRL).');
+  fact('LBRL','21.1.s',9,'¿A quién corresponde en el Ayuntamiento el ejercicio de la jefatura superior de todo el personal y la jefatura de la Policía Local?','Al Alcalde|Al Pleno de la Corporación por mayoría absoluta|Al Concejal Delegado de Hacienda y Personal|Al Secretario General del Ayuntamiento','El Alcalde ostenta la jefatura superior de todo el personal de la entidad local y la jefatura de la Policía Municipal (art. 21.1.h y 21.1.i de la Ley 7/1985 LBRL).');
+  fact('LIG','45.1',19,'¿Cuál es el instrumento obligatorio que las empresas deben elaborar para alcanzar la igualdad de trato y de oportunidades entre mujeres y hombres?','Un Plan de Igualdad negociado con la representación legal de los trabajadores|Una declaración jurada anual ante el Registro Mercantil|Una auditoría retributiva voluntaria sin publicación|Un protocolo de vestimenta laboral no sexista','Las empresas están obligadas a respetar la igualdad de trato y de oportunidades. Aquellas de 50 o más trabajadores deberán elaborar y aplicar un Plan de Igualdad (art. 45 LO 3/2007).');
+  fact('LCC','2.1',21,'Según la Ley 7/2021 de Cambio Climático, ¿cuál es el porcentaje mínimo de reducción de emisiones de gases de efecto invernadero para el año 2030 respecto a 1990?','Al menos un 23 por ciento|Al menos un 10 por ciento|Al menos un 50 por ciento|No se establecen porcentajes intermedios','En el año 2030 las emisiones de gases de efecto invernadero del conjunto de la economía española deberán reducirse en al menos un 23% respecto del año 1990 (art. 3.1.a Ley 7/2021).');
+  fact('LCC','14.3',21,'¿Qué municipios españoles están obligados por ley a establecer zonas de bajas emisiones (ZBE) en su territorio?','Los municipios de más de 50.000 habitantes y los de más de 20.000 con superación de valores límite de contaminantes|Todos los municipios españoles sin excepción demográfica|Únicamente las capitales de provincia de más de 250.000 habitantes|Los municipios costeros e insulares exclusivamente','Los municipios de más de 50.000 habitantes y los de más de 20.000 cuando se superen los valores límite deberán adoptar planes de movilidad sostenible con zonas de bajas emisiones (art. 14.3 Ley 7/2021).');
+
 
   const noteProcedure = '';
   const officialAcademyNotes = {};
@@ -5269,6 +5311,17 @@ ${contentSection}`;
   }
   function exportNotes(type){const t=currentTopic();if(!t?.text)return toast('Añade apuntes al tema antes de exportar.');const name=t.title.replace(/[^\p{L}\p{N} -]/gu,'').slice(0,80),isWord=type==='docx';download(isWord?docxBlob(t):pdfBlob(t,type==='pdf2'?2:1),name+' - '+(readerTab==='table'?'tabla':'esquema')+(isWord?'.docx':' - '+(type==='pdf2'?'2 columnas':'1 columna')+'.pdf'));toast('Documento preparado para descargar.')}
   const glossary=text=>sentences(text).map(s=>s.match(/^([\p{L}\d][\p{L}\d \-\/]{1,45})\s*[:=]\s*(.{6,600})$/u)).filter(Boolean).map(m=>({term:m[1].trim(),def:m[2].trim()}));
+  function isOfficialExamQuestion(q) {
+    if (!q || !q.q || !Array.isArray(q.a) || q.a.length !== 4) return false;
+    // Strictly forbid cloze / fill-in-the-blank / "completa el fragmento"
+    if (q.q.includes('_____') || q.q.includes('____') || /^Completa\b/i.test(q.q) || /fragmento de tus apuntes/i.test(q.q)) {
+      return false;
+    }
+    // Reject empty or invalid options
+    if (q.a.some(opt => !opt || !String(opt).trim())) return false;
+    return true;
+  }
+
     /* =================================================================
      MOTOR DE GENERACIÓN DINÁMICA DE PREGUNTAS DEL TEMARIO
      ================================================================= */
@@ -5277,13 +5330,13 @@ ${contentSection}`;
     const qs = [];
     const titleNorm = norm(t.title || '');
 
-    // 1. Text-driven questions (if topic has user notes or text)
+    // 1. Text-driven questions (100% exam-style, NO clozes, NO '_____')
     if (t.text && t.text.length > 40) {
       const sens = sentences(t.text).filter(s => s.length >= 25 && s.length <= 420);
-      
-      // Look for plazos
+
+      // 1.1 Plazos en formato pregunta de examen oficial (SIN completar)
       for (const s of sens) {
-        const mPlazo = s.match(/(?:plazo(?:\s+máximo|\s+ordinario)?(?:\s+es|\s+será)?\s+(?:de\s+)?|en\s+(?:el\s+plazo\s+de\s+|un\s+plazo\s+de\s+))(\d+|un|una|dos|tres|cuatro|cinco|diez|quince|veinte|veintidós|treinta|tres\s+meses|seis\s+meses|un\s+año)\s+(días?(?:\s+(?:hábiles|naturales))?|mes(?:es)?|años?|horas?)/i);
+        const mPlazo = s.match(/(?:plazo(?:\s+máximo|\s+ordinario)?(?:\s+es|\s+será)?(?:\s+de\s+)?|en\s+(?:el\s+plazo\s+de\s+|un\s+plazo\s+de\s+))(\d+|un|una|dos|tres|cuatro|cinco|diez|quince|veinte|veintidós|treinta|tres\s+meses|seis\s+meses|un\s+año)\s+(días?(?:\s+(?:hábiles|naturales))?|mes(?:es)?|años?|horas?)/i);
         if (mPlazo) {
           const correct = mPlazo[1] + ' ' + mPlazo[2];
           const isDays = /día/i.test(mPlazo[2]);
@@ -5300,43 +5353,63 @@ ${contentSection}`;
           }
           const options = [correct, ...distractors.slice(0, 3)];
           if (options.length === 4) {
-            const cleanAction = s.replace(mPlazo[0], '...').replace(/^(?:En|Por|Asimismo|Sin embargo|No obstante|El|La),?\s+/i, '').slice(0, 110);
+            const cleanAction = s.replace(mPlazo[0], '').replace(/^(?:En|Por|Asimismo|Sin embargo|No obstante|El|La),?\s+/i, '').replace(/\s{2,}/g, ' ').slice(0, 110);
             qs.push({
               id: 'dyn-p-' + t.id + '-' + qs.length,
               t: t.id,
-              q: `Según el temario sobre ${t.title.split('.')[1] || t.title}, ¿cuál es el plazo correspondiente en el siguiente supuesto: «${cleanAction.trim()}»?`,
+              q: `En el marco del tema «${t.title}», ¿cuál es el plazo correspondiente en relación con: «${cleanAction.trim()}»?`,
               a: options,
               c: 0,
               ref: t.title,
               url: t.source || '',
-              why: `Fundamentación del apunte: «${s.trim()}»`
+              why: `Fundamentación legal del temario: «${s.trim()}»`
             });
           }
         }
         if (qs.length >= 4) break;
       }
 
-      // Look for majorities
+      // 1.2 Mayorías en formato pregunta de examen oficial (SIN huecos ni _____)
       for (const s of sens) {
         const mMayoria = s.match(/(mayoría\s+(?:absoluta|simple|cualificada|de\s+dos\s+tercios|de\s+tres\s+quintos))/i);
         if (mMayoria) {
           const correct = mMayoria[1].charAt(0).toUpperCase() + mMayoria[1].slice(1).toLowerCase();
           const allM = ['Mayoría absoluta', 'Mayoría simple', 'Mayoría de tres quintos', 'Mayoría de dos tercios'];
           const options = [correct, ...allM.filter(x => norm(x) !== norm(correct)).slice(0, 3)];
-          const cleanSent = s.replace(mMayoria[0], '_____').slice(0, 120);
+          const cleanSent = s.replace(mMayoria[0], '').replace(/\s{2,}/g, ' ').slice(0, 120);
           qs.push({
             id: 'dyn-m-' + t.id + '-' + qs.length,
             t: t.id,
-            q: `¿Qué tipo de mayoría se exige en el siguiente supuesto del tema: «${cleanSent.trim()}»?`,
+            q: `¿Qué tipo de mayoría se exige legalmente según el programa para la siguiente previsión: «${cleanSent.trim()}»?`,
             a: options,
             c: 0,
             ref: t.title,
             url: t.source || '',
-            why: `Texto de estudio: «${s.trim()}»`
+            why: `Texto oficial de estudio: «${s.trim()}»`
           });
         }
         if (qs.length >= 7) break;
       }
+
+      // 1.3 Conceptos del glosario formulados como preguntas tipo test de examen (NO clozes)
+      const vocabList = glossary(t.text);
+      vocabList.slice(0, 4).forEach((v, i) => {
+        const allLegalTerms = ['Recurso de alzada', 'Subsanación preceptiva', 'Silencio positivo', 'Prescripción de la acción', 'Caducidad del procedimiento', 'Competencia material', 'Nulidad de pleno derecho', 'Anulabilidad'];
+        const otherTerms = shuffle(allLegalTerms.filter(x => norm(x) !== norm(v.term)));
+        const options = [v.term, ...otherTerms.slice(0, 3)];
+        if (options.length === 4) {
+          qs.push({
+            id: 'dyn-g-' + t.id + '-' + i,
+            t: t.id,
+            q: `En el ámbito de «${t.title}», ¿a qué concepto jurídico o trámite corresponde la siguiente definición: «${v.def.slice(0, 160)}»?`,
+            a: options,
+            c: 0,
+            ref: t.title,
+            url: t.source || '',
+            why: `${v.term}: ${v.def}`
+          });
+        }
+      });
     }
 
     // Helper to add question
@@ -5560,7 +5633,7 @@ ${contentSection}`;
     return qs;
   }
 
-  function clozeQuestions(t){if(!t?.text)return [];const ls=sentences(t.text).filter(s=>words(s).length>=6&&s.length<620),qs=[],pool=[...new Set(ls.flatMap(s=>s.match(keyRX)||[]))],vocab=glossary(t.text);vocab.forEach((v,i)=>{const other=shuffle(vocab.filter(x=>norm(x.term)!==norm(v.term)).map(x=>x.term));const a=[...new Set([v.term,...other,'Resolución','Subsanación','Prescripción','Competencia'])].slice(0,4);qs.push({id:'g'+t.id+i,t:t.id,q:'¿Qué concepto de tus apuntes corresponde a esta definición? '+v.def,a,c:0,ref:t.title,url:t.source,why:v.term+': '+v.def})});ls.forEach((s,i)=>{const matches=s.match(keyRX)||[];const terms=matches.length?[...new Set(matches)]:[...new Set(words(s).map(v=>v.replace(/[^\p{L}]/gu,'')).filter(v=>v.length>=7&&!/^(artículo|artículos|durante|mediante|siempre|siguiente|presente|establece|conforme)$/i.test(v)))].slice(0,2);terms.slice(0,2).forEach((term,j)=>{let others=pool.filter(x=>norm(x)!==norm(term));if(/d[ií]as|mes|años|horas/i.test(term))others=shuffle(['5 días','10 días','15 días','un mes','tres meses','seis meses','un año'].filter(x=>norm(x)!==norm(term)));else others=[...others,...shuffle(ls.filter(x=>x!==s).flatMap(x=>words(x).map(w=>w.replace(/[^\p{L}]/gu,'')).filter(w=>w.length>=8)))];const a=[...new Map([term,...others,'competencia','resolución','procedimiento','presupuesto'].map(x=>[norm(x),x])).values()].slice(0,4);if(a.length===4)qs.push({id:'c'+t.id+'-'+i+'-'+j,t:t.id,q:'Completa el fragmento de tus apuntes: «'+s.replace(term,'_____')+'»',a,c:0,ref:t.title,url:t.source,why:'Texto original: «'+s+'»',origin:'local'})})});return qs.slice(0,160)}
+  function clozeQuestions(t){ return []; } // Deprecated in favor of 100% authentic exam-style questions
   function questionPool({scope='all',block=0,tid='',count=30}={}) {
     const o = opp();
     const ts = o.topics.filter(t => scope === 'topic' ? t.id === tid : scope === 'block' ? t.b === Number(block) : true);
@@ -5569,18 +5642,16 @@ ${contentSection}`;
     if (scope === 'failed') {
       return Object.entries(state.mistakes)
         .filter(([k,v]) => k.startsWith(o.id + ':') && v.count > 0)
-        .map(([,v]) => v.question);
+        .map(([,v]) => v.question)
+        .filter(isOfficialExamQuestion);
     }
 
     let qs = [...(o.questions || [])].filter(q => ids.has(q.t));
 
-    // Dynamic generation from all syllabus topics in scope
+    // Dynamic generation from all syllabus topics in scope (100% official multiple choice, NO clozes)
     for (const t of ts) {
       const dynQs = generateDynamicTopicQuestions(t);
       qs.push(...dynQs);
-      if (t.text) {
-        qs.push(...clozeQuestions(t));
-      }
     }
 
     // Include official questions from bank for broad scopes or when syllabus pool needs enrichment
@@ -5593,8 +5664,11 @@ ${contentSection}`;
       qs.push(...bankMapped);
     }
 
+    // Strictly enforce 100% official examination style (4 options, NO '_____', NO 'Completa...')
+    const examQuestions = qs.filter(isOfficialExamQuestion);
+
     // Deduplicate by question text
-    const unique = [...new Map(qs.map(q => [q.q, q])).values()];
+    const unique = [...new Map(examQuestions.map(q => [q.q, q])).values()];
     return shuffle(unique);
   }
   function sourceLink(q){const u=safeURL(q.url);return u?`<a class="law-link" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(q.ref||'Consultar fuente')} ${I('external',11)}</a>`:`<span class="tiny muted">Fuente local: ${esc(q.ref||'Mis apuntes')}</span>`}
@@ -6982,8 +7056,10 @@ ${contentSection}`;
     } else if (type === 'sopa') {
       activeGame = { type, started: now, ...makeWordGrid(), done: false, message: 'Selecciona la primera letra y después la última.' };
     } else {
-      const pool = questionPool({ scope, tid, block, count: 50 });
-      const shuffled = shuffle(pool);
+      const pool = questionPool({ scope, tid, block, count: 60 });
+      const examPool = pool.filter(isOfficialExamQuestion);
+      const finalPool = examPool.length >= 8 ? examPool : bank.map((q, idx) => ({ ...q, id: 'sf-b-' + idx }));
+      const shuffled = shuffle(finalPool);
       activeGame = {
         type: 'fighter',
         started: now,
@@ -7166,12 +7242,12 @@ ${contentSection}`;
     }
 
     g.seen = g.seen || [];
-    // Filter out already seen questions in this match to guarantee NO repeats!
-    let nextCandidates = g.pool.filter(q => q && !g.seen.includes(q.id));
+    // Filter out already seen questions and ensure 100% exam style (NO clozes)
+    let nextCandidates = g.pool.filter(q => q && !g.seen.includes(q.id) && isOfficialExamQuestion(q));
     if (!nextCandidates.length) {
       // Replenish with fresh pool across topics
-      const freshPool = questionPool({ scope: g.scope, tid: g.tid, block: g.block, count: 60 });
-      g.pool = shuffle(freshPool);
+      const freshPool = questionPool({ scope: g.scope, tid: g.tid, block: g.block, count: 60 }).filter(isOfficialExamQuestion);
+      g.pool = shuffle(freshPool.length >= 8 ? freshPool : bank);
       g.seen = [];
       nextCandidates = g.pool;
     }
@@ -8783,6 +8859,10 @@ ${contentSection}`;
       </form>
     `, true);
   }
+  window.bank = bank;
+  window.isOfficialExamQuestion = isOfficialExamQuestion;
+  window.questionPool = questionPool;
+  window.generateDynamicTopicQuestions = generateDynamicTopicQuestions;
   window.openEditPastelModal = openEditPastelModal;
   window.setTopicMainPdf = setTopicMainPdf;
   window.openManageTopicPdfsModal = openManageTopicPdfsModal;
