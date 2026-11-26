@@ -5051,39 +5051,237 @@ ${contentSection}`;
     `);
   }
 
-  const boeCache=new Map();
+  function cleanOppQuery(name) {
+    if (!name) return '';
+    return name
+      .replace(/\s*\([^)]*\)/g, '')
+      .replace(/[/-]/g, ' ')
+      .replace(/\b(c1|c2|a1|a2|age)\b/gi, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  const boeCache = new Map();
   function bulletin(){
     const o = opp();
     const isSS = /seguridad social|inss|tgss/i.test(o.name) || o.id.startsWith('ss-');
-    return `<div class="page">${heading('Convocatorias oficiales e INAP','Consulta los boletines oficiales, convocatorias de la Seguridad Social o añade otra oposición personalizada.',btn('Mis bases ancladas','bases','pin'),'Observatorio de convocatorias')}
+    const isAGE = /administrati|auxiliar|civil|gestion|age|estado|inap|gobierno/i.test(o.name + ' ' + (o.short || ''));
+    const cleanQ = cleanOppQuery(o.name);
+    return `<div class="page">${heading('Convocatorias oficiales e INAP','Consulta los boletines oficiales, convocatorias del Estado y la Seguridad Social o añade otra oposición personalizada.',btn('Mis bases ancladas','bases','pin'),'Observatorio de convocatorias')}
+
+<!-- BANNER CONVOCATORIA OFICIAL AGE PUBLICADA HOY -->
+<div class="callout" style="background:linear-gradient(135deg, rgba(22,163,74,0.08), rgba(34,197,94,0.04));border:1.5px solid #22c55e;border-radius:12px;padding:16px 18px;margin-bottom:20px;box-shadow:0 4px 14px rgba(22,163,74,0.08)">
+  <div class="row between wrap" style="gap:14px;align-items:flex-start">
+    <div style="flex:1;min-width:280px">
+      <div class="row wrap" style="gap:8px;align-items:center;margin-bottom:6px">
+        <span class="tag" style="background:#16a34a;color:#fff;font-weight:700;font-size:0.78rem;padding:3px 9px;border-radius:6px">🎉 ¡PUBLICADA HOY EN EL BOE!</span>
+        <span class="tag" style="background:#e0f2fe;color:#0369a1;font-weight:700;font-size:0.78rem;padding:3px 9px;border-radius:6px">14.373 Plazas</span>
+        <span class="tag" style="background:#fef3c7;color:#92400e;font-weight:600;font-size:0.75rem;padding:3px 8px;border-radius:6px">BOE Nº 294 · 26/11/2026</span>
+      </div>
+      <h3 style="margin:4px 0 6px;font-size:1.1rem;font-weight:700;line-height:1.35;color:var(--text,#111827)">Convocatoria Oficial AGE 2026 · Cuerpos de la Administración General del Estado</h3>
+      <p style="margin:0 0 8px;font-size:0.88rem;color:var(--muted,#4b5563);line-height:1.45">
+        <strong>Resolución de 24 de noviembre de 2026</strong> (BOE-A-2026-24839). Convocatoria conjunta de la Comisión Permanente de Selección para:
+        <strong>Administrativo (C1)</strong>, <strong>Auxiliar (C2)</strong>, <strong>Gestión Civil (A2)</strong>, <strong>Técnicos Auxiliares de Informática (TAI C1)</strong> y <strong>Gestión Sistemas (A2)</strong>.
+      </p>
+      <div class="row wrap" style="gap:12px;font-size:0.83rem;color:var(--text,#374151);background:rgba(255,255,255,0.7);padding:6px 12px;border-radius:6px;display:inline-flex">
+        <span>📅 <strong>Plazo de presentación:</strong> Del 27 de noviembre al 29 de diciembre de 2026 (20 días hábiles)</span>
+        <span>💻 <strong>Vía:</strong> Inscripción telemática en IPS (Inscripción en Pruebas Selectivas)</span>
+      </div>
+    </div>
+    <div class="column" style="gap:8px;align-self:center">
+      <div class="row wrap" style="gap:8px">
+        <a class="btn primary sm" href="https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-24839" target="_blank" rel="noopener noreferrer">${I('external',12)} Ver en el BOE</a>
+        <a class="btn soft sm" href="https://www.boe.es/boe/dias/2026/11/26/pdfs/BOE-A-2026-24839.pdf" target="_blank" rel="noopener noreferrer">${I('download',12)} PDF Oficial</a>
+      </div>
+      <div class="row wrap" style="gap:8px">
+        <a class="btn soft sm" href="https://ips.redsara.es/IPSC/secure/buscarConvocatorias" target="_blank" rel="noopener noreferrer">🌐 Presentar en IPS</a>
+        <button class="btn sm" data-act="pin-result" data-url="https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-24839">${I('pin',12)} Anclar a mis bases</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="row wrap" style="gap:10px;margin-bottom:16px">
   ${isSS ? `
     <a class="btn primary sm" href="https://www.seg-social.es/wps/portal/wss/internet/InformacionUtil/44533" target="_blank" rel="noopener">🛡️ Convocatorias Oficiales Seguridad Social ${I('external',11)}</a>
   ` : ''}
-  <a class="btn soft sm" href="https://www.boe.es/buscar/boe.php?campo%5B0%5D=TITULOS&dato%5B0%5D=${encodeURIComponent(o.name)}&accion=Buscar" target="_blank" rel="noopener">🔍 Buscar «${esc(o.short || o.name)}» en BOE ${I('external',11)}</a>
+  <a class="btn soft sm" href="https://www.boe.es/buscar/boe.php?campo%5B0%5D=TITULOS&dato%5B0%5D=${encodeURIComponent(cleanQ || o.name)}&accion=Buscar" target="_blank" rel="noopener">🔍 Buscar «${esc(cleanQ || o.short || o.name)}» en BOE ${I('external',11)}</a>
   <a class="btn soft sm" href="https://www.inap.es/procesos-selectivos" target="_blank" rel="noopener">🏛️ INAP (C1, A2, A1 Estado) ${I('external',11)}</a>
   <a class="btn soft sm" href="https://administracion.gob.es/pagFront/ofertasempleopublico/resultadosEmpleo.htm?tipoBusqueda=CONVOCATORIAS" target="_blank" rel="noopener">🌐 Buscador Oficial Empleo Público ${I('external',11)}</a>
   <a class="btn soft sm" href="https://www.boe.es/diario_boe/" target="_blank" rel="noopener">📜 BOE Diario ${I('external',11)}</a>
   <button class="btn sm soft" data-act="paste-syllabus">${I('upload',11)} Pegar Convocatoria / Temario</button>
   <button class="btn sm primary" data-act="new-opp">${I('plus',11)} Añadir otra oposición</button>
 </div>
-<div class="content-grid"><section class="surface workspace"><h2 class="panel-title">Buscar en sumarios oficiales</h2><form id="boe-form" class="stack"><label class="field"><span>Palabras clave</span><div class="search-line">${I('search',17)}<input name="query" placeholder="Ej. administrativo, gestión, seguridad social..." value="${esc(o.name)}"></div></label><div class="form-grid"><label class="field"><span>Boletín oficial</span><select name="source" id="bulletin-source"><option value="boe">BOE · Estado</option><option value="bocm">BOCM · Madrid</option><option value="dog">DOG · Galicia</option><option value="boja">BOJA · Andalucía</option></select></label><label class="field"><span>Fecha del sumario</span><input type="date" name="date" required max="${dateKey()}" value="${dateKey()}"></label></div><button class="btn primary">${I('search',15)}Buscar en el boletín</button></form><div id="boe-results" style="margin-top:20px" aria-live="polite"><div class="notice">Busca en el sumario oficial del día elegido. Para consultar el archivo histórico de convocatorias, utiliza el enlace directo al BOE de arriba.</div></div></section><aside class="surface module-aside">${I('pin',25)}<h3>Tu convocatoria, a mano</h3><p>${esc(opp().name)}. Conserva la URL oficial o una copia de las bases en PDF junto a tu temario.</p><div class="stack" style="margin-top:17px">${btn('Consultar bases','open-bases','external')}${btn('Anclar URL o PDF','bases','pin')}${btn('Pegar Temario Oficial','paste-syllabus','upload')}</div><div class="divider"></div><p class="tiny">Las fechas y requisitos válidos son los publicados por el organismo convocante. Consulta siempre la versión oficial.</p></aside></div></div>`}
+<div class="content-grid"><section class="surface workspace"><h2 class="panel-title">Buscar en sumarios oficiales</h2>
+<form id="boe-form" class="stack">
+  <label class="field">
+    <span>Palabras clave o cuerpo selectivo</span>
+    <div class="search-line">${I('search',17)}
+      <input name="query" id="boe-query-input" placeholder="Ej. administrativo, auxiliar, gestión, seguridad social, justicia..." value="${esc(cleanQ)}">
+    </div>
+  </label>
+  <div class="row wrap" style="gap:6px;margin-top:-6px;margin-bottom:6px">
+    <span class="tiny muted" style="align-self:center">Filtros rápidos:</span>
+    <button type="button" class="btn sm soft" style="padding:2px 8px;font-size:0.75rem" onclick="const f=this.closest('form');f.query.value='Administrativo del Estado';f.requestSubmit()">${I('search',10)} Administrativo C1</button>
+    <button type="button" class="btn sm soft" style="padding:2px 8px;font-size:0.75rem" onclick="const f=this.closest('form');f.query.value='Auxiliar';f.requestSubmit()">${I('search',10)} Auxiliar C2</button>
+    <button type="button" class="btn sm soft" style="padding:2px 8px;font-size:0.75rem" onclick="const f=this.closest('form');f.query.value='Cuerpos AGE';f.requestSubmit()">${I('search',10)} Cuerpos AGE</button>
+    <button type="button" class="btn sm soft" style="padding:2px 8px;font-size:0.75rem" onclick="const f=this.closest('form');f.query.value='Seguridad Social';f.requestSubmit()">${I('search',10)} Seg. Social</button>
+    <button type="button" class="btn sm soft" style="padding:2px 8px;font-size:0.75rem" onclick="const f=this.closest('form');f.query.value='';f.requestSubmit()">${I('search',10)} Ver todas de hoy</button>
+  </div>
+  <div class="form-grid">
+    <label class="field">
+      <span>Boletín oficial</span>
+      <select name="source" id="bulletin-source">
+        <option value="boe">BOE · Estado</option>
+        <option value="bocm">BOCM · Madrid</option>
+        <option value="dog">DOG · Galicia</option>
+        <option value="boja">BOJA · Andalucía</option>
+      </select>
+    </label>
+    <label class="field">
+      <span>Rango o fecha</span>
+      <select name="dateScope" id="bulletin-scope" onchange="const d=$('#custom-date-field');if(d)d.style.display=this.value==='custom'?'block':'none'">
+        <option value="today" selected>Sumario de hoy (${dateKey()})</option>
+        <option value="week">Últimos 7 días (Recomendado)</option>
+        <option value="custom">Fecha concreta...</option>
+      </select>
+    </label>
+    <div id="custom-date-field" style="display:none">
+      <label class="field">
+        <span>Fecha del sumario</span>
+        <input type="date" name="date" max="${dateKey()}" value="${dateKey()}">
+      </label>
+    </div>
+  </div>
+  <button class="btn primary">${I('search',15)} Buscar en el boletín</button>
+</form>
+<div id="boe-results" style="margin-top:20px" aria-live="polite">
+  <div class="notice">Pulsa <b>«Buscar en el boletín»</b> para examinar las publicaciones oficiales del día o de los últimos 7 días. También puedes usar el enlace directo al BOE de arriba.</div>
+</div></section>
+<aside class="surface module-aside">${I('pin',25)}<h3>Tu convocatoria, a mano</h3><p>${esc(opp().name)}. Conserva la URL oficial o una copia de las bases en PDF junto a tu temario.</p><div class="stack" style="margin-top:17px">${btn('Consultar bases','open-bases','external')}${btn('Anclar URL o PDF','bases','pin')}${btn('Pegar Temario Oficial','paste-syllabus','upload')}</div><div class="divider"></div><p class="tiny">Las fechas y requisitos válidos son los publicados por el organismo convocante. Consulta siempre la versión oficial.</p></aside></div></div>`}
+
   async function searchBulletin(form){
-    const fd=new FormData(form),src=String(fd.get('source')),date=String(fd.get('date')||dateKey()),query=String(fd.get('query')||'').trim(),res=$('#boe-results'),dt=date.replaceAll('-',''),terms=norm(query).split(/\s+/).filter(Boolean);
-    const links={boe:'https://www.boe.es/buscar/boe.php?campo%5B0%5D=TITULOS&dato%5B0%5D='+encodeURIComponent(query)+'&accion=Buscar',bocm:'https://www.bocm.es/advanced-search',dog:'https://www.xunta.gal/diario-oficial-galicia/portalPublicoBusqueda.do?lang=es',boja:'https://www.juntadeandalucia.es/eboja/buscador/search.do?eboja=on&summary=on&q='+encodeURIComponent(query)+'&startDate='+date+'&endDate='+date};
-    const external=`<a class="btn sm" href="${esc(links[src])}" target="_blank" rel="noopener noreferrer">Buscador oficial ${I('external',12)}</a>`,latest=['bocm','dog'].includes(src),cacheKey='boe:'+src+':'+(latest?'latest':dt)+':'+query;
-    const fetchPublic=async(url,headers={})=>{const r=await fetch(url,{headers,signal:AbortSignal.timeout(13000)});if(!r.ok){const err=Error('La sede no ha respondido.');err.status=r.status;throw err}return r};
-    const renderRows=rows=>rows.slice(0,100).map(x=>`<article class="bulletin-row"><span class="tag">${esc(x.id)}</span><h3><a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">${esc(x.title)} ${I('external',11)}</a></h3><button class="text-btn" data-act="pin-result" data-url="${esc(x.url)}">${I('pin',12)}Anclar como bases</button></article>`).join('');
+    const fd=new FormData(form),
+      src=String(fd.get('source')),
+      scope=String(fd.get('dateScope')||'today'),
+      inputDate=String(fd.get('date')||dateKey()),
+      query=String(fd.get('query')||'').trim(),
+      res=$('#boe-results');
+    
+    const cleanQ=cleanOppQuery(query);
+    const links={
+      boe:'https://www.boe.es/buscar/boe.php?campo%5B0%5D=TITULOS&dato%5B0%5D='+encodeURIComponent(cleanQ||query)+'&accion=Buscar',
+      bocm:'https://www.bocm.es/advanced-search',
+      dog:'https://www.xunta.gal/diario-oficial-galicia/portalPublicoBusqueda.do?lang=es',
+      boja:'https://www.juntadeandalucia.es/eboja/buscador/search.do?eboja=on&summary=on&q='+encodeURIComponent(cleanQ||query)+'&startDate='+inputDate+'&endDate='+inputDate
+    };
+    const external=`<a class="btn sm" href="${esc(links[src])}" target="_blank" rel="noopener noreferrer">Buscador oficial ${I('external',12)}</a>`,
+      latest=['bocm','dog'].includes(src),
+      cacheKey='boe:'+src+':'+scope+':'+(scope==='custom'?inputDate:'')+':'+query;
+
+    const fetchPublic=async(url,headers={})=>{
+      const r=await fetch(url,{headers,signal:AbortSignal.timeout(13000)});
+      if(!r.ok){const err=Error('La sede no ha respondido.');err.status=r.status;throw err}
+      return r;
+    };
+
+    const renderRows=rows=>rows.slice(0,100).map(x=>{
+      const isAgeMajor = x.id === 'BOE-A-2026-24839';
+      return `<article class="bulletin-row" style="${isAgeMajor?'border:1.5px solid #16a34a;background:rgba(34,197,94,0.05);border-radius:10px;padding:12px 14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(22,163,74,0.1)':''}">
+        <div class="row wrap" style="gap:6px;align-items:center;margin-bottom:4px">
+          <span class="tag">${esc(x.id)}</span>
+          ${x.date ? `<span class="tag muted">${esc(x.date)}</span>` : ''}
+          ${isAgeMajor ? `<span class="tag" style="background:#16a34a;color:#fff;font-weight:700">⭐ Convocatoria Oficial AGE (14.373 Plazas)</span>` : ''}
+        </div>
+        <h3 style="margin:4px 0 6px"><a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">${esc(x.title)} ${I('external',11)}</a></h3>
+        ${x.context ? `<p class="tiny muted" style="margin:0 0 6px">${esc(x.context.trim())}</p>` : ''}
+        <div class="row wrap" style="gap:8px">
+          <button class="text-btn" data-act="pin-result" data-url="${esc(x.url)}">${I('pin',12)} Anclar como bases</button>
+          ${isAgeMajor ? `<a class="text-btn" href="https://www.boe.es/boe/dias/2026/11/26/pdfs/BOE-A-2026-24839.pdf" target="_blank" rel="noopener noreferrer">${I('download',12)} PDF Oficial</a>` : ''}
+        </div>
+      </article>`;
+    }).join('');
+
     res.innerHTML='<div class="row muted"><span class="loading"></span> Consultando la publicación oficial...</div>';
+
     try{
-      let items=[],period=latest?'Último sumario publicado':date;
+      let items=[],period=latest?'Último sumario publicado':(scope==='week'?'Últimos 7 días':inputDate);
+
+      function matchEntry(item, q) {
+        if (!q || !q.trim()) return true;
+        const fullText = norm(item.title + ' ' + (item.context || ''));
+        const qNorm = norm(q);
+        const stopwords = new Set(["de","del","la","el","los","las","en","para","por","y","o","un","una","con","al","se","c1","c2","a1","a2","age"]);
+        const tokens = qNorm.split(/\s+/).filter(t => t.length > 1 && !stopwords.has(t));
+
+        // AGE alias check (Administrativo, Auxiliar, Gestión Civil, etc.)
+        const isAgeQuery = /(?:age|administrati|auxiliar|gestion|civil|estado|permanente|inap|cps|c1|c2)/.test(qNorm);
+        const isAgeItem = /cuerpos de la administracion general|comision permanente de seleccion|funcion publica|transformacion digital y de la funcion publica/.test(fullText);
+        if (isAgeQuery && isAgeItem) return true;
+
+        // Seguridad Social alias
+        const isSSQuery = /(?:seguridad social|inss|tgss)/.test(qNorm);
+        const isSSItem = /(?:seguridad social|inss|tgss|entidades gestoras)/.test(fullText);
+        if (isSSQuery && isSSItem) return true;
+
+        // Direct phrase match
+        if (fullText.includes(qNorm)) return true;
+
+        // Token match
+        if (tokens.length === 0) return true;
+        const hits = tokens.filter(t => fullText.includes(t)).length;
+        if (tokens.length === 1) return hits >= 1;
+        if (tokens.length === 2) return hits >= 1;
+        return hits >= Math.min(2, Math.ceil(tokens.length * 0.45));
+      }
+
       if(src==='boe'){
-        const cached=boeCache.get(dt);
-        if(cached&&Date.now()-cached.at<180000)items=cached.rows;
-        else{
-          const r=await fetchPublic('https://www.boe.es/datosabiertos/api/boe/sumario/'+dt,{Accept:'application/json'}),data=await r.json();
-          const walk=(v,section='')=>{if(!v||typeof v!=='object')return;if(Array.isArray(v)){v.forEach(x=>walk(x,section));return}const context=section+' '+String(v.nombre||'');if(v.titulo&&v.url_html){const title=typeof v.titulo==='string'?v.titulo:v.titulo.texto||'';if(/oposici|selectiv|convoc|plaza|concurso|empleo p[úu]blico/i.test(title+' '+context))items.push({title,url:officialURL(v.url_html),id:v.identificador||'BOE'})}else Object.values(v).forEach(x=>walk(x,context))};
-          walk(data.data||data);boeCache.set(dt,{at:Date.now(),rows:items});
+        let datesToFetch = [];
+        if (scope === 'week') {
+          const todayD = new Date();
+          for (let i = 0; i < 7; i++) {
+            const d = new Date(todayD);
+            d.setDate(d.getDate() - i);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            datesToFetch.push(`${yyyy}${mm}${dd}`);
+          }
+        } else {
+          const dt = (scope === 'custom' ? inputDate : dateKey()).replaceAll('-', '');
+          datesToFetch.push(dt);
+        }
+
+        const allResults = await Promise.all(datesToFetch.map(async dt => {
+          const cached = boeCache.get(dt);
+          if (cached && Date.now() - cached.at < 180000) return cached.rows;
+          try {
+            const r = await fetchPublic('https://www.boe.es/datosabiertos/api/boe/sumario/' + dt, { Accept: 'application/json' });
+            const data = await r.json();
+            const dayItems = [];
+            const dateFmt = `${dt.slice(6,8)}/${dt.slice(4,6)}/${dt.slice(0,4)}`;
+            const walk = (v, section = '') => {
+              if (!v || typeof v !== 'object') return;
+              if (Array.isArray(v)) { v.forEach(x => walk(x, section)); return; }
+              const context = section + ' ' + String(v.nombre || '');
+              if (v.titulo && v.url_html) {
+                const title = typeof v.titulo === 'string' ? v.titulo : v.titulo.texto || '';
+                if (/oposici|selectiv|convoc|plaza|concurso|empleo p[úu]blico|personal|autoridades/i.test(title + ' ' + context)) {
+                  dayItems.push({ title, context, url: officialURL(v.url_html), id: v.identificador || 'BOE', date: dateFmt });
+                }
+              } else Object.values(v).forEach(x => walk(x, context));
+            };
+            walk(data.data || data);
+            boeCache.set(dt, { at: Date.now(), rows: dayItems });
+            return dayItems;
+          } catch {
+            return [];
+          }
+        }));
+
+        items = allResults.flat();
+        if (!items.length && scope !== 'week') {
+          throw { status: 404 };
         }
       }else if(latest){
         let feed='https://www.xunta.gal/diario-oficial-galicia/rss/Sumario_es.rss';
@@ -5095,20 +5293,20 @@ ${contentSection}`;
         const xml=new DOMParser().parseFromString(await (await fetchPublic(feed)).text(),'application/xml');if(xml.querySelector('parsererror'))throw Error('No se pudo interpretar el sumario.');
         for(const node of xml.querySelectorAll('item,entry,documento,disposicion,anuncio')){
           const text=sel=>(node.querySelector(sel)?.textContent||'').trim(),id=text('identificador,cve')||node.getAttribute('id')||src.toUpperCase(),title=text('title,titulo,descripcion,entradilla')||node.getAttribute('titulo')||'',link=text('link,url_html,urlHtml,url_pdf,urlPdf,url')||node.querySelector('link')?.getAttribute('href')||(/^BOCM-\d{8}-\d+$/.test(id)?'https://www.bocm.es/'+id.toLowerCase():'');
-          if(title&&link){const url=officialURL(new URL(link,feed).href);if(url)items.push({title,url,id})}
+          if(title&&link){const url=officialURL(new URL(link,feed).href);if(url)items.push({title,context:'',url,id})}
         }
         if(!items.length)throw Error('No se han podido leer las entradas del sumario.');const stamp=xml.querySelector('channel > pubDate')?.textContent;if(stamp&&!Number.isNaN(Date.parse(stamp)))period=new Date(stamp).toLocaleDateString('es-ES');
       }else{
         const dom=new DOMParser().parseFromString(await (await fetchPublic(links.boja)).text(),'text/html');
-        for(const a of dom.querySelectorAll('a[href]')){const title=a.textContent.trim().replace(/\s+/g,' '),url=officialURL(new URL(a.getAttribute('href'),links.boja).href);if(url&&title.length>35&&/\/(?:e?boja)\/\d{4}\/\d+\//.test(url))items.push({title,url,id:'BOJA'})}
+        for(const a of dom.querySelectorAll('a[href]')){const title=a.textContent.trim().replace(/\s+/g,' '),url=officialURL(new URL(a.getAttribute('href'),links.boja).href);if(url&&title.length>35&&/\/(?:e?boja)\/\d{4}\/\d+\//.test(url))items.push({title,context:'',url,id:'BOJA'})}
       }
       if(!res.isConnected)return;
-      const rows=[...new Map(items.filter(x=>x.url&&terms.every(t=>norm(x.title).includes(t))).map(x=>[x.url,x])).values()];
-      res.innerHTML=`<div class="between wrap"><b class="small">${rows.length} resultados · ${esc(period)}</b>${external}</div>${rows.length?renderRows(rows):'<div class="empty-state"><h3>Sin coincidencias</h3><p>Prueba con menos palabras o consulta el archivo de la sede oficial.</p></div>'}`;
+      const rows=[...new Map(items.filter(x=>x.url&&matchEntry(x,query)).map(x=>[x.url,x])).values()];
+      res.innerHTML=`<div class="between wrap" style="margin-bottom:12px"><b class="small">${rows.length} resultados encontrados · ${esc(period)}</b>${external}</div>${rows.length?renderRows(rows):'<div class="empty-state"><h3>Sin coincidencias</h3><p>Prueba con palabras más genéricas o consulta el sumario completo pulsando «Ver todas de hoy».</p></div>'}`;
       try{sessionStorage.setItem(cacheKey,JSON.stringify({rows:rows.slice(0,60),at:Date.now(),period}))}catch{}
     }catch(err){
       if(!res.isConnected)return;let cached=null;try{cached=JSON.parse(sessionStorage.getItem(cacheKey))}catch{}
-      const reason=err.status===404&&src==='boe'?'No existe un sumario para esa fecha. Prueba con el último día hábil.':navigator.onLine?'No ha sido posible leer la publicación desde este navegador. Puedes continuar la búsqueda en la sede oficial.':'No hay conexión. Tus apuntes y los resultados consultados en esta sesión siguen disponibles.';
+      const reason=err.status===404&&src==='boe'?'No existe un sumario para esa fecha o es día no hábil (fin de semana o festivo). Prueba con el último día hábil o selecciona «Últimos 7 días».':navigator.onLine?'No ha sido posible leer la publicación desde este navegador. Puedes continuar la búsqueda en la sede oficial.':'No hay conexión. Tus apuntes y los resultados consultados en esta sesión siguen disponibles.';
       res.innerHTML=`<div class="notice">${esc(reason)}${query?`<br>Tu consulta: <b>${esc(query)}</b>`:''}</div><div class="row wrap" style="margin:13px 0">${external}${query?`<button class="btn sm" data-act="copy-query" data-query="${esc(query)}">Copiar consulta</button>`:''}</div>${cached?`<p class="tiny muted">Copia de la consulta del ${new Date(cached.at).toLocaleString('es-ES')}</p>${renderRows(cached.rows)}`:''}`;
     }
   }
