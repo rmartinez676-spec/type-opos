@@ -32,7 +32,7 @@ Plataforma inteligente y visual para opositores: visor de PDFs, esquemas de llav
 
 ### 🏛️ 6. Observatorio de Convocatorias & Soporte Multi-Oposición
 - Acceso directo al **INAP**, **BOE** y **Buscador Estatal de Empleo Público**.
-- Crea o comparte nuevas oposiciones para amigas (Auxiliar C2, Administrativo C1, Gestión A2, Justicia, Hacienda...).
+- Crea o comparte nuevas oposiciones personalizadas (Auxiliar C2, Administrativo C1, Gestión A2, Justicia, Hacienda...).
 
 ### 🕹️ 7. OpoArcade con Street Fighter Pixel-Art
 - Combate retro por turnos (*El Opositor contra El Tribunal Calificador*) con escenario pixelado nocturno, sprites y barras de vida.
