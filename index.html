@@ -5325,6 +5325,62 @@ ${contentSection}`;
     /* =================================================================
      MOTOR DE GENERACIÓN DINÁMICA DE PREGUNTAS DEL TEMARIO
      ================================================================= */
+  function getTopicDomainKeywords(t) {
+    const titleNorm = norm(t?.title || '');
+    const blockNorm = norm(opp().blocks[t?.b || 0] || '');
+    const full = titleNorm + ' ' + blockNorm;
+
+    if (full.includes('ambient') || full.includes('medio ambiente') || full.includes('clima') || full.includes('cambio climatico') || full.includes('ecolog') || full.includes('biodiversidad')) {
+      return { domain: 'ambiente', laws: ['LCC', 'CE'], keywords: ['clima', 'emisiones', 'bajas emisiones', 'medio ambiente', '45 ce', '149.1.23'] };
+    }
+    if (full.includes('union europea') || full.includes('tratados') || full.includes('instituciones de la union') || full.includes('parlamento europeo') || full.includes('comision europea') || full.includes('consejo europeo') || full.includes('tjue')) {
+      return { domain: 'ue', laws: ['TUE', 'TFUE'], keywords: ['consejo europeo', 'parlamento europeo', 'comisión', 'tjue', 'directiva', 'reglamento', 'lisboa', 'prejudicial'] };
+    }
+    if (full.includes('contrat') || full.includes('lcsp') || full.includes('licitac') || full.includes('pliego')) {
+      return { domain: 'contratos', laws: ['LCSP'], keywords: ['contrato menor', 'licitación', 'garantía', 'remc', 'tacrc', 'sara', 'adjudicación', 'pliegos'] };
+    }
+    if (full.includes('presupuest') || full.includes('financier') || full.includes('lgp') || full.includes('gasto') || full.includes('credito') || full.includes('contabilidad')) {
+      return { domain: 'presupuestos', laws: ['LGP'], keywords: ['presupuesto', 'gasto', 'crédito', 'adop', 'autorización', 'compromiso', 'reconocimiento', 'igae', 'transferencia', 'suplemento', '134 ce'] };
+    }
+    if (full.includes('emplead') || full.includes('personal') || full.includes('trebep') || full.includes('funcionario') || full.includes('situaciones') || full.includes('incompatibilidades')) {
+      return { domain: 'personal', laws: ['EBEP'], keywords: ['funcionario', 'interino', 'trebep', 'carrera', 'excedencia', 'vacaciones', 'permiso', 'falta', 'sanción', 'disciplinario'] };
+    }
+    if (full.includes('procedimiento') || full.includes('acto administrativ') || full.includes('recurso') || full.includes('plazo') || full.includes('silencio') || full.includes('notificac') || full.includes('nulidad')) {
+      return { domain: 'procedimiento', laws: ['LPAC', 'LRJSP'], keywords: ['subsanación', 'alzada', 'reposición', 'recurso', 'silencio', 'notificación', 'nulidad', 'anulabilidad', 'interesado', 'plazo', 'resolución'] };
+    }
+    if (full.includes('seguridad social') || full.includes('afiliac') || full.includes('cotizac') || full.includes('recaudac') || full.includes('prestac') || full.includes('jubilac') || full.includes('tgss') || full.includes('inss')) {
+      return { domain: 'seguridad_social', laws: ['LGSS'], keywords: ['seguridad social', 'afiliación', 'alta', 'baja', 'cotización', 'incapacidad', 'jubilación', 'tgss', 'inss'] };
+    }
+    if (full.includes('local') || full.includes('municipi') || full.includes('ayuntamient') || full.includes('alcalde') || full.includes('provincia')) {
+      return { domain: 'local', laws: ['LBRL', 'CE'], keywords: ['alcalde', 'pleno', 'ayuntamiento', 'municipio', 'padrón', 'junta de gobierno', 'lbrl', '140 ce'] };
+    }
+    if (full.includes('transparencia') || full.includes('datos') || full.includes('rgpd') || full.includes('lopd') || full.includes('acceso a la informacion')) {
+      return { domain: 'transparencia', laws: ['TRANSP', 'LOPD'], keywords: ['transparencia', 'publicidad activa', 'datos', 'rgpd', 'lopd', 'aepd', 'dpo', 'seguridad', 'acceso'] };
+    }
+    if (full.includes('igualdad') || full.includes('genero') || full.includes('violencia')) {
+      return { domain: 'igualdad', laws: ['LIG'], keywords: ['igualdad', 'plan de igualdad', 'discriminación', 'género'] };
+    }
+    if (full.includes('corona') || full.includes('rey')) {
+      return { domain: 'corona', laws: ['CE'], keywords: ['corona', 'rey', 'regencia', 'tutela', 'refrendo', 'título ii', '56 ce', '59 ce', '62 ce', '64 ce'] };
+    }
+    if (full.includes('cortes') || full.includes('congreso') || full.includes('senado')) {
+      return { domain: 'cortes', laws: ['CE'], keywords: ['cortes generales', 'congreso', 'senado', 'diputado', 'senador', '68 ce', '69 ce', '70 ce', '72 ce', '81 ce'] };
+    }
+    if (full.includes('gobierno') || full.includes('consejo de ministros') || full.includes('presidente del gobierno')) {
+      return { domain: 'gobierno', laws: ['CE', 'LRJSP'], keywords: ['gobierno', 'consejo de ministros', 'presidente del gobierno', 'investidura', 'moción de censura', 'cuestión de confianza', '99 ce', '116 ce'] };
+    }
+    if (full.includes('judicial') || full.includes('jueces') || full.includes('cgpj') || full.includes('tribunal supremo')) {
+      return { domain: 'judicial', laws: ['CE'], keywords: ['poder judicial', 'cgpj', 'jueces', 'magistrados', 'tribunal supremo', '122 ce', '117 ce'] };
+    }
+    if (full.includes('constitucional') || full.includes('reforma')) {
+      return { domain: 'constitucional', laws: ['CE'], keywords: ['tribunal constitucional', '159 ce', '167 ce', '168 ce', 'amparo', 'inconstitucionalidad', 'reforma'] };
+    }
+    if (full.includes('constitucion') || full.includes('derechos fundamentales') || full.includes('deberes')) {
+      return { domain: 'constitucion', laws: ['CE'], keywords: ['soberanía', 'valores superiores', 'título preliminar', 'título i', 'derechos fundamentales', '14 ce', '15 ce', '17 ce', '18 ce', '20 ce', '53 ce', '54 ce', 'defensor del pueblo'] };
+    }
+    return { domain: 'general', laws: [], keywords: [] };
+  }
+
   function generateDynamicTopicQuestions(t) {
     if (!t) return [];
     const qs = [];
@@ -5425,6 +5481,79 @@ ${contentSection}`;
         why
       });
     };
+
+    // Dynamic questions synthesized from the 12 legal subject domains
+    const info = getTopicLegalSubjectInfo(t);
+    if (info) {
+      // Questions from key articles
+      (info.articles || []).forEach(artStr => {
+        const cleanArt = artStr.replace(/^\[LEY:\s*([^\]]+)\]\s*/i, '').trim();
+        const artMatch = artStr.match(/^\[LEY:\s*([^\]]+)\]/i);
+        const artCite = artMatch ? artMatch[1] : info.law.split('(')[0].trim();
+        const colonIdx = cleanArt.indexOf(':');
+        let questionTitle = cleanArt;
+        let answerBody = cleanArt;
+        if (colonIdx !== -1 && colonIdx < 60) {
+          questionTitle = cleanArt.slice(0, colonIdx).trim();
+          answerBody = cleanArt.slice(colonIdx + 1).trim();
+        }
+
+        const distractors = [
+          'Carece de regulación positiva básica, quedando atribuida su determinación plena al reglamento municipal.',
+          'Constituye una mera recomendación programática sin carácter vinculante para las Administraciones Públicas.',
+          'Fue derogado expresamente por la legislación comunitaria con eficacia retroactiva.'
+        ];
+
+        addQ(`De conformidad con el ${artCite} aplicable a «${t.title}», en relación con ${questionTitle.toLowerCase()}, ¿cuál es la prescripción legal establecida?`,
+          [answerBody, ...distractors],
+          `Precepto oficial de examen: «${cleanArt}»`,
+          artCite);
+      });
+
+      // Questions from deadlines
+      (info.deadlines || []).forEach(dlStr => {
+        const m = dlStr.match(/^\[(?:PLAZO|QUÓRUM|MAYORÍA):\s*([^\]]+)\]\s*(.*)$/i);
+        if (m) {
+          const correctVal = m[1].trim();
+          const dlDesc = m[2].trim();
+          let altVals = ['10 días hábiles', '1 mes', '3 meses', '6 meses'];
+          if (/mes/i.test(correctVal)) {
+            altVals = ['15 días hábiles', '1 mes', '3 meses', '6 meses'].filter(x => norm(x) !== norm(correctVal));
+          } else if (/año/i.test(correctVal)) {
+            altVals = ['1 año', '2 años', '3 años', '4 años'].filter(x => norm(x) !== norm(correctVal));
+          } else if (/%|por ciento/i.test(correctVal)) {
+            altVals = ['5%', '10%', '15%', '20%'].filter(x => norm(x) !== norm(correctVal));
+          } else if (/octubre|diciembre|enero/i.test(correctVal)) {
+            altVals = ['1 de octubre', '31 de diciembre', '30 de junio', '1 de enero'].filter(x => norm(x) !== norm(correctVal));
+          } else {
+            altVals = ['3 días naturales', '10 días hábiles', '15 días hábiles', '1 mes'].filter(x => norm(x) !== norm(correctVal));
+          }
+          const options = [correctVal, ...altVals.slice(0, 3)];
+          addQ(`En el marco de «${t.title}», ¿cuál es el plazo, quórum o cómputo fijado legalmente para: «${dlDesc}»?`,
+            options,
+            `Regla de cómputo en ${info.law}: ${dlStr}`,
+            info.law.split('(')[0].trim());
+        }
+      });
+
+      // Questions from traps
+      (info.traps || []).forEach(trStr => {
+        const m = trStr.match(/^\[TRAMPA:\s*([^\]]+)\]\s*(.*)$/i);
+        if (m) {
+          const trapTitle = m[1].trim();
+          const trapBody = m[2].trim();
+          const distractors = [
+            'Dicha regla no resulta de aplicación a los procedimientos selectivos ni a la Administración General del Estado.',
+            'Se trata de un trámite potestativo que puede ser dispensado libremente por el órgano instructor.',
+            'Produce únicamente efectos declarativos no vinculantes sin consecuencias anulatorias.'
+          ];
+          addQ(`Respecto a «${t.title}» y en particular sobre «${trapTitle}», ¿cuál de las siguientes consideraciones normativas constituye una regla estricta de examen?`,
+            [trapBody, ...distractors],
+            `Alerta oficial del Tribunal Calificador: ${trapBody}`,
+            info.law.split('(')[0].trim());
+        }
+      });
+    }
 
     // 2. High-yield legal bank matching topic keywords & syllabus scope
     if (titleNorm.includes('constitucion') || titleNorm.includes('corona') || titleNorm.includes('cortes') || titleNorm.includes('gobierno') || titleNorm.includes('poder judicial') || titleNorm.includes('tribunal constitucional') || titleNorm.includes('defensor del pueblo')) {
@@ -5636,8 +5765,8 @@ ${contentSection}`;
   function clozeQuestions(t){ return []; } // Deprecated in favor of 100% authentic exam-style questions
   function questionPool({scope='all',block=0,tid='',count=30}={}) {
     const o = opp();
-    const ts = o.topics.filter(t => scope === 'topic' ? t.id === tid : scope === 'block' ? t.b === Number(block) : true);
-    const ids = new Set(ts.map(t => t.id));
+    const ts = o.topics.filter(t => scope === 'topic' ? String(t.id) === String(tid) : scope === 'block' ? t.b === Number(block) : true);
+    const ids = new Set(ts.map(t => String(t.id)));
 
     if (scope === 'failed') {
       return Object.entries(state.mistakes)
@@ -5646,16 +5775,79 @@ ${contentSection}`;
         .filter(isOfficialExamQuestion);
     }
 
-    let qs = [...(o.questions || [])].filter(q => ids.has(q.t));
+    let qs = [];
 
-    // Dynamic generation from all syllabus topics in scope (100% official multiple choice, NO clozes)
+    // 1. Preguntas asociadas directamente en el temario de la oposición
+    (o.questions || []).forEach(q => {
+      if (ids.has(String(q.t)) && isOfficialExamQuestion(q)) {
+        qs.push(q);
+      }
+    });
+
+    // 2. Generación dinámica garantizada para los temas del filtro
     for (const t of ts) {
       const dynQs = generateDynamicTopicQuestions(t);
-      qs.push(...dynQs);
+      dynQs.forEach(q => {
+        if (isOfficialExamQuestion(q)) qs.push(q);
+      });
     }
 
-    // Include official questions from bank for broad scopes or when syllabus pool needs enrichment
-    if (scope === 'all' || qs.length < count) {
+    // 3. Asociación temática precisa de preguntas del banco oficial (SIN mezclar leyes ajenas)
+    if (scope === 'topic' && ts.length === 1) {
+      const targetTopic = ts[0];
+      const domain = getTopicDomainKeywords(targetTopic);
+
+      const matchedFromBank = bank.filter(bq => {
+        if (!isOfficialExamQuestion(bq)) return false;
+
+        // Coincidencia exacta de ID
+        if (String(bq.t) === String(targetTopic.id) || String(bq.t) === 't' + targetTopic.id) return true;
+
+        // Coincidencia estricta por norma y palabras clave del dominio
+        if (domain.laws.length > 0 && domain.laws.includes(bq.law)) {
+          if (domain.keywords.length > 0) {
+            const bqText = norm(bq.q + ' ' + (bq.why || '') + ' ' + (bq.ref || ''));
+            return domain.keywords.some(kw => bqText.includes(norm(kw)));
+          }
+          return true;
+        }
+
+        // Coincidencia por términos sustantivos del título
+        const bqText = norm(bq.q + ' ' + (bq.why || '') + ' ' + (bq.ref || ''));
+        const cleanTitle = norm(targetTopic.title || '').replace(/^tema\s+\d+[\.:]?\s*/i, '');
+        const wordsList = cleanTitle.split(/\s+/).filter(w => w.length >= 6);
+        const matches = wordsList.filter(w => bqText.includes(w)).length;
+        return matches >= 2;
+      });
+
+      matchedFromBank.forEach((bq, idx) => {
+        qs.push({
+          ...bq,
+          id: 't-bank-' + targetTopic.id + '-' + idx,
+          t: targetTopic.id
+        });
+      });
+
+    } else if (scope === 'block') {
+      ts.forEach(t => {
+        const domain = getTopicDomainKeywords(t);
+        const matched = bank.filter(bq => {
+          if (!isOfficialExamQuestion(bq)) return false;
+          if (domain.laws.length > 0 && domain.laws.includes(bq.law)) {
+            if (domain.keywords.length > 0) {
+              const bqText = norm(bq.q + ' ' + (bq.why || '') + ' ' + (bq.ref || ''));
+              return domain.keywords.some(kw => bqText.includes(norm(kw)));
+            }
+            return true;
+          }
+          return false;
+        });
+        matched.forEach((bq, idx) => {
+          qs.push({ ...bq, id: 'b-bank-' + t.id + '-' + idx, t: t.id });
+        });
+      });
+    } else {
+      // Scope === 'all': simulacro completo
       const bankMapped = bank.map((q, idx) => ({
         ...q,
         id: 'bm-' + idx,
@@ -5664,19 +5856,48 @@ ${contentSection}`;
       qs.push(...bankMapped);
     }
 
-    // Strictly enforce 100% official examination style (4 options, NO '_____', NO 'Completa...')
+    // Filtrar estrictamente solo preguntas tipo examen oficial
     const examQuestions = qs.filter(isOfficialExamQuestion);
 
-    // Deduplicate by question text
+    // Deduplicar por enunciado de pregunta
     const unique = [...new Map(examQuestions.map(q => [q.q, q])).values()];
     return shuffle(unique);
   }
   function sourceLink(q){const u=safeURL(q.url);return u?`<a class="law-link" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(q.ref||'Consultar fuente')} ${I('external',11)}</a>`:`<span class="tiny muted">Fuente local: ${esc(q.ref||'Mis apuntes')}</span>`}
   let pendingQuiz=null,testScope='all',testTopic='',testBlock='0',lastResult=null;
-  function testsView(){return `<div class="page">${heading('Tests de examen','Diseña un simulacro y aprende de cada respuesta.',btn('Generar preguntas con IA','ai-questions','sparkle'),'Práctica / '+opp().short)}<div class="content-grid"><section class="surface workspace"><h2 class="panel-title">Configura tu examen</h2>${state.exam?.opp===opp().id?`<div class="notice between" style="margin-bottom:17px"><span>Tienes un examen en curso.</span><button class="btn sm" data-go="quiz">Continuar ${I('arrow',12)}</button></div>`:''}<form id="test-form" class="stack"><div class="field"><span>Número de preguntas</span><div class="choice-grid">${[10,15,20,30].map(n=>`<label><input type="radio" name="count" value="${n}" ${n===10?'checked':''}>${n}</label>`).join('')}</div></div><label class="field"><span>Contenido del examen</span><select name="scope" id="test-scope">${[['all','Todo mi temario'],['block','Un bloque temático'],['topic','Un tema concreto'],['failed','Mis preguntas falladas']].map(([v,l])=>`<option value="${v}" ${testScope===v?'selected':''}>${l}</option>`).join('')}</select></label><label class="field" id="test-block-field" ${testScope==='block'?'':'hidden'}><span>Bloque</span><select name="block">${opp().blocks.map((b,i)=>`<option value="${i}" ${i===Number(testBlock)?'selected':''}>${esc(b)}</option>`).join('')}</select></label><label class="field" id="test-topic-field" ${testScope==='topic'?'':'hidden'}><span>Tema</span><select name="topic">${opp().topics.map(t=>`<option value="${esc(t.id)}" ${t.id===(testTopic||currentTopic()?.id)?'selected':''}>${esc(t.title)}</option>`).join('')}</select></label><label class="field"><span>Penalización por respuesta incorrecta</span><select name="penalty" id="test-penalty"><option value="0">Sin penalización</option><option value="0.25">1/4 de un acierto</option><option value="${1/3}" selected>1/3 de un acierto · habitual en AGE</option><option value="0.5">1/2 de un acierto</option><option value="manual">Personalizada</option></select></label><label class="field" id="manual-penalty" hidden><span>Factor de penalización (0 a 1)</span><input type="number" name="manual" step="0.001" min="0" max="1" value="0.333"></label><p class="small muted">Puntuación neta = aciertos − (fallos × penalización). Las respuestas en blanco no restan. Comprueba las bases de tu convocatoria.</p><button class="btn primary">${I('play',12)}Empezar examen</button><p id="test-error" class="modal-error" aria-live="polite"></p></form></section><aside class="surface module-aside">${toolArt('tests')}<h3>Cuaderno de resultados</h3><p>Revisa tus errores y vuelve a intentarlo con una selección de las preguntas que más te cuestan.</p><div class="divider"></div>${(state.history || []).filter(h=>h && h.opp===opp().id).slice(0,5).map(h=>`<button class="history-row w-full" data-act="show-result" data-id="${esc(h.id)}"><span>${esc(h.title)}<small class="muted" style="display:block;text-align:left">${new Date(h.at).toLocaleDateString('es-ES')}</small></span><b>${Number(h.grade).toFixed(1)}/10</b></button>`).join('')||'<p class="small">Tu primer resultado aparecerá aquí al terminar un examen.</p>'}</aside></div></div>`}
+  function testsView(){return `<div class="page">${heading('Tests de examen','Diseña un simulacro y aprende de cada respuesta.',btn('Generar preguntas con IA','ai-questions','sparkle'),'Práctica / '+opp().short)}<div class="content-grid"><section class="surface workspace"><h2 class="panel-title">Configura tu examen</h2>${state.exam?.opp===opp().id?`<div class="notice between" style="margin-bottom:17px"><span>Tienes un examen en curso.</span><button class="btn sm" data-go="quiz">Continuar ${I('arrow',12)}</button></div>`:''}<form id="test-form" class="stack"><div class="field"><span>Número de preguntas</span><div class="choice-grid">${[10,15,20,30].map(n=>`<label><input type="radio" name="count" value="${n}" ${n===10?'checked':''}>${n}</label>`).join('')}</div></div><label class="field"><span>Contenido del examen</span><select name="scope" id="test-scope">${[['all','Todo mi temario'],['block','Un bloque temático'],['topic','Un tema concreto'],['failed','Mis preguntas falladas']].map(([v,l])=>`<option value="${v}" ${testScope===v?'selected':''}>${l}</option>`).join('')}</select></label><label class="field" id="test-block-field" ${testScope==='block'?'':'hidden'}><span>Bloque</span><select name="block" id="test-block-select">${opp().blocks.map((b,i)=>`<option value="${i}" ${i===Number(testBlock)?'selected':''}>${esc(b)}</option>`).join('')}</select></label><label class="field" id="test-topic-field" ${testScope==='topic'?'':'hidden'}><span>Tema</span><select name="topic" id="test-topic-select">${opp().topics.map(t=>`<option value="${esc(t.id)}" ${String(t.id)===String(testTopic||currentTopic()?.id)?'selected':''}>${esc(t.title)}</option>`).join('')}</select></label><label class="field"><span>Penalización por respuesta incorrecta</span><select name="penalty" id="test-penalty"><option value="0">Sin penalización</option><option value="0.25">1/4 de un acierto</option><option value="${1/3}" selected>1/3 de un acierto · habitual en AGE</option><option value="0.5">1/2 de un acierto</option><option value="manual">Personalizada</option></select></label><label class="field" id="manual-penalty" hidden><span>Factor de penalización (0 a 1)</span><input type="number" name="manual" step="0.001" min="0" max="1" value="0.333"></label><p class="small muted">Puntuación neta = aciertos − (fallos × penalización). Las respuestas en blanco no restan. Comprueba las bases de tu convocatoria.</p><button class="btn primary">${I('play',12)}Empezar examen</button><p id="test-error" class="modal-error" aria-live="polite"></p></form></section><aside class="surface module-aside">${toolArt('tests')}<h3>Cuaderno de resultados</h3><p>Revisa tus errores y vuelve a intentarlo con una selección de las preguntas que más te cuestan.</p><div class="divider"></div>${(state.history || []).filter(h=>h && h.opp===opp().id).slice(0,5).map(h=>`<button class="history-row w-full" data-act="show-result" data-id="${esc(h.id)}"><span>${esc(h.title)}<small class="muted" style="display:block;text-align:left">${new Date(h.at).toLocaleDateString('es-ES')}</small></span><b>${Number(h.grade).toFixed(1)}/10</b></button>`).join('')||'<p class="small">Tu primer resultado aparecerá aquí al terminar un examen.</p>'}</aside></div></div>`}
   function balancedQuestions(qs){const offset=Math.floor(Math.random()*4),keys=shuffle(qs.map((_,i)=>(i+offset)%4));return qs.map((q,i)=>{const idx=keys[i],correct=q.a[q.c],wrong=shuffle(q.a.map((v,j)=>({v,j})).filter(x=>x.j!==q.c));wrong.splice(idx,0,{v:correct,j:q.c});return {...q,a:wrong.map(x=>x.v),c:idx,exps:wrong.map(x=>x.j===q.c?q.why:q.exps?.[x.j]||q.traps?.[x.j>q.c?x.j-1:x.j]||`«${x.v}» no satisface la regla aplicable. ${q.why}`)}})}
   function startQuiz(items,penalty,title='Test de examen',facts=''){if(!items.length)return toast('No hay preguntas disponibles para este filtro.');state.exam={id:uid(),opp:opp().id,title,facts,items:balancedQuestions(shuffle(items)),answers:items.map(()=>null),index:0,penalty,started:Date.now()};save();go('quiz')}
-  function prepareTest(form){const fd=new FormData(form),n=Number(fd.get('count')),scope=fd.get('scope'),pool=questionPool({scope,tid:fd.get('topic'),block:fd.get('block'),count:n}),p=Number(fd.get('penalty')==='manual'?fd.get('manual'):fd.get('penalty'));if(!Number.isFinite(p)||p<0||p>1)throw Error('La penalización debe estar entre 0 y 1.');if(!pool.length){$('#test-error').textContent=scope==='failed'?'Aún no tienes preguntas falladas en esta oposición. Prueba con todo el temario.':'Este filtro no tiene preguntas. Importa más apuntes o genera preguntas con IA.';return}pendingQuiz={items:shuffle(pool).slice(0,n),p};if(pool.length<n||state.exam){modal('Preparar el simulacro',`<div class="notice">${pool.length<n?`Este filtro reúne ${pool.length} preguntas distintas. Puedes hacer un repaso de ${pool.length} preguntas o ampliar tus apuntes.`:`Tu nuevo examen tendrá ${n} preguntas.`}${state.exam?'<br>Al empezar se sustituirá el examen que tienes en curso.':''}</div><div class="modal-actions">${btn('Volver','close')}${btn('Empezar con '+pendingQuiz.items.length+' preguntas','start-pending','play','primary')}</div>`)}else startQuiz(pendingQuiz.items,p)}
+  function prepareTest(form){
+    const fd=new FormData(form),
+          n=Number(fd.get('count')),
+          scope=fd.get('scope'),
+          tid=String(fd.get('topic')||testTopic||currentTopic()?.id||''),
+          block=Number(fd.get('block')||testBlock||0),
+          pool=questionPool({scope,tid,block,count:n}),
+          p=Number(fd.get('penalty')==='manual'?fd.get('manual'):fd.get('penalty'));
+    if(!Number.isFinite(p)||p<0||p>1)throw Error('La penalización debe estar entre 0 y 1.');
+    if(!pool.length){
+      $('#test-error').textContent=scope==='failed'?'Aún no tienes preguntas falladas en esta oposición. Prueba con todo el temario.':'Este filtro no tiene preguntas. Importa más apuntes o genera preguntas con IA.';
+      return;
+    }
+    let title = 'Simulacro oficial de examen';
+    if (scope === 'topic') {
+      const selT = topic(tid);
+      title = selT ? `Test: ${selT.title}` : 'Test del tema seleccionado';
+    } else if (scope === 'block') {
+      const bName = opp().blocks[block];
+      title = bName ? `Test: ${bName}` : 'Test por bloque temático';
+    } else if (scope === 'failed') {
+      title = 'Repaso de preguntas falladas';
+    }
+    pendingQuiz={items:shuffle(pool).slice(0,n),p,title};
+    if(pool.length<n||state.exam){
+      modal('Preparar el examen',`<div class="notice">${pool.length<n?`Este filtro reúne ${pool.length} preguntas específicas de este tema.`:`Tu nuevo examen tendrá ${n} preguntas.`}${state.exam?'<br>Al empezar se sustituirá el examen que tienes en curso.':''}</div><div class="modal-actions">${btn('Volver','close')}${btn('Empezar con '+pendingQuiz.items.length+' preguntas','start-pending','play','primary')}</div>`);
+    } else {
+      startQuiz(pendingQuiz.items,p,title);
+    }
+  }
   function quizView(){const e=state.exam;if(!e||e.opp!==opp().id)return testsView();const q=e.items[e.index],ans=e.answers[e.index],last=e.index===e.items.length-1;return `<div class="page"><button class="bread" data-go="tests">${I('back',13)}Salir y guardar</button>${heading(e.title,'Tu avance se guarda después de cada respuesta.',null,'Sesión de práctica')}<section class="quiz-box surface" style="margin-top:0"><div class="quiz-top"><span>Pregunta <b>${e.index+1}</b> de ${e.items.length}</span><span>Penalización: ${Number(e.penalty.toFixed(3))}</span></div><div class="progress-track" style="margin:10px 0"><i style="width:${(e.index+1)*100/e.items.length}%"></i></div>${e.facts?`<details class="case-facts" style="margin-top:16px"><summary style="cursor:pointer">Consultar expediente del caso</summary><p style="margin-top:8px">${esc(e.facts)}</p></details>`:''}<h2 class="question-title">${esc(q.q)}</h2><div class="answer-list">${q.a.map((a,i)=>`<button class="answer ${ans===i?'chosen':''}" data-act="answer" data-id="${i}" aria-pressed="${ans===i}"><span class="letter">${'ABCD'[i]}</span>${esc(a)}${ans===i?'<span class="spacer"></span>'+I('check',15):''}</button>`).join('')}</div><div class="between wrap" style="margin-top:20px"><button class="btn sm" data-act="prev-q" ${!e.index?'disabled':''}>${I('back',13)}Anterior</button><div class="row wrap"><button class="text-btn" data-act="skip-q">En blanco</button><button class="btn primary" data-act="next-q" ${ans===null?'disabled':''}>${last?'Corregir examen':'Siguiente'}${I('arrow',14)}</button></div></div></section></div>`}
   function adjustMistake(q,right){const k=opp().id+':'+q.id;if(right){if(state.mistakes[k])state.mistakes[k].count=Math.max(0,state.mistakes[k].count-1)}else{state.mistakes[k]={question:q,count:(state.mistakes[k]?.count||0)+1,at:Date.now()}}const t=topic(q.t);if(t)t.errors=Math.max(0,t.errors+(right?-1:1))}
   function finishQuiz(){const e=state.exam;if(!e)return;let good=0,bad=0,blank=0;e.items.forEach((q,i)=>{if(e.answers[i]===null||e.answers[i]===-1)blank++;else{const r=e.answers[i]===q.c;if(r)good++;else bad++;adjustMistake(q,r)}});const net=good-bad*e.penalty,h={...e,at:Date.now(),good,bad,blank,net,grade:10*net/e.items.length};state.history=[h,...state.history].slice(0,30);state.exam=null;lastResult=h.id;save();go('result',h.id);petReact(good>=e.items.length/2)}
@@ -8859,6 +9080,9 @@ ${contentSection}`;
       </form>
     `, true);
   }
+  window.opp = opp;
+  window.state = state;
+  window.topic = topic;
   window.bank = bank;
   window.isOfficialExamQuestion = isOfficialExamQuestion;
   window.questionPool = questionPool;
@@ -9590,7 +9814,7 @@ ${contentSection}`;
         petReact(true);
         break;
       }
-      case 'start-pending':if(pendingQuiz)startQuiz(pendingQuiz.items,pendingQuiz.p);break;
+      case 'start-pending':if(pendingQuiz)startQuiz(pendingQuiz.items,pendingQuiz.p,pendingQuiz.title);break;
       case 'answer':if(state.exam&&[0,1,2,3].includes(+id)){state.exam.answers[state.exam.index]=+id;save();renderRoute(false)}break;
       case 'prev-q':if(state.exam){state.exam.index=Math.max(0,state.exam.index-1);save();renderRoute(false)}break;
       case 'next-q':nextQuestion();break;
@@ -9655,7 +9879,7 @@ ${contentSection}`;
       case 'library-filter':libraryFilter=el.value;$('#topic-list').innerHTML=topicList();break;
       case 'bulletin-source':{const field=$('#boe-form').elements.date,latest=['dog','bocm'].includes(el.value);field.closest('label').hidden=latest;$('#boe-results').innerHTML=`<div class="notice">${latest?'La consulta por palabras se realiza sobre el último sumario publicado. Para fechas anteriores, abre el buscador de la sede oficial.':'Consulta el sumario de la fecha indicada o utiliza el archivo del buscador oficial.'}</div>`;break}
       case 'scheme-topic':go('schemes',el.value);break;
-      case 'test-scope':testScope=el.value;$('#test-block-field').hidden=el.value!=='block';$('#test-topic-field').hidden=el.value!=='topic';break;
+      case 'test-scope':testScope=el.value;$('#test-block-field').hidden=el.value!=='block';$('#test-topic-field').hidden=el.value!=='topic';break;case 'test-topic-select':testTopic=el.value;break;case 'test-block-select':testBlock=el.value;break;
       case 'test-penalty':$('#manual-penalty').hidden=el.value!=='manual';break;
       case 'case-select':chosenCase=+el.value;renderRoute(false);break;
       case 'flash-topic':flashTopic=el.value;flashCurrent=null;flashFlipped=false;renderRoute(false);break;
