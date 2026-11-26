@@ -444,6 +444,123 @@
       background: #fdfbf7;
     }
 
+    
+    /* === Apuntes y Esquemas Oposiciones Pastel (Libreta Artesanal con Anillas y Washi Tape) === */
+    .pastel-notebook-sheet {
+      position: relative;
+      background-color: #fdfbf7 !important;
+      background-image: 
+        linear-gradient(rgba(175, 165, 155, 0.22) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(175, 165, 155, 0.22) 1px, transparent 1px) !important;
+      background-size: 20px 20px !important; /* Cuadrícula suave de 5 mm */
+      border-radius: 14px;
+      padding: 32px 34px 32px 52px;
+      border: 1.5px solid #ded6ca;
+      box-shadow: 0 4px 20px rgba(75, 50, 95, 0.05);
+      line-height: 1.7;
+      color: #2d2633;
+    }
+    /* Anillas laterales en colores pastel (verde, lila, naranja, azul, rosa, amarillo) */
+    .pastel-notebook-sheet::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 36px;
+      bottom: 36px;
+      width: 14px;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        #86efac 0px 14px, transparent 14px 26px,
+        #d8b4fe 26px 40px, transparent 40px 52px,
+        #fdba74 52px 66px, transparent 66px 78px,
+        #93c5fd 78px 92px, transparent 92px 104px,
+        #f9a8d4 104px 118px, transparent 118px 130px,
+        #fde047 130px 144px, transparent 144px 156px
+      );
+      border-radius: 7px;
+      opacity: 0.95;
+      box-shadow: inset 0 0 2px rgba(0,0,0,0.25);
+    }
+    /* Cinta adhesiva (Washi Tape) en cabecera */
+    .washi-tape-header {
+      position: relative;
+      background: #ffffff;
+      border: 1.5px solid #e2d9cd;
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 22px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .washi-tape-header::before {
+      content: '';
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-1deg);
+      width: 130px;
+      height: 22px;
+      background: rgba(224, 210, 240, 0.75);
+      border-left: 2px dashed #b39dc8;
+      border-right: 2px dashed #b39dc8;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      z-index: 2;
+    }
+    /* Código exacto de colores pastel en subrayados */
+    .hl-pastel-green  { background: #bbf7d0 !important; color: #14532d !important; font-weight: 600; border-radius: 4px; padding: 1px 5px; }
+    .hl-pastel-purple { background: #e9d5ff !important; color: #581c87 !important; font-weight: 600; border-radius: 4px; padding: 1px 5px; }
+    .hl-pastel-orange { background: #fed7aa !important; color: #7c2d12 !important; font-weight: 600; border-radius: 4px; padding: 1px 5px; }
+    .hl-pastel-blue   { background: #bfdbfe !important; color: #1e3a8a !important; font-weight: 600; border-radius: 4px; padding: 1px 5px; }
+    .hl-pastel-pink   { background: #fbcfe8 !important; color: #831843 !important; font-weight: 600; border-radius: 4px; padding: 1px 5px; }
+    .hl-pastel-yellow { background: #fef08a !important; color: #713f12 !important; font-weight: 600; border-radius: 4px; padding: 1px 5px; }
+    .hl-pastel-red    { background: #fecaca !important; color: #7f1d1d !important; font-weight: 600; border-radius: 4px; padding: 1px 5px; }
+    
+    /* Boceto / Doodle en trazo fino para temas de oposiciones */
+    .doodle-sketch {
+      display: inline-block;
+      vertical-align: middle;
+      stroke: #5b466f;
+      stroke-width: 1.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Print styling: A4 clean printing without buttons or dark backgrounds */
+    @media print {
+      body {
+        background: #ffffff !important;
+        background-image: none !important;
+      }
+      .topbar, .nav-shell, .tabs, .export-bar, .modal-actions, .btn, .icon-btn, .notice.between, #header, #announcer, .pet-bubble {
+        display: none !important;
+      }
+      .split-reader {
+        display: block !important;
+      }
+      .reader-col:first-child {
+        display: none !important;
+      }
+      .pastel-notebook-sheet {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        padding: 20mm 15mm 20mm 22mm !important;
+        background: #fff !important;
+        background-image: 
+          linear-gradient(rgba(180, 170, 160, 0.18) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(180, 170, 160, 0.18) 1px, transparent 1px) !important;
+        background-size: 5mm 5mm !important;
+      }
+      .sheet-divider {
+        break-after: page !important;
+        page-break-after: always !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 0 !important;
+        border: none !important;
+        overflow: hidden !important;
+      }
+    }
+
     /* === Tablet Notebook Backgrounds for Reader & Print === */
     .notebook-bg-grid {
       background-color: #faf8f5 !important;
@@ -1861,17 +1978,69 @@
 
   function defaultGeminiSkills() {
     return {
-      summary: `Actúa como preparador de oposiciones de élite en España. A partir del texto del tema adjunto, genera los "APUNTES OPOSICIONES PASTEL" listos para estudiar en papel:
-- Estructura limpia y jerárquica en Markdown (#, ##, ###) orientada a preguntas de examen oficial.
-- 1. IDEAS FUERZA Y CONCEPTOS CLAVE: Desglose sintético sin paja de cada epígrafe con los conceptos jurídicos exactos.
-- 2. ARTÍCULOS Y PRECEPTOS DE CITA OBLIGATORIA: Cita los preceptos normativos exactos de la Constitución y leyes aplicables con su contenido literal que siempre preguntan en test.
-- 3. CUADRO COMPARATIVO DE EXAMEN: Tabla en Markdown con figuras, órganos competentes, plazos y efectos.
-- 4. PREGUNTAS TRAMPA DEL TRIBUNAL Y ALERTAS: Incluye trampas clásicas de test (días hábiles vs naturales, excepciones, quórums) utilizando las etiquetas [PLAZO: ...], [MAYORÍA: ...], [TRAMPA: ...] y [LEY: ...].`,
-      scheme: `Actúa como preparador de oposiciones de élite en España. A partir del texto del tema adjunto, genera el "ESQUEMA REPASO EXAMEN PASTEL" (máximo 2 hojas A4 en Nueva Pizarra):
-- Esquema visual de máxima síntesis y jerarquía estricta en Markdown.
-- Desglose estructurado por bloques con viñetas concisas y conectores lógicos claros.
-- Uso obligatorio de etiquetas visuales en mayúsculas: [PLAZO: x días/meses], [MAYORÍA: x], [TRAMPA: alerta], [LEY: norma y art].
-- CUADRO EXPRÉS DE CIERRE: Tabla resumen con todas las cifras, plazos perentorios, órganos y quórums de examen.`
+      summary: `# Apuntes Oposiciones Pastel
+
+Convierte temas, apuntes o dossieres de estudio en archivos PDF listos para descargar y guardar con estética de libreta cuadriculada artesanal con anillas en colores pastel, cintas adhesivas en el encabezado, subrayados pastel, ilustraciones en estilo boceto de libreta y conservación íntegra de todo el contenido original.
+
+## Cuándo usar
+- Cuando el usuario pida dar esta estética visual a un tema, texto, PDF o dossier de estudio.
+- Cuando se necesite preparar apuntes o esquemas descargables en PDF manteniendo el 100 por 100 del contenido, artículos, plazos, cifras, tablas y notas de examen.
+- Cuando se trabaje con temarios de oposiciones o materias académicas que requieran estética de cuaderno artesanal y dibujillos de libreta.
+
+## Código de colores pastel
+Aplicar siempre este código semántico exacto en los subrayados y resaltados puntuales del texto y las tablas, evitando subrayar párrafos completos cuando no correspondan a una única categoría y sin incluir nunca un cuadro de leyenda ni explicar el código de colores dentro del documento generado:
+- **Verde pastel:** Leyes y artículos.
+- **Lila pastel:** Principios.
+- **Naranja pastel:** Procesos.
+- **Azul pastel:** Personas e instituciones.
+- **Rosa pastel:** Subprocesos o datos que provocan algo (condiciones, desencadenantes, plazos/supuestos que activan un efecto o consecuencia).
+- **Amarillo pastel:** Cosas a destacar.
+
+## Pasos
+1. **Conservar el 100 por 100 del contenido**:
+   - Mantener todos los artículos, apartados, fechas, porcentajes, votos, plazos, excepciones, tablas y notas sin resumir ni omitir datos.
+   - Si el usuario indica actualizaciones o incorporaciones normativas en la conversación, integrarlas junto con el contenido base.
+2. **Entregar directamente en PDF descargable**:
+   - Generar el resultado directamente como archivo PDF descargable, sin añadir botones de impresión ni depender de vistas HTML con botón de guardar.
+3. **Aplicar la estética de libreta artesanal e imprimible**:
+   - Diseñar sobre fondo claro/blanco con cuadrícula suave de 5 mm calibrada para impresión limpia, anillas laterales en colores pastel (alternando verde, lila, naranja, azul, rosa y amarillo) y cintas adhesivas en el encabezado, asegurando que el fondo se mantenga claro, legible y sin cortes ni solapamientos entre páginas.
+   - Emplear cabeceras con aire de cuaderno artesanal (pastillas kraft/cálidas o títulos con acentos caligráficos y destellos), sin etiquetas genéricas tipo «Temario Oficial Integrado» salvo que vengan en el temario, y con notas adhesivas y tablas ordenadas.
+   - Mantener el subrayado pastel puntual e integrado en el texto y las tablas según el código de colores, pero sin incluir cuadro de leyenda del código de colores ni explicaciones del código en el documento.
+4. **Añadir ilustraciones en estilo boceto de libreta**:
+   - Incluir dibujillos sencillos en trazo fino de boceto/doodle acordes con cada bloque temático (urna, balanza, organigrama, corona, bandera, calendario, mazo, hemiciclo o notas).
+
+## Precauciones
+- Nunca omitir ni recortar contenido del temario original por adaptar el formato visual.
+- No subrayar párrafos enteros con un solo color si mezclan distintos elementos o no son principios.
+- No incluir cuadro de leyenda ni texto explicativo del código de colores dentro del documento PDF.
+- No dejar que el modo oscuro oscurezca el fondo ni que la paginación oculte páginas intermedias o finales.
+- No añadir botones de impresión.`,
+      scheme: `# Esquema Repaso Examen Pastel
+
+Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF descargables de máximo 2 páginas A4 por tema, conservando la estética de cuaderno artesanal cuadriculado con anillas pastel, cintas adhesivas, ilustraciones en boceto, subrayados en tonos pastel y sin leyenda del código de colores ni botones de impresión.
+
+## Cuándo usar
+- Cuando el usuario pida un esquema de repaso rápido antes de un examen a partir de un tema, PDF o dossier.
+- Cuando se necesite condensar un tema o temario en un máximo de 2 páginas A4 en PDF sin perder artículos, plazos, mayorías, excepciones ni conceptos críticos.
+- Cuando se requiera la estética de libreta artesanal con subrayados pastel y bocetos optimizada para consulta rápida de examen.
+
+## Pasos
+1. **Sintetizar sin perder datos críticos**:
+   - Condensar la estructura y redacción para que todo el esquema quepa limpiamente en un máximo de 2 páginas A4.
+   - Preservar todos los artículos, plazos, mayorías, porcentajes, órganos, excepciones y notas clave de examen, eliminando relleno narrativo pero no los datos memorizables.
+2. **Entregar directamente en PDF descargable**:
+   - Generar el resultado directamente como archivo PDF descargable, sin botones de impresión ni vistas HTML intermedias.
+3. **Aplicar la estética de libreta artesanal de repaso**:
+   - Diseñar sobre fondo claro con cuadrícula suave, anillas laterales pastel y cintas adhesivas en el encabezado, evitando fondos oscuros o páginas ocultas.
+   - Utilizar subrayados pastel (verde para leyes/artículos, lila para principios, naranja para procesos, rosa para subprocesos/motivos, amarillo para destacados, rojo claro para fechas/plazos, azul claro para personas/instituciones) de forma directa en el texto y tablas, sin incluir cuadro de leyenda de colores.
+   - Ajustar tipografía, espaciado y tablas compactas para aprovechar las 2 páginas con claridad visual y sin cortes ni desbordamientos.
+4. **Añadir ilustraciones en estilo boceto de libreta**:
+   - Incluir dibujillos sencillos en trazo fino de boceto acordes con cada bloque temático.
+
+## Precauciones
+- No superar nunca el límite de 2 páginas A4 por esquema de repaso.
+- No omitir plazos, mayorías, artículos ni excepciones relevantes para test o supuestos.
+- No añadir botones de impresión ni incluir el cuadro de leyenda del código de colores.`
     };
   }
 
@@ -1902,7 +2071,9 @@
     const raw = localStorage.getItem(STORAGE) || localStorage.getItem('oposapiens.studio.v1');
     let d = raw ? JSON.parse(raw) : null;
     if (d && Array.isArray(d.opps) && d.opps.length) {
-      if ((d.version || 0) < 6) {
+      if ((d.version || 0) < 7) {
+        d.version = 7;
+        d.geminiSkills = defaultGeminiSkills();
         d.version = 6;
         d.geminiSkills = defaultGeminiSkills();
         // Upgrade existing oppositions: if user named an opp "seguridad social" but it had 58 topics of GACE, fix it with SS official syllabus!
@@ -4040,10 +4211,29 @@
     }
   }
 
+  function getTopicDoodleSVG(kind) {
+    switch(kind) {
+      case 'balanza':
+        return `<svg class="doodle-sketch" width="32" height="32" viewBox="0 0 24 24"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h18"/></svg>`;
+      case 'urna':
+        return `<svg class="doodle-sketch" width="32" height="32" viewBox="0 0 24 24"><path d="M18 12h.01"/><path d="M6 12h.01"/><path d="m2 7 2 12c.1 1 1 2 2 2h12c1 0 1.9-1 2-2l2-12"/><path d="M4 7h16"/><path d="M9 3h6v4H9z"/></svg>`;
+      case 'corona':
+        return `<svg class="doodle-sketch" width="32" height="32" viewBox="0 0 24 24"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v2H5z"/></svg>`;
+      case 'calendario':
+        return `<svg class="doodle-sketch" width="30" height="30" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>`;
+      case 'organigrama':
+        return `<svg class="doodle-sketch" width="32" height="32" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="4" rx="1"/><rect x="3" y="15" width="5" height="4" rx="1"/><rect x="16" y="15" width="5" height="4" rx="1"/><path d="M12 7v5"/><path d="M5.5 12h13"/><path d="M5.5 12v3"/><path d="M18.5 12v3"/></svg>`;
+      case 'mazo':
+        return `<svg class="doodle-sketch" width="32" height="32" viewBox="0 0 24 24"><path d="m14 13-7.5 7.5c-.8.8-2 .8-2.8 0s-.8-2 0-2.8L11.2 10.2"/><path d="m16 16 6-6"/><path d="m8 8 6-6"/><path d="m9 7 8 8"/><path d="m21 11-8-8"/></svg>`;
+      default:
+        return `<svg class="doodle-sketch" width="30" height="30" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>`;
+    }
+  }
+
   function renderGeminiMarkdown(md) {
     if (!md) return '';
     const lines = md.split(/\r?\n/);
-    let html = '';
+    let html = '<div class="pastel-notebook-sheet">';
     let inTable = false;
     let tableRows = [];
     let inList = false;
@@ -4055,10 +4245,10 @@
     function flushTable() {
       if (!inTable) return;
       if (tableRows.length) {
-        let tHtml = '<div style="overflow-x:auto;margin:16px 0"><table class="cuadro-table">';
+        let tHtml = '<div style="overflow-x:auto;margin:18px 0"><table class="cuadro-table" style="background:#fff;border:1.5px solid #ded5e7;border-radius:10px">';
         tableRows.forEach((row, rIdx) => {
           if (rIdx === 0) {
-            tHtml += '<thead><tr>' + row.map(c => '<th>' + c + '</th>').join('') + '</tr></thead><tbody>';
+            tHtml += '<thead><tr>' + row.map(c => '<th style="background:#f3ecf8;color:#4c2b6e;font-weight:700">' + c + '</th>').join('') + '</tr></thead><tbody>';
           } else {
             tHtml += '<tr>' + row.map((c, cIdx) => (cIdx === 0 ? '<td><strong>' + c + '</strong></td>' : '<td>' + c + '</td>')).join('') + '</tr>';
           }
@@ -4071,17 +4261,25 @@
     }
 
     function fmtLine(str) {
-      return str
+      let res = str
         .replace(/&/g, '&amp;')
         .replace(/</g, '&#60;')
         .replace(/>/g, '&#62;')
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
         .replace(/`([^`]+)`/g, '<code style="background:#f3e8ff;padding:2px 6px;border-radius:4px;font-size:12px">$1</code>')
-        .replace(/\[PLAZO:\s*([^\]]+)\]/gi, '<span class="badge-plazo">⏱️ $1</span>')
-        .replace(/\[MAYOR[IÍ]A:\s*([^\]]+)\]/gi, '<span class="badge-mayoria">🟣 $1</span>')
-        .replace(/\[TRAMPA:\s*([^\]]+)\]/gi, '<span class="badge-trampa">🔴 $1</span>')
-        .replace(/\[LEY:\s*([^\]]+)\]/gi, '<span class="tag">⚖️ $1</span>');
+        /* Código semántico exacto del Skill del usuario */
+        .replace(/\[(?:LEY|NORMA|ART[IÍ]CULO|VERDE):\s*([^\]]+)\]/gi, '<span class="hl-pastel-green">⚖️ $1</span>')
+        .replace(/\[(?:PRINCIPIO|VALOR|LILA):\s*([^\]]+)\]/gi, '<span class="hl-pastel-purple">🟣 $1</span>')
+        .replace(/\[(?:PROCESO|PROCEDIMIENTO|FASE|NARANJA):\s*([^\]]+)\]/gi, '<span class="hl-pastel-orange">🔄 $1</span>')
+        .replace(/\[(?:[OÓ]RGANO|INSTITUCI[OÓ]N|PERSONA|AZUL):\s*([^\]]+)\]/gi, '<span class="hl-pastel-blue">🏛️ $1</span>')
+        .replace(/\[(?:SUBPROCESO|DESENCADENANTE|CONDICI[OÓ]N|ROSA):\s*([^\]]+)\]/gi, '<span class="hl-pastel-pink">⚡ $1</span>')
+        .replace(/\[(?:DESTACADO|CLAVE|NOTA|AMARILLO):\s*([^\]]+)\]/gi, '<span class="hl-pastel-yellow">⭐ $1</span>')
+        .replace(/\[(?:PLAZO|FECHA|T[EÉ]RMINO|ROJO):\s*([^\]]+)\]/gi, '<span class="hl-pastel-red">⏱️ $1</span>')
+        .replace(/\[MAYOR[IÍ]A:\s*([^\]]+)\]/gi, '<span class="hl-pastel-purple">🗳️ $1</span>')
+        .replace(/\[TRAMPA:\s*([^\]]+)\]/gi, '<span class="hl-pastel-red">🔴 $1</span>');
+
+      return res;
     }
 
     for (let i = 0; i < lines.length; i++) {
@@ -4105,38 +4303,65 @@
         continue;
       }
 
+      /* Corte exacto de página A4 para Esquema de 2 páginas */
       if (/^---+$/.test(rawLine)) {
         flushList();
         flushTable();
-        html += '<div class="sheet-divider" style="margin:26px 0;padding:12px 18px;background:linear-gradient(90deg,#fdf2f8,#f5f3ff,#fdf2f8);border:1.5px dashed #c084fc;border-radius:10px;text-align:center;font-weight:700;color:#6b21a8;font-size:13px;break-after:page;page-break-after:always"><span style="margin-right:8px">✂️</span> CORTE DE HOJA 1 · INICIO DE HOJA 2 (MÁX. 2 HOJAS EN NUEVA PIZARRA) <span style="margin-left:8px">✂️</span></div>';
+        html += `
+          <div class="sheet-divider" style="margin:28px 0;padding:14px 18px;background:linear-gradient(90deg,#fdf2f8,#faf5ff,#fdf2f8);border:1.5px dashed #c084fc;border-radius:10px;text-align:center;font-weight:700;color:#6b21a8;font-size:13px;break-after:page;page-break-after:always">
+            <span style="margin-right:8px">✂️</span> CORTE DE PÁGINA 1 · INICIO DE PÁGINA 2 DE 2 (ESQUEMA ULTIMATE PASTEL) <span style="margin-left:8px">✂️</span>
+          </div>
+        `;
+        continue;
+      }
+
+      if (rawLine.startsWith('# ')) {
+        flushList();
+        html += `
+          <div class="washi-tape-header">
+            <div class="row between wrap" style="gap:10px;align-items:center">
+              <div>
+                <h2 style="margin:0;color:#3b1e54;font-size:20px;font-weight:800;letter-spacing:-0.5px">
+                  ${fmtLine(rawLine.slice(2))}
+                </h2>
+              </div>
+              <div>${getTopicDoodleSVG('balanza')}</div>
+            </div>
+          </div>
+        `;
+        continue;
+      }
+
+      if (rawLine.startsWith('## ')) {
+        flushList();
+        html += `
+          <div style="padding:10px 14px;margin:22px 0 10px 0;border-left:4px solid #a855f7;border-radius:6px;background:#fbf8fd">
+            <div class="row between wrap" style="gap:8px;align-items:center">
+              <h3 style="margin:0;color:#3b1e54;font-size:16px;font-weight:800">
+                ${fmtLine(rawLine.slice(3))}
+              </h3>
+              ${getTopicDoodleSVG('urna')}
+            </div>
+          </div>
+        `;
         continue;
       }
 
       if (rawLine.startsWith('### ')) {
         flushList();
-        html += '<h4 style="margin:18px 0 8px 0;color:#553396;font-size:15px;font-weight:700">' + fmtLine(rawLine.slice(4)) + '</h4>';
-        continue;
-      }
-      if (rawLine.startsWith('## ')) {
-        flushList();
-        html += '<div class="surface" style="padding:14px 18px;margin:18px 0 10px 0;border-left:4px solid #9333ea;border-radius:8px;background:#faf5ff"><h3 style="margin:0;color:#3b1e54;font-size:16px;font-weight:800">' + fmtLine(rawLine.slice(3)) + '</h3></div>';
-        continue;
-      }
-      if (rawLine.startsWith('# ')) {
-        flushList();
-        html += '<div class="notice" style="background:linear-gradient(135deg,#fdf2f8 0%,#f5f3ff 100%);border-color:#e9d5ff;padding:16px;border-radius:12px;margin-bottom:14px"><h2 style="margin:0;color:#3b1e54;font-size:18px;font-weight:800">' + fmtLine(rawLine.slice(2)) + '</h2></div>';
+        html += '<h4 style="margin:16px 0 6px 0;color:#553396;font-size:14.5px;font-weight:750">' + fmtLine(rawLine.slice(4)) + '</h4>';
         continue;
       }
 
       if (rawLine.startsWith('> ')) {
         flushList();
-        html += '<div style="background:#fff7ed;border-left:4px solid #ea580c;padding:10px 14px;border-radius:6px;margin:10px 0;font-size:13px;color:#7c2d12">' + fmtLine(rawLine.slice(2)) + '</div>';
+        html += '<div style="background:#fffbf2;border-left:3.5px solid #f59e0b;padding:10px 14px;border-radius:6px;margin:10px 0;font-size:13px;color:#78350f">' + fmtLine(rawLine.slice(2)) + '</div>';
         continue;
       }
 
       if (/^[-*•]\s+/.test(rawLine)) {
         if (!inList) {
-          html += '<ul style="margin:8px 0 12px 0;padding-left:22px;font-size:13px;line-height:1.7;color:#332e38">';
+          html += '<ul style="margin:8px 0 12px 0;padding-left:22px;font-size:13px;line-height:1.75;color:#2f2a33">';
           inList = true;
         }
         html += '<li>' + fmtLine(rawLine.replace(/^[-*•]\s+/, '')) + '</li>';
@@ -4145,11 +4370,12 @@
         flushList();
       }
 
-      html += '<p style="margin:6px 0;font-size:13px;line-height:1.65;color:#332e38">' + fmtLine(rawLine) + '</p>';
+      html += '<p style="margin:7px 0;font-size:13px;line-height:1.7;color:#2f2a33">' + fmtLine(rawLine) + '</p>';
     }
 
     flushList();
     flushTable();
+    html += '</div>';
     return html;
   }
 
@@ -4270,16 +4496,17 @@
     const isSummary = type === 'summary';
     const systemPrompt = isSummary ? (state.geminiSkills?.summary || '') : (state.geminiSkills?.scheme || '');
     const raw = String(t.text || '').trim();
-    if (!raw) return toast('Añade apuntes al tema antes de copiar el prompt.');
-    const fullPrompt = systemPrompt + '\n\n=========================\nDOCUMENTO ORIGINAL DEL TEMA:\nTítulo: ' + t.title + '\nOposición: ' + opp().name + '\n=========================\n\n' + raw;
+    const info = getTopicLegalSubjectInfo(t);
+    const textToInclude = raw || (`Materia oficial: ${info.law}\nConcepto clave: ${info.def}\nArtículos de examen: ${info.articles.join(' | ')}`);
+    const fullPrompt = `${systemPrompt}\n\n=========================\nDOCUMENTO ORIGINAL DEL TEMA:\nTítulo: ${t.title}\nOposición: ${opp().name}\n=========================\n\n${textToInclude}`;
     try {
       await navigator.clipboard.writeText(fullPrompt);
-      toast('¡Prompt copiado al portapapeles! Pégalo en tu chat de Gemini.');
+      toast('¡Prompt del Skill copiado al portapapeles! Pégalo en tu chat de Gemini.');
     } catch {
-      modal('Prompt para Gemini Web', `
+      modal('Prompt para Gemini Web (' + (isSummary ? 'Apuntes Pastel' : 'Esquema 2 Hojas') + ')', `
         <label class="field">
           <span>Selecciona y copia este texto completo para pegarlo en Gemini:</span>
-          <textarea rows="12" readonly style="font-family:monospace;font-size:12px">${esc(fullPrompt)}</textarea>
+          <textarea rows="14" readonly style="font-family:monospace;font-size:12px">${esc(fullPrompt)}</textarea>
         </label>
       `);
     }
@@ -7556,11 +7783,12 @@
             </div>
           </span>
           <div class="row wrap" style="gap:6px">
-            <button class="btn sm soft" data-act="edit-pastel-scheme" data-id="${esc(t.id)}" onclick="openEditPastelModal('${esc(t.id)}', 'scheme')">✏️ Editar Esquema</button>
-            <button class="btn sm soft" data-act="copy-pastel-scheme" data-id="${esc(t.id)}" onclick="copyTopicScheme('${esc(t.id)}')">📋 Copiar</button>
-            <button class="btn sm soft" onclick="printTopicPastel('${esc(t.id)}', 'scheme')">🖨️ Imprimir 2 Hojas</button>
-            <button class="btn sm soft" data-act="paste-gemini-scheme" data-id="${esc(t.id)}" title="Pegar de Gemini">${I('sparkle',12)} Pegar Gemini</button>
-            <button class="btn sm" data-act="regenerate-pastel-scheme" data-id="${esc(t.id)}" title="Regenerar">↺ Restablecer</button>
+            <button class="btn sm primary" data-act="generate-gemini-scheme-btn" data-id="${esc(t.id)}" title="Generar con Gemini AI usando tu Skill exacto de 2 hojas">${I('sparkle',12)} Generar con Gemini AI</button>
+            <button class="btn sm soft" data-act="copy-gemini-prompt" data-id="${esc(t.id)}" data-kind="scheme" title="Copiar el prompt completo con las instrucciones de tu Skill para pegarlo en Gemini Web">📋 Copiar Prompt Gemini</button>
+            <button class="btn sm soft" data-act="paste-gemini-scheme" data-id="${esc(t.id)}" title="Pegar el resultado de Gemini">📥 Pegar de Gemini</button>
+            <button class="btn sm soft" data-act="edit-pastel-scheme" data-id="${esc(t.id)}" onclick="openEditPastelModal('${esc(t.id)}', 'scheme')">✏️ Editar</button>
+            <button class="btn sm soft" onclick="printTopicPastel('${esc(t.id)}', 'scheme')" title="Descargar como PDF limpio en 2 hojas con anillas pastel y cuadrícula de 5 mm">🖨️ PDF 2 Hojas</button>
+            <button class="btn sm" data-act="regenerate-pastel-scheme" data-id="${esc(t.id)}" title="Regenerar con motor local">↺ Restablecer Local</button>
           </div>
         </div>
         <div class="gemini-rendered-content surface" id="pastel-scheme-view-${esc(t.id)}" style="padding:24px 28px;border:1.5px solid #d8b4fe;border-radius:14px;background:#fff;line-height:1.65">
@@ -7678,11 +7906,12 @@
             </div>
           </span>
           <div class="row wrap" style="gap:6px">
-            <button class="btn sm soft" data-act="edit-pastel-summary" data-id="${esc(t.id)}" onclick="openEditPastelModal('${esc(t.id)}', 'summary')">✏️ Editar mis Apuntes</button>
-            <button class="btn sm soft" data-act="copy-pastel-summary" data-id="${esc(t.id)}" onclick="copyTopicSummary('${esc(t.id)}')">📋 Copiar</button>
-            <button class="btn sm soft" onclick="printTopicPastel('${esc(t.id)}', 'summary')">🖨️ Imprimir</button>
-            <button class="btn sm soft" data-act="paste-gemini-summary" data-id="${esc(t.id)}" title="Pegar de Gemini">${I('sparkle',12)} Pegar Gemini</button>
-            <button class="btn sm" data-act="regenerate-pastel-summary" data-id="${esc(t.id)}" title="Regenerar">↺ Restablecer</button>
+            <button class="btn sm primary" data-act="generate-gemini-summary-btn" data-id="${esc(t.id)}" title="Generar con Gemini AI usando tu Skill exacto">${I('sparkle',12)} Generar con Gemini AI</button>
+            <button class="btn sm soft" data-act="copy-gemini-prompt" data-id="${esc(t.id)}" data-kind="summary" title="Copiar el prompt completo con las instrucciones de tu Skill para pegarlo en Gemini Web">📋 Copiar Prompt Gemini</button>
+            <button class="btn sm soft" data-act="paste-gemini-summary" data-id="${esc(t.id)}" title="Pegar el resultado de Gemini">📥 Pegar de Gemini</button>
+            <button class="btn sm soft" data-act="edit-pastel-summary" data-id="${esc(t.id)}" onclick="openEditPastelModal('${esc(t.id)}', 'summary')">✏️ Editar</button>
+            <button class="btn sm soft" onclick="printTopicPastel('${esc(t.id)}', 'summary')" title="Descargar como PDF limpio con anillas pastel y cuadrícula de 5 mm">🖨️ Descargar PDF</button>
+            <button class="btn sm" data-act="regenerate-pastel-summary" data-id="${esc(t.id)}" title="Regenerar con motor local">↺ Restablecer Local</button>
           </div>
         </div>
         <div class="gemini-rendered-content surface" id="pastel-summary-view-${esc(t.id)}" style="padding:24px 28px;border:1px solid #e9d5ff;border-radius:14px;background:#fff;line-height:1.65">
@@ -7909,6 +8138,14 @@
       case 'manage-topic-pdfs': {
         const t = topic(id || currentTopic()?.id);
         if (t) openManageTopicPdfsModal(t.id);
+        break;
+      }
+      case 'generate-gemini-summary-btn': {
+        await generateTopicWithGemini(id || currentTopic()?.id, 'summary');
+        break;
+      }
+      case 'generate-gemini-scheme-btn': {
+        await generateTopicWithGemini(id || currentTopic()?.id, 'scheme');
         break;
       }
       case 'edit-pastel-summary': openEditPastelModal(id || currentTopic()?.id, 'summary'); break;
