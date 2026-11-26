@@ -4431,7 +4431,116 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
     }
   }
 
-  function openApiKeyOrPromptModal(topicId, type) {
+    function openGeminiAssistantModal(topicId, type) {
+    const t = topic(topicId);
+    if (!t) return toast('Tema no encontrado.');
+    const isSummary = type === 'summary';
+    const skillTitle = isSummary ? 'Apuntes Oposiciones Pastel' : 'Esquema Repaso Examen (2 Páginas)';
+
+    modal(`✨ Asistente Gemini · ${esc(skillTitle)}`, `
+      <div class="stack" style="gap:16px">
+        <p class="small muted" style="margin:0">
+          Usa la inteligencia artificial de Google para transformar este tema según tus gustos:
+        </p>
+
+        <!-- MÉTODO 1: EL MÁS FÁCIL (Para cualquier persona sin conocimientos) -->
+        <div class="surface" style="padding:18px;border:2px solid #d8b4fe;border-radius:12px;background:#faf5ff">
+          <div class="row" style="gap:8px;margin-bottom:12px;align-items:center">
+            <span style="background:#7e22ce;color:#fff;border-radius:50%;width:24px;height:24px;display:grid;place-items:center;font-weight:700;font-size:12px">1</span>
+            <strong style="color:#581c87;font-size:14px">Método Fácil: Paso a paso con Gemini Web (Gratis y sin configurar nada)</strong>
+          </div>
+
+          <div class="stack" style="gap:12px;padding-left:12px">
+            <div class="row wrap between" style="gap:10px;align-items:center;background:#fff;padding:10px 14px;border-radius:8px;border:1px solid #e9d5ff">
+              <span style="font-size:12.5px;color:#3b1e54">
+                <strong>Paso 1:</strong> Pulsa el botón para copiar el tema con las instrucciones exactas:
+              </span>
+              <button class="btn primary sm" data-act="copy-gemini-prompt" data-id="${esc(t.id)}" data-kind="${esc(type)}">
+                📋 Copiar para Gemini
+              </button>
+            </div>
+
+            <div class="row wrap between" style="gap:10px;align-items:center;background:#fff;padding:10px 14px;border-radius:8px;border:1px solid #e9d5ff">
+              <span style="font-size:12.5px;color:#3b1e54">
+                <strong>Paso 2:</strong> Abre Gemini, pega con <strong>Ctrl+V</strong> y dale a Enviar:
+              </span>
+              <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" class="btn sm soft" style="font-weight:600">
+                🌐 Abrir Gemini Web ↗
+              </a>
+            </div>
+
+            <div class="stack" style="gap:8px;background:#fff;padding:12px 14px;border-radius:8px;border:1px solid #e9d5ff">
+              <span style="font-size:12.5px;color:#3b1e54">
+                <strong>Paso 3:</strong> Cuando Gemini termine, copia su respuesta y pégala aquí:
+              </span>
+              <textarea id="easy-gemini-paste" rows="5" placeholder="Pega aquí lo que te ha respondido Gemini..." style="width:100%;font-size:12px;padding:8px;border-radius:6px;border:1px solid #ccc;font-family:inherit"></textarea>
+              <button class="btn primary sm" onclick="applyEasyGeminiPaste('${esc(t.id)}', '${esc(type)}')" style="align-self:flex-start;background:#059669;border-color:#059669">
+                ✅ Guardar en mi Cuaderno Pastel
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MÉTODO 2: AUTOMÁTICO EN 1 CLIC (SI TIENE CLAVE) -->
+        <details style="border:1px solid var(--line);border-radius:10px;padding:12px 16px;background:#fff">
+          <summary style="font-weight:600;font-size:12.5px;cursor:pointer;color:var(--deep)">
+            ⚡ Opción Avanzada: Generar en 1 solo clic (con clave de Google AI Studio)
+          </summary>
+          <div class="stack" style="gap:10px;margin-top:12px">
+            <p class="tiny muted" style="margin:0">
+              Si tienes una clave API gratuita de Google AI Studio, puedes guardarla aquí para generar resúmenes con 1 solo clic sin salir de la página:
+            </p>
+            <div class="row wrap" style="gap:8px">
+              <input type="password" id="modal-gemini-key" placeholder="AIzaSy..." value="${esc(getGeminiApiKey())}" style="flex:1;min-width:200px;font-size:12px;padding:6px 10px;border:1px solid #ccc;border-radius:6px">
+              <button class="btn primary sm" onclick="saveKeyAndRunGemini('${esc(t.id)}', '${esc(type)}')">
+                🚀 Generar Ahora
+              </button>
+            </div>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="tiny" style="color:#7e57c2">
+              👉 Conseguir clave gratis en Google AI Studio (1 minuto) ↗
+            </a>
+          </div>
+        </details>
+      </div>
+    `, true);
+  }
+
+  function applyEasyGeminiPaste(topicId, type) {
+    const text = document.getElementById('easy-gemini-paste')?.value?.trim();
+    if (!text) {
+      toast('Pega primero el texto que te ha respondido Gemini.');
+      return;
+    }
+    const t = topic(topicId);
+    if (!t) return;
+    if (type === 'summary') {
+      t.geminiSummary = text;
+    } else {
+      t.geminiScheme = text;
+    }
+    save();
+    closeModal();
+    renderRoute(false);
+    toast('¡Apuntes guardados y adaptados al formato Pastel!');
+    petReact(true);
+  }
+
+  async function saveKeyAndRunGemini(topicId, type) {
+    const key = document.getElementById('modal-gemini-key')?.value?.trim();
+    if (!key) {
+      toast('Introduce tu clave de API.');
+      return;
+    }
+    setGeminiApiKey(key);
+    closeModal();
+    await generateTopicWithGemini(topicId, type);
+  }
+
+  window.openGeminiAssistantModal = openGeminiAssistantModal;
+  window.applyEasyGeminiPaste = applyEasyGeminiPaste;
+  window.saveKeyAndRunGemini = saveKeyAndRunGemini;
+
+function openApiKeyOrPromptModal(topicId, type) {
     const t = topic(topicId);
     const isSummary = type === 'summary';
     const skillName = isSummary ? 'Apuntes Oposiciones Pastel' : 'Esquema Repaso Examen Pastel';
@@ -7762,7 +7871,158 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
   }
 
   function printTopicPastel(id, type) {
-    window.print();
+    const t = topic(id) || currentTopic();
+    if (!t) return;
+    const isSummary = type === 'summary';
+    const contentMd = isSummary 
+      ? (t.geminiSummary || generateInternalApuntesPastel(t))
+      : (t.geminiScheme || generateInternalEsquemaPastel(t));
+    
+    const renderedHtml = renderGeminiMarkdown(contentMd);
+    const title = isSummary ? `Apuntes Pastel - ${t.title}` : `Esquema Repaso 2 Hojas - ${t.title}`;
+
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(`
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+        <meta charset="utf-8">
+        <title>${title}</title>
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+        <style>
+          @page {
+            size: A4 portrait;
+            margin: 10mm 12mm 10mm 14mm;
+          }
+          * { box-sizing: border-box; }
+          body {
+            margin: 0;
+            padding: 0;
+            color: #2d2633;
+            font: 13px/1.65 'DM Sans', -apple-system, sans-serif;
+            background: #ffffff;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          .pastel-notebook-sheet {
+            position: relative;
+            background-color: #fdfbf7 !important;
+            background-image: 
+              linear-gradient(rgba(175, 165, 155, 0.22) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(175, 165, 155, 0.22) 1px, transparent 1px) !important;
+            background-size: 20px 20px !important;
+            border-radius: 8px;
+            padding: 20px 24px 20px 44px;
+            border: 1px solid #ded6ca;
+            min-height: 100%;
+          }
+          .pastel-notebook-sheet::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 24px;
+            bottom: 24px;
+            width: 14px;
+            background-image: repeating-linear-gradient(
+              to bottom,
+              #86efac 0px 14px, transparent 14px 26px,
+              #d8b4fe 26px 40px, transparent 40px 52px,
+              #fdba74 52px 66px, transparent 66px 78px,
+              #93c5fd 78px 92px, transparent 92px 104px,
+              #f9a8d4 104px 118px, transparent 118px 130px,
+              #fde047 130px 144px, transparent 144px 156px
+            );
+            border-radius: 7px;
+            opacity: 0.95;
+          }
+          .washi-tape-header {
+            position: relative;
+            background: #ffffff;
+            border: 1.5px solid #e2d9cd;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+          }
+          .washi-tape-header::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-1deg);
+            width: 120px;
+            height: 18px;
+            background: rgba(224, 210, 240, 0.75);
+            border-left: 2px dashed #b39dc8;
+            border-right: 2px dashed #b39dc8;
+          }
+          .hl-pastel-green  { background: #bbf7d0 !important; color: #14532d !important; font-weight: 600; border-radius: 3px; padding: 1px 4px; }
+          .hl-pastel-purple { background: #e9d5ff !important; color: #581c87 !important; font-weight: 600; border-radius: 3px; padding: 1px 4px; }
+          .hl-pastel-orange { background: #fed7aa !important; color: #7c2d12 !important; font-weight: 600; border-radius: 3px; padding: 1px 4px; }
+          .hl-pastel-blue   { background: #bfdbfe !important; color: #1e3a8a !important; font-weight: 600; border-radius: 3px; padding: 1px 4px; }
+          .hl-pastel-pink   { background: #fbcfe8 !important; color: #831843 !important; font-weight: 600; border-radius: 3px; padding: 1px 4px; }
+          .hl-pastel-yellow { background: #fef08a !important; color: #713f12 !important; font-weight: 600; border-radius: 3px; padding: 1px 4px; }
+          .hl-pastel-red    { background: #fecaca !important; color: #7f1d1d !important; font-weight: 600; border-radius: 3px; padding: 1px 4px; }
+          .doodle-sketch    { stroke: #5b466f; stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+          .cuadro-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            line-height: 1.5;
+            margin: 12px 0;
+          }
+          .cuadro-table th, .cuadro-table td {
+            padding: 7px 9px;
+            border: 1px solid #dcd3e4;
+            text-align: left;
+            vertical-align: top;
+          }
+          .cuadro-table th {
+            background: #f4eef9 !important;
+            color: #4b2a75;
+            font-weight: 700;
+          }
+          .cuadro-table tr:nth-child(even) {
+            background: #faf7fc;
+          }
+          .sheet-divider {
+            break-after: page !important;
+            page-break-after: always !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            height: 0 !important;
+            border: 0 !important;
+            overflow: hidden !important;
+          }
+          .row { display: flex; align-items: center; gap: 8px; }
+          .between { justify-content: space-between; }
+          .wrap { flex-wrap: wrap; }
+          h2, h3, h4, p { margin: 0; }
+          ul { margin: 6px 0; padding-left: 20px; }
+          li { margin: 4px 0; }
+        </style>
+      </head>
+      <body>
+        ${renderedHtml}
+      </body>
+      </html>
+    `);
+    doc.close();
+
+    setTimeout(() => {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+      setTimeout(() => iframe.remove(), 15000);
+    }, 450);
   }
 
   function generateFinalReviewHTML(t) {
@@ -7782,13 +8042,10 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
               </div>
             </div>
           </span>
-          <div class="row wrap" style="gap:6px">
-            <button class="btn sm primary" data-act="generate-gemini-scheme-btn" data-id="${esc(t.id)}" title="Generar con Gemini AI usando tu Skill exacto de 2 hojas">${I('sparkle',12)} Generar con Gemini AI</button>
-            <button class="btn sm soft" data-act="copy-gemini-prompt" data-id="${esc(t.id)}" data-kind="scheme" title="Copiar el prompt completo con las instrucciones de tu Skill para pegarlo en Gemini Web">📋 Copiar Prompt Gemini</button>
-            <button class="btn sm soft" data-act="paste-gemini-scheme" data-id="${esc(t.id)}" title="Pegar el resultado de Gemini">📥 Pegar de Gemini</button>
+          <div class="row wrap" style="gap:8px">
+            <button class="btn sm primary" data-act="open-gemini-assistant" data-id="${esc(t.id)}" data-kind="scheme" title="Asistente guiado paso a paso para crear o actualizar tu esquema con Gemini">${I('sparkle',13)} Asistente Gemini</button>
+            <button class="btn sm soft" onclick="printTopicPastel('${esc(t.id)}', 'scheme')" title="Descargar como PDF completo de 2 hojas con anillas pastel y cuadrícula de 5 mm">${I('download',12)} Guardar en PDF</button>
             <button class="btn sm soft" data-act="edit-pastel-scheme" data-id="${esc(t.id)}" onclick="openEditPastelModal('${esc(t.id)}', 'scheme')">✏️ Editar</button>
-            <button class="btn sm soft" onclick="printTopicPastel('${esc(t.id)}', 'scheme')" title="Descargar como PDF limpio en 2 hojas con anillas pastel y cuadrícula de 5 mm">🖨️ PDF 2 Hojas</button>
-            <button class="btn sm" data-act="regenerate-pastel-scheme" data-id="${esc(t.id)}" title="Regenerar con motor local">↺ Restablecer Local</button>
           </div>
         </div>
         <div class="gemini-rendered-content surface" id="pastel-scheme-view-${esc(t.id)}" style="padding:24px 28px;border:1.5px solid #d8b4fe;border-radius:14px;background:#fff;line-height:1.65">
@@ -7905,13 +8162,10 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
               </div>
             </div>
           </span>
-          <div class="row wrap" style="gap:6px">
-            <button class="btn sm primary" data-act="generate-gemini-summary-btn" data-id="${esc(t.id)}" title="Generar con Gemini AI usando tu Skill exacto">${I('sparkle',12)} Generar con Gemini AI</button>
-            <button class="btn sm soft" data-act="copy-gemini-prompt" data-id="${esc(t.id)}" data-kind="summary" title="Copiar el prompt completo con las instrucciones de tu Skill para pegarlo en Gemini Web">📋 Copiar Prompt Gemini</button>
-            <button class="btn sm soft" data-act="paste-gemini-summary" data-id="${esc(t.id)}" title="Pegar el resultado de Gemini">📥 Pegar de Gemini</button>
+          <div class="row wrap" style="gap:8px">
+            <button class="btn sm primary" data-act="open-gemini-assistant" data-id="${esc(t.id)}" data-kind="summary" title="Asistente guiado paso a paso para crear o actualizar tus apuntes con Gemini">${I('sparkle',13)} Asistente Gemini</button>
+            <button class="btn sm soft" onclick="printTopicPastel('${esc(t.id)}', 'summary')" title="Descargar como PDF completo con anillas pastel y cuadrícula de 5 mm">${I('download',12)} Guardar en PDF</button>
             <button class="btn sm soft" data-act="edit-pastel-summary" data-id="${esc(t.id)}" onclick="openEditPastelModal('${esc(t.id)}', 'summary')">✏️ Editar</button>
-            <button class="btn sm soft" onclick="printTopicPastel('${esc(t.id)}', 'summary')" title="Descargar como PDF limpio con anillas pastel y cuadrícula de 5 mm">🖨️ Descargar PDF</button>
-            <button class="btn sm" data-act="regenerate-pastel-summary" data-id="${esc(t.id)}" title="Regenerar con motor local">↺ Restablecer Local</button>
           </div>
         </div>
         <div class="gemini-rendered-content surface" id="pastel-summary-view-${esc(t.id)}" style="padding:24px 28px;border:1px solid #e9d5ff;border-radius:14px;background:#fff;line-height:1.65">
@@ -8138,6 +8392,12 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
       case 'manage-topic-pdfs': {
         const t = topic(id || currentTopic()?.id);
         if (t) openManageTopicPdfsModal(t.id);
+        break;
+      }
+      case 'open-gemini-assistant': {
+        const tid = id || currentTopic()?.id;
+        const kind = el.dataset.kind || 'summary';
+        openGeminiAssistantModal(tid, kind);
         break;
       }
       case 'generate-gemini-summary-btn': {
