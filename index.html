@@ -4317,14 +4317,26 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
 
   function renderGeminiMarkdown(md) {
     if (!md) return '';
-    const lines = md.split(/\r?\n/);
+    const rawLines = md.split(/\r?\n/);
     let html = '<div class="pastel-notebook-sheet">';
     let inTable = false;
     let tableRows = [];
     let inList = false;
+    let listType = 'ul'; // 'ul' or 'ol'
+    let currentParagraph = [];
+
+    function flushParagraph() {
+      if (currentParagraph.length) {
+        html += '<p style="margin:7px 0;font-size:13px;line-height:1.75;color:#2f2a33">' + currentParagraph.join(' ') + '</p>';
+        currentParagraph = [];
+      }
+    }
 
     function flushList() {
-      if (inList) { html += '</ul>'; inList = false; }
+      if (inList) {
+        html += listType === 'ol' ? '</ol>' : '</ul>';
+        inList = false;
+      }
     }
 
     function flushTable() {
@@ -4346,14 +4358,13 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
     }
 
     function fmtLine(str) {
-      let res = str
+      return str
         .replace(/&/g, '&amp;')
         .replace(/</g, '&#60;')
         .replace(/>/g, '&#62;')
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
         .replace(/`([^`]+)`/g, '<code style="background:#f3e8ff;padding:2px 6px;border-radius:4px;font-size:12px">$1</code>')
-        /* Código semántico exacto del Skill del usuario */
         .replace(/\[(?:LEY|NORMA|ART[IÍ]CULO|VERDE):\s*([^\]]+)\]/gi, '<span class="hl-pastel-green">⚖️ $1</span>')
         .replace(/\[(?:PRINCIPIO|VALOR|LILA):\s*([^\]]+)\]/gi, '<span class="hl-pastel-purple">🟣 $1</span>')
         .replace(/\[(?:PROCESO|PROCEDIMIENTO|FASE|NARANJA):\s*([^\]]+)\]/gi, '<span class="hl-pastel-orange">🔄 $1</span>')
@@ -4363,14 +4374,22 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
         .replace(/\[(?:PLAZO|FECHA|T[EÉ]RMINO|ROJO):\s*([^\]]+)\]/gi, '<span class="hl-pastel-red">⏱️ $1</span>')
         .replace(/\[MAYOR[IÍ]A:\s*([^\]]+)\]/gi, '<span class="hl-pastel-purple">🗳️ $1</span>')
         .replace(/\[TRAMPA:\s*([^\]]+)\]/gi, '<span class="hl-pastel-red">🔴 $1</span>');
-
-      return res;
     }
 
-    for (let i = 0; i < lines.length; i++) {
-      const rawLine = lines[i].trim();
-      
+    for (let i = 0; i < rawLines.length; i++) {
+      const rawLine = rawLines[i].trim();
+
+      // Empty line -> boundaries of paragraphs and lists
+      if (!rawLine) {
+        flushParagraph();
+        flushList();
+        flushTable();
+        continue;
+      }
+
+      // Markdown Table
       if (rawLine.startsWith('|') && rawLine.endsWith('|')) {
+        flushParagraph();
         flushList();
         const cells = rawLine.slice(1, -1).split('|').map(c => fmtLine(c.trim()));
         if (cells.every(c => /^:?-+:?$/.test(c.replace(/&#60;|&#62;|&amp;/g, '')))) {
@@ -4383,15 +4402,10 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
         flushTable();
       }
 
-      if (!rawLine) {
-        flushList();
-        continue;
-      }
-
-      /* Corte exacto de página A4 para Esquema de 2 páginas */
+      // Horizontal rule / page break
       if (/^---+$/.test(rawLine)) {
+        flushParagraph();
         flushList();
-        flushTable();
         html += `
           <div class="sheet-divider" style="margin:28px 0;padding:14px 18px;background:linear-gradient(90deg,#fdf2f8,#faf5ff,#fdf2f8);border:1.5px dashed #c084fc;border-radius:10px;text-align:center;font-weight:700;color:#6b21a8;font-size:13px;break-after:page;page-break-after:always">
             <span style="margin-right:8px">✂️</span> CORTE DE PÁGINA 1 · INICIO DE PÁGINA 2 DE 2 (ESQUEMA ULTIMATE PASTEL) <span style="margin-left:8px">✂️</span>
@@ -4400,7 +4414,9 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
         continue;
       }
 
+      // Headers
       if (rawLine.startsWith('# ')) {
+        flushParagraph();
         flushList();
         html += `
           <div class="washi-tape-header">
@@ -4418,6 +4434,7 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
       }
 
       if (rawLine.startsWith('## ')) {
+        flushParagraph();
         flushList();
         html += `
           <div style="padding:10px 14px;margin:22px 0 10px 0;border-left:4px solid #a855f7;border-radius:6px;background:#fbf8fd">
@@ -4433,31 +4450,61 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
       }
 
       if (rawLine.startsWith('### ')) {
+        flushParagraph();
         flushList();
         html += '<h4 style="margin:16px 0 6px 0;color:#553396;font-size:14.5px;font-weight:750">' + fmtLine(rawLine.slice(4)) + '</h4>';
         continue;
       }
 
+      // Blockquotes
       if (rawLine.startsWith('> ')) {
+        flushParagraph();
         flushList();
         html += '<div style="background:#fffbf2;border-left:3.5px solid #f59e0b;padding:10px 14px;border-radius:6px;margin:10px 0;font-size:13px;color:#78350f">' + fmtLine(rawLine.slice(2)) + '</div>';
         continue;
       }
 
+      // Bullet lists
       if (/^[-*•]\s+/.test(rawLine)) {
-        if (!inList) {
+        flushParagraph();
+        if (!inList || listType !== 'ul') {
+          flushList();
           html += '<ul style="margin:8px 0 12px 0;padding-left:22px;font-size:13px;line-height:1.75;color:#2f2a33">';
           inList = true;
+          listType = 'ul';
         }
         html += '<li>' + fmtLine(rawLine.replace(/^[-*•]\s+/, '')) + '</li>';
         continue;
-      } else {
-        flushList();
       }
 
-      html += '<p style="margin:7px 0;font-size:13px;line-height:1.7;color:#2f2a33">' + fmtLine(rawLine) + '</p>';
+      // Numbered lists
+      if (/^\d+[.)]\s+/.test(rawLine)) {
+        flushParagraph();
+        if (!inList || listType !== 'ol') {
+          flushList();
+          html += '<ol style="margin:8px 0 12px 0;padding-left:22px;font-size:13px;line-height:1.75;color:#2f2a33">';
+          inList = true;
+          listType = 'ol';
+        }
+        html += '<li>' + fmtLine(rawLine.replace(/^\d+[.)]\s+/, '')) + '</li>';
+        continue;
+      }
+
+      // Continuation line of a list item
+      if (inList) {
+        // Append smoothly to the previous list item instead of creating broken orphan paragraphs
+        const lastLiIdx = html.lastIndexOf('</li>');
+        if (lastLiIdx !== -1) {
+          html = html.slice(0, lastLiIdx) + ' ' + fmtLine(rawLine) + '</li>';
+          continue;
+        }
+      }
+
+      // Regular paragraph line: accumulate lines to keep sentences intact and prevent fragmentation
+      currentParagraph.push(fmtLine(rawLine));
     }
 
+    flushParagraph();
     flushList();
     flushTable();
     html += '</div>';
@@ -4545,8 +4592,12 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
     let contentSection = '';
     if (raw) {
       contentSection = `=======================================================
-DOCUMENTO Y APUNTES OFICIALES APORTADOS POR EL OPOSITOR:
-${raw}`;
+DOCUMENTO Y APUNTES OFICIALES APORTADOS POR EL OPOSITOR PARA ESTE TEMA:
+${raw}
+
+INSTRUCCIÓN ESTRICTA DE CONTENIDO:
+1. Desarrolla el contenido basándote FIELMENTE y de manera COMPLETA en el tema oficial «${t.title}» y en los apuntes aportados arriba.
+2. Céntrate EXCLUSIVAMENTE en la materia de este tema. NO introduzcas normas ni artículos de procedimiento administrativo común (LPAC) a menos que los apuntes traten expresamente de ello.`;
     } else {
       contentSection = `=======================================================
 MATERIA Y DIRECTRICES NORMATIVAS OFICIALES:
@@ -4555,21 +4606,24 @@ Concepto nuclear a desarrollar: ${info.def}
 Artículos y preceptos clave de examen:
 ${info.articles.join('\n')}
 
-INSTRUCCIÓN ESPECÍFICA:
-Como este tema no tiene aún apuntes redactados manualmente, desarrolla el temario oficial completo correspondiente al título exacto «${t.title}» según el programa oficial de ${opp().name}. No mezcles con materias de otros temas.`;
+INSTRUCCIÓN ESTRICTA DE CONTENIDO:
+1. Como este tema no tiene aún texto redactado manualmente, desarrolla el temario oficial completo correspondiente al título exacto «${t.title}» según el programa oficial de ${opp().name}.
+2. DESARROLLA EXCLUSIVAMENTE LA MATERIA PROPIA DE ESTE TEMA (${info.law}).
+3. Está TERMINANTEMENTE PROHIBIDO incluir leyes o preceptos de otros temas no relacionados (por ejemplo, NO incluyas artículos de la Ley 39/2015 ni de procedimiento administrativo común si el tema es de la Unión Europea, Medio Ambiente, Constitución, Presupuestos o Personal).`;
     }
 
     if (isSummary) {
-      return `ORDEN PARA GEMINI (APUNTES COMPLETOS DE OPOSICIÓN):
-Actúa como preparador experto de oposiciones. Transforma de forma completa y estructurada el tema oficial que te indico abajo, aplicando las siguientes directrices exactas:
+      return `ORDEN PARA GEMINI (APUNTES COMPLETOS DE OPOSICIÓN · TEMA ${t.title}):
+Actúa como preparador experto de oposiciones. Transforma de forma completa, estructurada y visual el tema oficial indicado abajo, aplicando las siguientes directrices exactas:
 
-1. CONSERVACIÓN ÍNTEGRA DEL TEMARIO:
-   - Mantén el 100% del contenido: todos los artículos, plazos, fechas, mayorías, órganos, excepciones y tablas. No omitas ni resumas datos críticos para examen.
+1. CONSERVACIÓN ÍNTEGRA DE LA MATERIA:
+   - Mantén el 100% del contenido de «${t.title}»: todos los artículos, plazos, fechas, mayorías, órganos, excepciones y tablas. No omitas ni resumas datos críticos para examen.
+   - Céntrate única y exclusivamente en la materia que corresponde a este tema (${info.law}).
 
 2. ESTRUCTURA Y CÓDIGO VISUAL EN TEXTO:
    - Estructura con títulos (#, ##, ###), listas y tablas comparativas en Markdown.
    - Resalta en negrita los elementos según su categoría:
-     * Leyes y artículos oficiales (ej: **art. 35 LPAC**, **art. 45 CE**, etc.)
+     * Leyes y artículos oficiales propios del tema
      * Principios jurídicos rectores
      * Procedimientos y fases
      * Órganos competentes y personas
@@ -4588,11 +4642,12 @@ Bloque Temático: ${blockTitle}
 
 ${contentSection}`;
     } else {
-      return `ORDEN PARA GEMINI (ESQUEMA DE REPASO EXAMEN · MÁXIMO 2 PÁGINAS A4):
+      return `ORDEN PARA GEMINI (ESQUEMA DE REPASO EXAMEN · MÁXIMO 2 PÁGINAS A4 · TEMA ${t.title}):
 Actúa como preparador experto de oposiciones. Genera un esquema ultracompacto de repaso rápido para examen a partir del tema que te indico abajo, con las siguientes directrices:
 
-1. LÍMITE ESTRICTO DE EXTENSIÓN:
+1. LÍMITE ESTRICTO DE EXTENSIÓN Y PRECISIÓN TEMÁTICA:
    - Debe ser ultracompacto para ocupar como máximo 2 páginas A4 en el cuaderno de repaso.
+   - Trata con exactitud la materia propia de «${t.title}» (${info.law}). NO mezcles con procedimiento administrativo general salvo que sea su materia.
    - Elimina paja narrativa, pero conserva todos los artículos, plazos, mayorías, órganos y excepciones clave para examen tipo test.
 
 2. TABLAS Y RESALTADOS:
@@ -7922,23 +7977,47 @@ ${contentSection}`;
         law: 'Ley 7/2021 de Cambio Climático y Transición Energética y Ley 42/2007 del Patrimonio Natural y de la Biodiversidad',
         def: 'Regula las competencias públicas sobre protección ambiental, objetivos de reducción de emisiones de gases de efecto invernadero, conservación de espacios protegidos (Red Natura 2000) y transición ecológica hacia una economía descarbonizada.',
         articles: [
-          '[LEY: Art. 45 CE] Derecho de todos a disfrutar de un medio ambiente adecuado para el desarrollo de la persona, así como el deber de conservarlo. Los poderes públicos velarán por la utilización racional de todos los recursos naturales.',
-          '[LEY: Art. 149.1.23.ª CE] Competencia exclusiva del Estado: Legislación básica sobre protección del medio ambiente, sin perjuicio de las facultades de las Comunidades Autónomas de establecer normas adicionales de protección.',
-          '[LEY: Art. 3 Ley 7/2021] Objetivos nacionales: Reducción para el año 2030 de al menos un 23% de las emisiones de gases de efecto invernadero respecto al año 1990 y neutralidad climática en 2050.',
+          '[LEY: Art. 45 CE] Derecho de todos a disfrutar de un medio ambiente adecuado y deber de conservarlo. Los poderes públicos velarán por la utilización racional de los recursos naturales.',
+          '[LEY: Art. 149.1.23.ª CE] Competencia exclusiva del Estado: Legislación básica sobre protección del medio ambiente, sin perjuicio de las facultades de las CCAA de establecer normas adicionales de protección.',
+          '[LEY: Art. 3 Ley 7/2021] Objetivos nacionales: Reducción para el año 2030 de al menos un 23% de las emisiones de gases de efecto invernadero respecto a 1990 y neutralidad climática a más tardar en 2050.',
           '[LEY: Art. 30 Ley 42/2007] Espacios naturales protegidos: Parques, Reservas Naturales, Áreas Marinas Protegidas, Monumentos Naturales y Paisajes Protegidos.',
           '[LEY: Ley 21/2013 de Evaluación Ambiental] Procedimientos de evaluación ambiental estratégica (planes y programas) y evaluación de impacto ambiental (proyectos públicos y privados).'
+        ],
+        elements: [
+          {
+            title: 'Distribución Constitucional de Competencias Ambientales',
+            items: [
+              '**Estado (art. 149.1.23.ª CE):** Legislación básica sobre protección del medio ambiente y montes, aprovechamientos forestales y vías pecuarias.',
+              '**Comunidades Autónomas:** Normas adicionales de protección y gestión/ejecución directa de los espacios naturales protegidos.',
+              '**Entidades Locales:** Gestión de residuos urbanos, abastecimiento de agua y Zonas de Bajas Emisiones (ZBE) en municipios de más de 50.000 habitantes.'
+            ]
+          },
+          {
+            title: 'Instrumentos Nucleares de Protección y Transición Ecológica',
+            items: [
+              '**Red Natura 2000:** Red ecológica europea integrada por Lugares de Importancia Comunitaria (LIC), Zonas Especiales de Conservación (ZEC) y Zonas de Especial Protección para las Aves (ZEPA).',
+              '**Evaluación de Impacto Ambiental (Ley 21/2013):** Evaluación ordinaria y simplificada para prevenir repercusiones de obras o actividades sobre el entorno.',
+              '**Principio Quien Contamina Paga (art. 191 TFUE):** Responsabilidad medioambiental objetiva e ilimitada del operador que cause daños a recursos naturales.'
+            ]
+          }
         ],
         table: [
           ['Materia / Instrumento', 'Ámbito Competencial', 'Norma Aplicable', 'Finalidad Principal'],
           ['Legislación Básica Ambiental', 'Estado (art. 149.1.23.ª CE)', 'Leyes estatales marco', 'Establecer mínimos obligatorios comunes en todo el territorio'],
           ['Gestión y Normas Adicionales', 'Comunidades Autónomas', 'Leyes autonómicas de desarrollo', 'Gestión de espacios protegidos y niveles superiores de protección'],
-          ['Planes de Calidad del Aire', 'Entidades Locales (municipios)', 'Ley 34/2007 de Calidad del Aire', 'Zonas de Bajas Emisiones (ZBE) en municipios de más de 50.000 hab.'],
+          ['Zonas de Bajas Emisiones (ZBE)', 'Municipios > 50.000 hab.', 'Ley 7/2021 de Cambio Climático', 'Planes de movilidad urbana sostenible y reducción de emisiones'],
           ['Evaluación de Impacto Ambiental', 'Órgano ambiental competente', 'Ley 21/2013', 'Prevención de efectos significativos de proyectos sobre el medio']
         ],
+        deadlines: [
+          '[PLAZO: Año 2030] Reducción vinculante de al menos el 23% de las emisiones de GEI respecto al nivel de 1990.',
+          '[PLAZO: Año 2050] Alcanzar la neutralidad climática en todo el territorio nacional.',
+          '[PLAZO: Evaluación Ordinaria] Plazo de resolución de la Declaración de Impacto Ambiental: 4 meses prorrogable motivadamente 2 meses más.',
+          '[QUÓRUM: Red Natura 2000] Designación de ZEC en un plazo máximo de 6 años tras la aprobación comunitaria del LIC.'
+        ],
         traps: [
-          '[TRAMPA: Reparto Competencial] El Estado dicta la LEGISLACIÓN BÁSICA (art. 149.1.23.ª CE); las CCAA pueden dictar NORMAS ADICIONALES de protección y tienen la competencia ejecutiva/gestora.',
+          '[TRAMPA: Reparto Competencial] El Estado dicta la LEGISLACIÓN BÁSICA (art. 149.1.23.ª CE); las CCAA pueden dictar NORMAS ADICIONALES de protección y ostentan la competencia ejecutiva.',
           '[TRAMPA: Red Natura 2000] Integrada por Zonas Especiales de Conservación (ZEC) y Zonas de Especial Protección para las Aves (ZEPA).',
-          '[TRAMPA: Principio Quien Contamina Paga] Consagrado en el art. 191 TFUE y en la Ley 26/2007 de Responsabilidad Medioambiental (responsabilidad objetiva e ilimitada del operador).'
+          '[TRAMPA: Responsabilidad Ambiental] Es objetiva e ilimitada (Ley 26/2007) y opera con independencia de dolo o culpa del operador.'
         ]
       };
     }
@@ -7947,30 +8026,55 @@ ${contentSection}`;
     if (titleNorm.includes('union europea') || titleNorm.includes('tratados') || titleNorm.includes('comunitari') || titleNorm.includes('consejo europeo') || titleNorm.includes('parlamento europeo') || titleNorm.includes('comision europea') || titleNorm.includes('tjue')) {
       return {
         law: 'Tratado de la Unión Europea (TUE) y Tratado de Funcionamiento de la UE (TFUE)',
-        def: 'La Unión Europea es una organización supranacional fundada sobre los valores de dignidad humana, libertad, democracia, igualdad, Estado de Derecho y respeto de los derechos humanos (art. 2 TUE), dotada de personalidad jurídica propia.',
+        def: 'La Unión Europea es una organización supranacional dotada de personalidad jurídica propia (art. 47 TUE) y de un ordenamiento jurídico autónomo fundado en los valores de libertad, democracia y Estado de Derecho.',
         articles: [
-          '[LEY: Art. 5 TUE] Principios rectores del ejercicio competencial: Principio de atribución, principio de subsidiariedad y principio de proporcionalidad.',
-          '[LEY: Art. 288 TFUE] Fuentes del Derecho derivado: El Reglamento (alcance general, obligatorio y directamente aplicable); la Directiva (vincula en el fin, requiere transposición nacional); la Decisión (obligatoria para sus destinatarios).',
-          '[LEY: Art. 14 TUE] Parlamento Europeo: Elegido por sufragio universal directo cada 5 años por los ciudadanos de la Unión. Función colegisladora y de control presupuestario.',
-          '[LEY: Art. 17 TUE] Comisión Europea: Órgano ejecutivo colegiado independiente que ostenta en exclusiva la iniciativa legislativa de la Unión.',
-          '[LEY: Art. 19 TUE] Tribunal de Justicia de la UE: Garantiza el respeto del Derecho en la interpretación y aplicación de los Tratados. Cuestión prejudicial (art. 267 TFUE).'
+          '[LEY: Art. 5 TUE] Principios rectores del ejercicio competencial: Atribución (solo actúa dentro de los límites conferidos), Subsidiariedad (en competencias no exclusivas) y Proporcionalidad.',
+          '[LEY: Art. 288 TFUE] Fuentes del Derecho derivado: Reglamento (obligatorio en todos sus elementos y directamente aplicable), Directiva (obliga en el fin, requiere transposición) y Decisión (obligatoria para sus destinatarios).',
+          '[LEY: Art. 14 TUE] Parlamento Europeo: Elegido por sufragio universal directo cada 5 años por los ciudadanos de la Unión. Ejerce junto con el Consejo la función legislativa y presupuestaria.',
+          '[LEY: Art. 15 TUE] Consejo Europeo: Integrado por los Jefes de Estado o de Gobierno, su Presidente y el Presidente de la Comisión. Define las orientaciones políticas generales; no legisla.',
+          '[LEY: Art. 17 TUE] Comisión Europea: Promueve el interés general de la UE, vela por la aplicación de los Tratados y ostenta en exclusiva la iniciativa legislativa ordinaria.'
+        ],
+        elements: [
+          {
+            title: 'Triángulo Institucional y Procedimiento Decisorio',
+            items: [
+              '**Comisión Europea:** Monopolio de la propuesta legislativa e impulsora de las políticas comunitarias.',
+              '**Consejo de la Unión Europea:** Reúne a los ministros por áreas temáticas y colegisla junto con el Parlamento.',
+              '**Parlamento Europeo:** Representa a la ciudadanía europea, aprueba el presupuesto y ejerce el control político sobre la Comisión.'
+            ]
+          },
+          {
+            title: 'Articulación del Ordenamiento Jurídico Comunitario',
+            items: [
+              '**Principio de Primacía (Costa c. ENEL):** Prevalencia de las normas de la UE sobre el Derecho interno de los Estados miembros.',
+              '**Principio de Efecto Directo (Van Gend en Loos):** Los particulares pueden invocar derechos derivados de normas europeas ante sus tribunales nacionales.',
+              '**Cuestión Prejudicial (art. 267 TFUE):** Mecanismo de reenvío al TJUE para interpretar el Derecho de la Unión con criterio vinculante y uniforme.'
+            ]
+          }
         ],
         table: [
           ['Institución UE', 'Sede Principal', 'Composición', 'Función Primaria'],
-          ['Consejo Europeo', 'Bruselas', 'Jefes de Estado/Gobierno + Presidente + Pres. Comisión', 'Define la orientación y prioridades políticas generales'],
-          ['Consejo de la UE (Ministros)', 'Bruselas', 'Un representante ministerial por Estado miembro', 'Colegislador y adopción del presupuesto junto al Parlamento'],
+          ['Consejo Europeo', 'Bruselas', 'Jefes de Estado/Gobierno + Presidente + Pres. Comisión', 'Define orientaciones y prioridades políticas generales (no legisla)'],
+          ['Consejo de la UE (Ministros)', 'Bruselas', 'Un representante de nivel ministerial por Estado', 'Colegislador y adopción de decisiones junto al Parlamento'],
           ['Comisión Europea', 'Bruselas', 'Colegio de Comisarios (1 por Estado miembro)', 'Iniciativa legislativa exclusiva y guardiana de los Tratados'],
           ['Tribunal de Justicia (TJUE)', 'Luxemburgo', '1 Juez por Estado miembro + 11 Abogados Generales', 'Jurisdicción suprema comunitaria y cuestiones prejudiciales']
         ],
+        deadlines: [
+          '[PLAZO: 5 años] Duración del mandato de los diputados al Parlamento Europeo y de los miembros de la Comisión Europea.',
+          '[PLAZO: Transposición de Directivas] Fijado en cada directiva (habitualmente entre 18 meses y 2 años).',
+          '[QUÓRUM: Mayoría Cualificada en el Consejo] Exige al menos el 55% de los Estados miembros (mínimo 15) que representen al menos el 65% de la población de la UE.',
+          '[QUÓRUM: Minoría de Bloqueo] Debe incluir al menos a 4 Estados miembros que representen más del 35% de la población de la UE.'
+        ],
         traps: [
-          '[TRAMPA: Distinción Reglamento vs Directiva] El Reglamento es DIRECTAMENTE APLICABLE en los Estados sin necesidad de ley de transposición. La Directiva REQUIERE transposición en el plazo fijado.',
-          '[TRAMPA: Iniciativa Legislativa] El Parlamento Europeo NO tiene iniciativa legislativa directa; le corresponde en exclusiva a la Comisión Europea (salvo excepciones tasadas).'
+          '[TRAMPA: Reglamento vs Directiva] El Reglamento es DIRECTAMENTE APLICABLE sin necesidad de ley de transposición nacional. La Directiva REQUIERE transposición en el plazo legal fijado.',
+          '[TRAMPA: Iniciativa Legislativa] El Parlamento Europeo NO tiene iniciativa legislativa directa; le corresponde en exclusiva a la Comisión Europea.',
+          '[TRAMPA: Consejo Europeo vs Consejo de la UE] El Consejo Europeo reúne a los Jefes de Estado/Gobierno y NO legisla. El Consejo de la UE reúne a ministros y SÍ aprueba leyes.'
         ]
       };
     }
 
     // 3. ADMINISTRACIÓN ELECTRÓNICA Y SERVICIOS DIGITALES
-    if (titleNorm.includes('administracion electronica') || titleNorm.includes('servicios digitales') || titleNorm.includes('interoperabilidad') || titleNorm.includes('modernizacion de la age')) {
+    if (titleNorm.includes('administracion electronica') || titleNorm.includes('servicios digitales') || titleNorm.includes('interoperabilidad') || titleNorm.includes('modernizacion')) {
       return {
         law: 'Ley 40/2015 (arts. 38 a 46), Esquema Nacional de Seguridad (RD 311/2022) y ENI (RD 4/2010)',
         def: 'Regula las sedes electrónicas, canales de acceso a los servicios públicos, identificación y firma electrónica, el registro electrónico de apoderamientos y los estándares de seguridad e interoperabilidad de la Administración Pública.',
@@ -7979,7 +8083,25 @@ ${contentSection}`;
           '[LEY: Art. 41 Ley 40/2015] Actuación administrativa automatizada: Acto producido por un sistema de información adecuadamente programado sin intervención directa de una persona.',
           '[LEY: Art. 42 Ley 40/2015] Sistemas de firma para la actuación automatizada: Sello electrónico de Administración u órgano y código seguro de verificación (CSV).',
           '[LEY: Art. 14.2 LPAC] Sujetos obligados a relacionarse electrónicamente: Personas jurídicas, entidades sin personalidad, quienes ejerzan actividad profesional colegiada y empleados públicos.',
-          '[LEY: RD 311/2022] Esquema Nacional de Seguridad (ENS): Principios básicos (seguridad integral, gestión de riesgos, prevención, respuesta y recuperación) y categorías BÁSICA, MEDIA y ALTA.'
+          '[LEY: RD 311/2022] Esquema Nacional de Seguridad (ENS): Principios básicos y categorías BÁSICA, MEDIA y ALTA.'
+        ],
+        elements: [
+          {
+            title: 'Componentes del Sistema de Administración Digital',
+            items: [
+              '**Punto de Acceso General (PAGe - administracion.gob.es):** Puerta única de acceso a la información y servicios públicos del Estado.',
+              '**Sede Electrónica:** Canal telemático dotado de garantías de seguridad, autenticidad, fecha y hora oficial sincronizada con el Real Observatorio de la Armada.',
+              '**Registro Electrónico de Apoderamientos (REA):** Inscripción telemática de poderes apud acta generales o específicos con validez máxima de 5 años.'
+            ]
+          },
+          {
+            title: 'Garantías de Interoperabilidad y Seguridad',
+            items: [
+              '**Esquema Nacional de Interoperabilidad (ENI):** Condiciones para el intercambio seguro y comprensible de documentos y datos entre Administraciones.',
+              '**Plataforma de Intermediación de Datos (PID):** Servicio que evita solicitar al ciudadano documentos ya obrantes en poder de cualquier Administración pública.',
+              '**Código Seguro de Verificación (CSV):** Mecanismo de autenticación e integridad que permite cotejar en sede electrónica copias en papel de documentos firmados.'
+            ]
+          }
         ],
         table: [
           ['Elemento Digital', 'Regulación', 'Requisitos de Validez', 'Función Principal'],
@@ -7988,9 +8110,15 @@ ${contentSection}`;
           ['Código Seguro de Verificación (CSV)', 'Art. 42 Ley 40/2015', 'Garantía de integridad y cotejo con el original', 'Verificación de autenticidad de documentos impresos o digitales'],
           ['Registro de Apoderamientos (REA)', 'Art. 6 Ley 39/2015', 'Poderes apud acta electrónicos por 5 años máx.', 'Acreditación válida de representación electrónica ante las AAPP']
         ],
+        deadlines: [
+          '[PLAZO: 5 años] Validez máxima de los poderes otorgados e inscritos en el Registro Electrónico de Apoderamientos (REA).',
+          '[PLAZO: 10 días naturales] Tiempo de puesta a disposición de una notificación electrónica antes de entenderse formalmente rechazada.',
+          '[QUÓRUM: Categorías ENS] Categorías Básica, Media y Alta según el impacto en la seguridad de la información y la continuidad del servicio.'
+        ],
         traps: [
           '[TRAMPA: Obligados a la Vía Electrónica] Las personas físicas eligen libremente; las personas jurídicas y los profesionales colegiados están OBLIGADOS por ley (art. 14.2 LPAC).',
-          '[TRAMPA: Duración de Apoderamientos] El poder inscrito en el registro electrónico de apoderamientos tiene una validez máxima de 5 AÑOS, prorrogable.'
+          '[TRAMPA: Duración de Apoderamientos] El poder inscrito en el registro electrónico de apoderamientos tiene una validez máxima de 5 AÑOS, prorrogable.',
+          '[TRAMPA: Firma vs Identificación] La identificación basta para trámites informativos; la firma electrónica se exige para formular solicitudes, recursos o desistir de acciones.'
         ]
       };
     }
@@ -8007,14 +8135,38 @@ ${contentSection}`;
           '[LEY: Art. 24 Ley 19/2013] Reclamación potestativa: Ante el Consejo de Transparencia y Buen Gobierno (CTBG), con carácter potestativo y previo a la vía contencioso-administrativa.',
           '[LEY: Art. 26 Ley 19/2013] Principios de buen gobierno: Integridad, imparcialidad, eficacia y dedicación al servicio público de los altos cargos.'
         ],
+        elements: [
+          {
+            title: 'Doble Vertiente de la Transparencia Pública',
+            items: [
+              '**Publicidad Activa:** Obligación de difundir de oficio en portales web información institucional, organizativa, de planificación, presupuestaria y contractual.',
+              '**Derecho de Acceso:** Procedimiento formal a solicitud de cualquier persona física o jurídica sin necesidad de acreditar un interés legítimo ni motivar la petición.',
+              '**Régimen de Inadmisión:** Solicitudes sobre información en curso de elaboración, notas internas o que requieran una acción previa de reelaboración.'
+            ]
+          },
+          {
+            title: 'Régimen de Garantías y Órgano de Control',
+            items: [
+              '**Test de Daño e Interés Público:** La aplicación de límites del art. 14 requiere justificar que el perjuicio es superior al interés público en su divulgación.',
+              '**Consejo de Transparencia y Buen Gobierno (CTBG):** Organismo público independiente con personalidad jurídica propia y plena autonomía orgánica y funcional.',
+              '**Régimen Sancionador de Altos Cargos:** Infracciones muy graves, graves y leves con sanciones que van desde la amonestación hasta la inhabilitación para cargo público.'
+            ]
+          }
+        ],
         table: [
           ['Vía de Acceso / Órgano', 'Plazo Legal', 'Sentido del Silencio', 'Efecto Jurídico'],
           ['Solicitud de Información', '1 mes (ampliable 1 mes más)', 'Desestimatorio (negativo)', 'Permite interponer reclamación o recurso'],
           ['Reclamación ante el CTBG', '1 mes desde notificación o silencio', '3 meses para resolver', 'Sustituye a los recursos administrativos ordinarios'],
           ['Publicidad Activa en Portal', 'Permanente y actualizada', 'Obligatorio de oficio', 'Información institucional, organizativa, jurídica y económica']
         ],
+        deadlines: [
+          '[PLAZO: 1 mes] Plazo para dictar y notificar la resolución de acceso a la información pública (ampliable por 1 mes adicional).',
+          '[PLAZO: 1 mes] Plazo para interponer la reclamación potestativa ante el Consejo de Transparencia.',
+          '[PLAZO: 3 meses] Plazo máximo para resolver y notificar la resolución de la reclamación ante el CTBG (silencio desestimatorio).'
+        ],
         traps: [
           '[TRAMPA: Silencio en Acceso a Información] El silencio administrativo en las solicitudes de acceso a información pública es DESESTIMATORIO (art. 20.4 Ley 19/2013).',
+          '[TRAMPA: Motivación de Solicitudes] El solicitante NO está obligado a motivar su solicitud de acceso; la falta de motivación no puede ser causa de inadmisión.',
           '[TRAMPA: Reclamación CTBG] La reclamación ante el Consejo de Transparencia es POTESTATIVA y GRATUITA, previa a la vía judicial.'
         ]
       };
@@ -8032,15 +8184,39 @@ ${contentSection}`;
           '[LEY: Art. 12 RGPD] Plazo de atención de derechos: El responsable responderá en el plazo máximo de UN MES desde la recepción de la solicitud.',
           '[LEY: Art. 47 Ley Orgánica 3/2018] Autoridad de control estatal: La Agencia Española de Protección de Datos (AEPD), ente de derecho público independiente.'
         ],
+        elements: [
+          {
+            title: 'Principios y Bases de Licitud del Tratamiento',
+            items: [
+              '**Responsabilidad Proactiva (Accountability):** El responsable debe aplicar medidas técnicas y organizativas y estar en condiciones de demostrar su cumplimiento.',
+              '**Bases Jurídicas (art. 6 RGPD):** Consentimiento, ejecución de contrato, obligación legal, interés vital, interés público o ejercicio de poderes públicos y satisfacción de intereses legítimos.',
+              '**Categorías Especiales de Datos (art. 9 RGPD):** Prohibido el tratamiento general de datos de origen étnico, opiniones políticas, convicciones religiosas, salud y vida sexual salvo excepciones tasadas.'
+            ]
+          },
+          {
+            title: 'Gobernanza y Obligaciones del Sector Público',
+            items: [
+              '**Delegado de Protección de Datos (DPO):** Obligatorio en todas las Administraciones Públicas, actúa como interlocutor con la AEPD y no recibe instrucciones.',
+              '**Registro de Actividades de Tratamiento (RAT):** Inventario público obligatorio de los tratamientos de datos efectuados.',
+              '**Evaluación de Impacto en la Protección de Datos (EIPD):** Preceptiva cuando el tratamiento entrañe un alto riesgo para los derechos y libertades.'
+            ]
+          }
+        ],
         table: [
           ['Figura / Derecho', 'Base Normativa', 'Plazo de Respuesta', 'Características Clave'],
           ['Derecho de Supresión (Olvido)', 'Art. 17 RGPD', '1 mes desde solicitud', 'Eliminación cuando los datos ya no sean necesarios para los fines'],
           ['Delegado de Protección de Datos', 'Art. 37 RGPD / 34 LOPD', 'Designación preceptiva', 'Cualificación profesional, independencia y enlace con la AEPD'],
           ['Notificación de Brechas de Seguridad', 'Art. 33 RGPD', 'Máximo 72 horas ante la AEPD', 'Obligatorio si entraña riesgo para los derechos y libertades']
         ],
+        deadlines: [
+          '[PLAZO: 72 horas] Tiempo máximo para notificar una brecha de seguridad a la AEPD tras tener constancia de la misma.',
+          '[PLAZO: 1 mes] Tiempo para responder a las solicitudes de ejercicio de derechos ARSULIPO (prorrogable 2 meses más si es complejo).',
+          '[PLAZO: 14 años] Edad mínima para prestar válidamente el consentimiento para el tratamiento de datos en España.'
+        ],
         traps: [
           '[TRAMPA: Plazo Notificación de Brechas] Las violaciones de seguridad deben notificarse a la AEPD a más tardar en 72 HORAS tras tener constancia.',
-          '[TRAMPA: DPD en la Administración] La designación del Delegado de Protección de Datos es SIEMPRE OBLIGATORIA en todas las Administraciones Públicas.'
+          '[TRAMPA: DPD en la Administración] La designación del Delegado de Protección de Datos es SIEMPRE OBLIGATORIA en todas las Administraciones Públicas.',
+          '[TRAMPA: Edad del Consentimiento] En España la edad mínima para consentir el tratamiento de datos propios son los 14 AÑOS (art. 7 LOPDGDD).'
         ]
       };
     }
@@ -8057,11 +8233,34 @@ ${contentSection}`;
           '[LEY: Art. 1 LO 1/2004] Violencia de género: Violencia ejercida sobre las mujeres por parte de quienes sean o hayan sido sus cónyuges o mantengan relaciones análogas de afectividad.',
           '[LEY: Ley 39/2006 de Promoción de la Autonomía Personal y Atención a las Personas en Situación de Dependencia] Grados: Grado I (dependencia moderada), Grado II (severa) y Grado III (gran dependencia).'
         ],
+        elements: [
+          {
+            title: 'Medidas Estructurales de la Ley de Igualdad (LO 3/2007)',
+            items: [
+              '**Transversalidad del Principio de Igualdad:** Integración en la formulación, ejecución y evaluación de todas las políticas públicas del Estado.',
+              '**Informe de Impacto de Género:** Preceptivo en la tramitación de anteproyectos de ley, reglamentos y planes de especial relevancia económica y social.',
+              '**Planes de Igualdad en las AAPP:** Elaboración, seguimiento y registro obligatorio de medidas concretas para eliminar desigualdades retributivas y de carrera.'
+            ]
+          },
+          {
+            title: 'Tutela Integral frente a la Violencia de Género y Dependencia',
+            items: [
+              '**Juzgados de Violencia sobre la Mujer:** Órganos especializados en los órdenes penal y civil para conocer de los delitos e incidentes de familia conexos.',
+              '**Delegación del Gobierno contra la Violencia de Género:** Unidad directiva que coordina los recursos institucionales y el seguimiento estadístico.',
+              '**Sistema para la Autonomía y Atención a la Dependencia (SAAD):** Marco de colaboración interadministrativo con catálogo de servicios y prestaciones económicas.'
+            ]
+          }
+        ],
         table: [
           ['Instrumento / Medida', 'Ámbito de Aplicación', 'Umbral / Quórum', 'Objetivo'],
           ['Plan de Igualdad en AAPP', 'AGE y Sector Público Institucional', 'Obligatorio y publicado', 'Eliminar brechas y garantizar corresponsabilidad'],
           ['Presencia Equilibrada', 'Tribunales y órganos colegiados', 'Ningún sexo menos del 40% ni más del 60%', 'Representación paritaria en toma de decisiones'],
           ['Juzgados de Violencia sobre la Mujer', 'Ámbito judicial penal y civil', 'Exclusivos en cada partido judicial', 'Instrucción y medidas cautelares integrales']
+        ],
+        deadlines: [
+          '[PLAZO: 50 trabajadores] Umbral de plantilla que hace obligatorio el plan de igualdad en empresas y administraciones.',
+          '[QUÓRUM: Presencia Equilibrada] Representación mínima del 40% y máxima del 60% de cualquiera de los dos sexos.',
+          '[PLAZO: SAAD] Plazo máximo legal para resolver el reconocimiento del grado de dependencia: 6 meses.'
         ],
         traps: [
           '[TRAMPA: Definición Legal de Violencia de Género] La Ley Orgánica 1/2004 exige expresamente que el agresor sea o haya sido CÓNYUGE o mantenga/haya mantenido RELACIÓN ANÁLOGA DE AFECTIVIDAD.',
@@ -8082,12 +8281,37 @@ ${contentSection}`;
           '[LEY: Art. 53 CE] Niveles de protección constitucional: tutela ordinaria, recurso de amparo (arts. 14 a 29 y 30.2) y reserva de ley orgánica.',
           '[LEY: Arts. 167 y 168 CE] Procedimientos ordinario (3/5 de cada Cámara) y agravado de reforma constitucional (2/3 de cada Cámara, disolución inmediata, ratificación por 2/3 y referéndum preceptivo).'
         ],
+        elements: [
+          {
+            title: 'Valores Superiores, Derechos y Garantías Constitucionales',
+            items: [
+              '**Valores Superiores (art. 1.1 CE):** Libertad, justicia, igualdad y pluralismo político.',
+              '**Derechos Fundamentales (arts. 15 a 29 CE):** Gozan de reserva de ley orgánica, tutela judicial preferente y sumaria, y recurso de amparo ante el Tribunal Constitucional.',
+              '**El Defensor del Pueblo (art. 54 CE):** Alto comisionado de las Cortes Generales para la supervisión de la actividad administrativa.'
+            ]
+          },
+          {
+            title: 'Organización Institucional de los Poderes del Estado',
+            items: [
+              '**La Corona (Título II):** Jefatura del Estado, inviolabilidad y refrendo ministerial preceptivo (art. 64 CE).',
+              '**Cortes Generales (Título III):** Congreso y Senado; potestad legislativa del Estado y control del Gobierno.',
+              '**Gobierno y Poder Judicial (Títulos IV y VI):** Dirección de la política interior y exterior; unidad jurisdiccional y CGPJ como órgano de gobierno judicial.'
+            ]
+          }
+        ],
         table: [
           ['Órgano Constitucional', 'Composición', 'Mayoría / Renovación', 'Función Principal'],
           ['Congreso de los Diputados', '350 Diputados (mín. 300, máx. 400)', 'Elegidos por 4 años por sufragio universal', 'Iniciativa legislativa, investidura y control político'],
           ['Senado', 'Cámara de representación territorial', 'Elegidos por 4 años (provinciales y autonómicos)', 'Segunda lectura, veto (mayoría absoluta) y enmiendas'],
           ['Tribunal Constitucional', '12 Magistrados nombrados por el Rey', 'Mandato 9 años, renovación por tercios cada 3 años', 'Control de constitucionalidad, amparo y conflictos'],
           ['Consejo General del Poder Judicial', 'Presidente del TS + 20 Vocales', 'Mandato 5 años por mayoría de 3/5 de las Cámaras', 'Órgano de gobierno de Jueces y Magistrados (no jurisdiccional)']
+        ],
+        deadlines: [
+          '[PLAZO: 4 años] Duración ordinaria del mandato del Congreso de los Diputados y del Senado.',
+          '[PLAZO: 72 horas] Límite máximo de la detención preventiva hasta la puesta a disposición judicial o libertad.',
+          '[PLAZO: 48 horas] Intervalo entre la primera y la segunda votación de investidura del Presidente del Gobierno (art. 99 CE).',
+          '[QUÓRUM: 3/5] Mayoría requerida en cada Cámara para la reforma constitucional ordinaria del art. 167 CE.',
+          '[QUÓRUM: 2/3] Mayoría requerida para la aprobación de la reforma agravada del art. 168 CE.'
         ],
         traps: [
           '[TRAMPA: Veto del Senado] Si el Senado veta un proyecto de ley por mayoría absoluta, el Congreso puede levantarlo inmediatamente por mayoría absoluta o transcurridos dos meses por mayoría simple.',
@@ -8101,13 +8325,31 @@ ${contentSection}`;
     if (titleNorm.includes('seguridad social') || titleNorm.includes('afiliac') || titleNorm.includes('cotizac') || titleNorm.includes('jubilac') || titleNorm.includes('incapacidad') || titleNorm.includes('tgss') || titleNorm.includes('inss')) {
       return {
         law: 'Real Decreto Legislativo 8/2015 (Texto Refundido de la Ley General de la Seguridad Social - LGSS)',
-        def: 'El sistema de la Seguridad Social garantiza a los trabajadores y familiares o asimilados a su cargo la protección adecuada frente a contingencias y situaciones legalmente contempladas (enfermedad, accidente, vejez, desempleo y viudedad).',
+        def: 'El sistema de la Seguridad Social garantiza a los trabajadores y familiares a su cargo la protección adecuada frente a contingencias y situaciones legalmente contempladas (enfermedad, accidente, jubilación, desempleo y viudedad).',
         articles: [
-          '[LEY: Art. 7 LGSS] Campo de aplicación: nivel contributivo (españoles y extranjeros que residan o se encuentren legalmente en España y ejerzan actividad profesional) y no contributivo.',
+          '[LEY: Art. 7 LGSS] Campo de aplicación: nivel contributivo (trabajadores por cuenta ajena y propia) y nivel no contributivo (prestaciones asistenciales e IMV).',
           '[LEY: Art. 16 LGSS] Afiliación: acto administrativo único, vitalicio y obligatorio para todo el territorio nacional.',
-          '[LEY: Art. 104 LGSS] Sujetos obligados y responsables del pago de cotizaciones: el empresario es el responsable del ingreso de las cuotas propias y de las de sus trabajadores.',
+          '[LEY: Art. 104 LGSS] Sujetos obligados y responsables del pago de cotizaciones: el empresario es el responsable del ingreso de las cuotas propias y de las retenidas a los trabajadores.',
           '[LEY: Art. 169 LGSS] Incapacidad temporal: duración máxima de 365 días, prorrogables por 180 días adicionales si se prevé curación.',
           '[LEY: Art. 205 LGSS] Jubilación ordinaria contributiva: periodo mínimo de cotización genérica de 15 años, con 2 años cotizados dentro de los 15 años inmediatamente anteriores.'
+        ],
+        elements: [
+          {
+            title: 'Estructura Orgánica y Actos de Encuadramiento',
+            items: [
+              '**Tesorería General (TGSS):** Caja única del sistema, titularidad patrimonial, afiliación, altas, bajas, liquidación y recaudación.',
+              '**Instituto Nacional (INSS):** Gestión y reconocimiento del derecho económico a las prestaciones contributivas (salvo desempleo y mar).',
+              '**Afiliación, Altas y Bajas:** Altas previas al inicio del trabajo; bajas comunicadas en los 3 días naturales siguientes al cese.'
+            ]
+          },
+          {
+            title: 'Acción Protectora y Régimen de Prestaciones',
+            items: [
+              '**Incapacidad Temporal (IT):** 365 días prorrogables por 180 días más; propuesta de incapacidad permanente tras 545 días.',
+              '**Contingencias Profesionales:** Accidente de trabajo y enfermedad profesional sin exigencia de carencia previa (principio de automatismo).',
+              '**Pensión de Jubilación:** Cálculo de base reguladora sobre años cotizados y edad ordinaria de jubilación según escala transitoria.'
+            ]
+          }
         ],
         table: [
           ['Figura / Trámite SS', 'Entidad Competente', 'Plazo de Comunicación', 'Efectos de Incumplimiento'],
@@ -8116,9 +8358,15 @@ ${contentSection}`;
           ['Prórroga de IT (180 días)', 'Instituto Nacional (INSS)', 'Al agotar los 365 días naturales', 'Competencia exclusiva del INSS (inspección médica y EVI)'],
           ['Pensión de Jubilación', 'Instituto Nacional (INSS)', 'Imprescriptible (salvo retroactividad 3 meses)', 'Abono vitalicio en 14 pagas anuales']
         ],
+        deadlines: [
+          '[PLAZO: Previo] Alta en Seguridad Social: debe solicitarse antes del inicio de la prestación laboral.',
+          '[PLAZO: 3 días naturales] Plazo para comunicar a la TGSS las bajas y variaciones de datos de los trabajadores.',
+          '[PLAZO: 365 días] Duración inicial de la IT (prorrogable por el INSS hasta un máximo de 180 días más).',
+          '[QUÓRUM: 15 años] Carencia genérica de cotización exigida para la pensión contributiva de jubilación.'
+        ],
         traps: [
           '[TRAMPA: Cómputo en Seguridad Social] Los plazos de altas y bajas se computan en DÍAS NATURALES (bajas en 3 días naturales; altas previas al inicio del trabajo).',
-          '[TRAMPA: Competencia TGSS vs INSS] La TGSS gestiona la caja única, afiliación, altas, bajas, liquidación y recaudación. El INSS reconoce el derecho económico a las prestaciones (IT, IP, Jubilación, Maternidad/Paternidad).',
+          '[TRAMPA: Competencia TGSS vs INSS] La TGSS gestiona la caja única, afiliación, altas, bajas, liquidación y recaudación. El INSS reconoce el derecho económico a las prestaciones.',
           '[TRAMPA: Automatismo de Prestaciones] En accidentes de trabajo y enfermedades profesionales rige el automatismo: el trabajador tiene derecho a la prestación aunque el empresario no lo haya dado de alta ni cotizado.'
         ]
       };
@@ -8136,12 +8384,36 @@ ${contentSection}`;
           '[LEY: Art. 95 TREBEP] Infracciones muy graves: tipicidad tasada (incumplimiento del deber de fidelidad a la CE, discriminación, acoso, etc.).',
           '[LEY: Art. 97 TREBEP] Prescripción de infracciones: muy graves (3 años), graves (2 años), leves (6 meses).'
         ],
+        elements: [
+          {
+            title: 'Tipología del Personal y Régimen Estatutario',
+            items: [
+              '**Funcionarios de Carrera:** Desempeñan servicios profesionales retribuidos y permanentes vinculados por una relación estatutaria regulada por el Derecho administrativo.',
+              '**Funcionarios Interinos (art. 10):** Nombrados por razones expresamente justificadas de necesidad y urgencia (máximo 3 años en vacantes).',
+              '**Personal Eventual:** Nombramiento y cese libres; realiza exclusivamente funciones de confianza o asesoramiento especial.'
+            ]
+          },
+          {
+            title: 'Situaciones Administrativas y Derechos',
+            items: [
+              '**Servicios Especiales (art. 87):** Reserva de puesto de trabajo en la misma localidad y cómputo de tiempo para trienios y promoción.',
+              '**Excedencias (art. 89):** Voluntaria por interés particular (sin reserva), por cuidado de familiares (reserva de puesto los 2 primeros años) y por violencia de género.',
+              '**Régimen Disciplinario:** Infracciones muy graves (prescriben a los 3 años), graves (2 años) y leves (6 meses); separación del servicio para muy graves.'
+            ]
+          }
+        ],
         table: [
           ['Situación Administrativa', 'Reserva de Puesto', 'Cómputo de Antigüedad / Trienios', 'Derechos Retributivos'],
           ['Servicio Activo', 'Puesto definitivo desempeñado', 'Sí computa plenamente', 'Retribuciones básicas y complementarias del puesto'],
           ['Servicios Especiales', 'Reserva del puesto de trabajo en la misma localidad', 'Sí computa trienios y promoción', 'Retribuciones del cargo público desempeñado'],
           ['Excedencia Interés Particular', 'No reserva (derecho preferente al reingreso)', 'No computa trienios ni ascensos', 'Sin retribución alguna'],
           ['Excedencia Cuidado Familiar', '2 años reserva de puesto (3.er año en misma localidad)', 'Sí computa trienios y antigüedad', 'Sin retribución (salvo cotización a efectos de SS)']
+        ],
+        deadlines: [
+          '[PLAZO: 22 días hábiles] Vacaciones retribuidas anuales por un año completo de servicios (los sábados no computan).',
+          '[PLAZO: 3 años] Plazo máximo de ocupación de plazas vacantes por personal funcionario interino (art. 10.4 TREBEP).',
+          '[PLAZO: 3 años] Prescripción de las faltas muy graves cometidas por empleados públicos (graves: 2 años; leves: 6 meses).',
+          '[PLAZO: 15 días naturales] Permiso retribuido por matrimonio o unión de hecho registrada.'
         ],
         traps: [
           '[TRAMPA: Prescripción de Sanciones] Las sanciones impuestas prescriben: muy graves a los 3 años, graves a los 2 años, leves al año. No confundir con la prescripción de infracciones (leves prescriben a los 6 meses).',
@@ -8163,12 +8435,36 @@ ${contentSection}`;
           '[LEY: Art. 29 LCSP] Plazo de duración de los contratos: máximo 5 años (incluidas prórrogas) con carácter general en suministros y servicios.',
           '[LEY: Art. 44 LCSP] Recurso especial en materia de contratación: preceptivo y gratuito ante el Tribunal Administrativo Central de Recursos Contractuales (TACRC).'
         ],
+        elements: [
+          {
+            title: 'Tipología Contractual y Procedimientos de Adjudicación',
+            items: [
+              '**Procedimiento Abierto y Abierto Simplificado:** El abierto ordinario es la regla general sin negociación; el simplificado acorta plazos de presentación.',
+              '**Contratos Menores (art. 118 LCSP):** Exigen informe de necesidad, aprobación del gasto e incorporación de la factura sin fraccionar el objeto.',
+              '**Criterios de Adjudicación (art. 145 LCSP):** Mejor relación calidad-precio mediante criterios económicos y cualitativos medioambientales o sociales.'
+            ]
+          },
+          {
+            title: 'Garantías y Vías de Impugnación Contractual',
+            items: [
+              '**Garantía Definitiva:** 5% del importe de adjudicación (IVA excluido) exigible al licitador con mejor oferta.',
+              '**Recurso Especial en Materia de Contratación (REMC):** Suspensión automática del acto de adjudicación hasta la resolución del TACRC.',
+              '**Pliegos de Cláusulas Administrativas (PCAP):** Constituyen la ley del contrato entre la Administración y el contratista.'
+            ]
+          }
+        ],
         table: [
           ['Tipo de Contrato', 'Umbral de Contrato Menor', 'Garantía Exigible', 'Duración Máxima General'],
           ['Obras', 'Valor estimado inferior a 40.000 €', '5% de adjudicación definitiva', 'Según proyecto (menor máx. 1 año)'],
           ['Suministros', 'Valor estimado inferior a 15.000 €', '5% de adjudicación definitiva', 'Máximo 5 años (incluidas prórrogas)'],
           ['Servicios', 'Valor estimado inferior a 15.000 €', '5% de adjudicación definitiva', 'Máximo 5 años (incluidas prórrogas)'],
           ['Concesión de Servicios', 'No admite contrato menor', '5% de adjudicación definitiva', 'Hasta 25 o 40 años según inversión']
+        ],
+        deadlines: [
+          '[PLAZO: Máx. 1 año] Duración máxima legal improrrogable del contrato menor.',
+          '[PLAZO: 5 años] Plazo máximo de duración general (incluidas prórrogas) de contratos de servicios y suministros.',
+          '[PLAZO: 15 días hábiles] Plazo de interposición del Recurso Especial en materia de contratación (REMC).',
+          '[QUÓRUM: 5%] Porcentaje de la garantía definitiva sobre el precio de adjudicación excluido el IVA.'
         ],
         traps: [
           '[TRAMPA: Duración de Contratos Menores] Los contratos menores no pueden tener una duración superior a 1 año ni ser objeto de prórroga en ningún caso.',
@@ -8190,12 +8486,37 @@ ${contentSection}`;
           '[LEY: Art. 51 LGP] Modificaciones presupuestarias: transferencias, generaciones, ampliaciones, créditos extraordinarios y suplementos de crédito.',
           '[LEY: Art. 134 CE] Elaboración del presupuesto: corresponde en exclusiva al Gobierno y su examen, enmienda y aprobación a las Cortes Generales.'
         ],
+        elements: [
+          {
+            title: 'Principios Presupuestarios y Fases de Gasto ADOP',
+            items: [
+              '**Autorización (A):** Aprobación del gasto por cuantía estimada; no genera obligación frente a terceros.',
+              '**Disposición / Compromiso (D):** Acuerdo vinculante que formaliza la relación jurídica con un tercero por cuantía exacta.',
+              '**Reconocimiento de la Obligación (O):** Constatación de la prestación o servicio realizado conforme a factura y devengo.',
+              '**Propuesta y Pago Material (P):** Orden de transferencia emitida al Tesoro Público para saldar la deuda.'
+            ]
+          },
+          {
+            title: 'Modificaciones Presupuestarias y Control Interno',
+            items: [
+              '**Crédito Extraordinario y Suplemento:** Cuando no hay crédito o es insuficiente y no puede demorarse al año siguiente.',
+              '**Transferencias de Crédito:** Traslado de crédito entre partidas sin alterar la cuantía global del presupuesto.',
+              '**Intervención General de la Administración del Estado (IGAE):** Control interno de la gestión económica mediante fiscalización previa y auditoría pública.'
+            ]
+          }
+        ],
         table: [
           ['Fase de Gasto', 'Significado Jurídico', 'Documento Contable', 'Órgano Decisor'],
           ['A: Autorización', 'Acuerdo de realizar un gasto por importe estimado', 'Documento A', 'Ministro o Director del Organismo'],
           ['D: Disposición', 'Vínculo jurídico formal con tercero (contrato/adjudicación)', 'Documento D', 'Órgano de contratación competente'],
           ['O: Reconocimiento', 'Declaración de exigibilidad de la deuda (obra ejecutada)', 'Documento OK / O', 'Órgano gestor con fiscalización previa'],
           ['P: Propuesta de Pago', 'Solicitud formal a la Dirección General del Tesoro', 'Documento P', 'Ordenador de pagos del departamento']
+        ],
+        deadlines: [
+          '[PLAZO: 1 de octubre] Fecha límite para que el Gobierno presente el proyecto de PGE ante el Congreso de los Diputados.',
+          '[PLAZO: 31 de diciembre] Fin del ejercicio presupuestario y caducidad de los créditos no comprometidos.',
+          '[PLAZO: 3 meses] Plazo de rendición de cuentas de los pagos librados a justificar.',
+          '[QUÓRUM: 2%] Límite máximo de dotación del Fondo de Contingencia sobre el gasto no financiero.'
         ],
         traps: [
           '[TRAMPA: Orden de Fases de Gasto] El orden cronológico inalterable es siempre ADOP: Autorización -> Disposición -> Reconocimiento de obligación -> Propuesta de pago.',
@@ -8205,7 +8526,7 @@ ${contentSection}`;
       };
     }
 
-    // Default: Procedimiento Administrativo Común (Ley 39/2015 y Ley 40/2015)
+    // 12. DERECHO ADMINISTRATIVO GENERAL (LPAC Ley 39/2015 y LRJSP Ley 40/2015)
     return {
       law: 'Ley 39/2015 del Procedimiento Administrativo Común y Ley 40/2015 de Régimen Jurídico',
       def: 'Regula los requisitos de validez y eficacia de los actos administrativos, los derechos de las personas interesadas, la tramitación del procedimiento electrónico y el régimen de responsabilidad patrimonial pública.',
@@ -8217,6 +8538,24 @@ ${contentSection}`;
         '[LEY: Art. 121 y 122 LPAC] Recurso de alzada: plazo de interposición de un mes ante actos expresos, resolviéndose por el superior jerárquico en un plazo máximo de tres meses.',
         '[LEY: Art. 124 LPAC] Recurso potestativo de reposición: plazo de un mes ante el mismo órgano que dictó el acto, resolviéndose en un mes máximo.'
       ],
+      elements: [
+        {
+          title: 'Elementos de Validez y Eficacia del Acto Administrativo',
+          items: [
+            '**Requisitos Subjetivos:** Competencia irrenunciable del órgano (art. 8 LRJSP) y deber de abstención y recusación (arts. 23 y 24 LRJSP).',
+            '**Requisitos Objetivos:** Objeto lícito, determinado y motivación preceptiva en actos que limiten derechos o resuelvan recursos (art. 35 LPAC).',
+            '**Eficacia y Notificación:** Los actos se presumen válidos y producen efectos desde la fecha en que se dicten, quedando demorada la eficacia a la notificación válida.'
+          ]
+        },
+        {
+          title: 'Fases del Procedimiento y Vía de Recursos',
+          items: [
+            '**Fase 1: Iniciación:** De oficio (iniciativa propia, orden superior, petición o denuncia) o a solicitud del interesado.',
+            '**Fase 2: Instrucción:** Alegaciones en cualquier momento anterior al trámite de audiencia, informes y período de prueba (10 a 30 días).',
+            '**Fase 3: Finalización y Recursos:** Resolución expresa, desistimiento, renuncia o caducidad; recursos de alzada (1 mes ante el superior) y reposición (1 mes ante el mismo órgano).'
+          ]
+        }
+      ],
       table: [
         ['Figura Jurídica', 'Órgano Competente', 'Plazo Legal', 'Efectos del Incumplimiento'],
         ['Subsanación de Solicitud', 'Órgano instructor', '10 días hábiles (ampliable 5)', 'Desistimiento de la petición por resolución'],
@@ -8224,6 +8563,12 @@ ${contentSection}`;
         ['Recurso de Alzada', 'Superior jerárquico del autor', '1 mes (acto expreso) / 3 meses resolver', 'Desestimación presunta por silencio administrativo'],
         ['Recurso de Reposición', 'Mismo órgano que dictó el acto', '1 mes interponer / 1 mes resolver', 'Desestimación presunta por silencio administrativo'],
         ['Silencio General', 'Órgano competente para resolver', '3 meses (salvo norma con rango de ley)', 'Estimatorio en solicitudes / Desestimatorio si hay recursos']
+      ],
+      deadlines: [
+        '[PLAZO: 10 días hábiles] Subsanación de defectos en la solicitud inicial (art. 68 LPAC).',
+        '[PLAZO: 10 días naturales] Notificación electrónica: plazo sin acceder para entenderla rechazada (art. 43.2 LPAC).',
+        '[PLAZO: 1 mes] Interposición de los recursos de alzada y potestativo de reposición frente a actos expresos.',
+        '[PLAZO: 3 meses] Plazo máximo general para resolver y notificar los procedimientos y el recurso de alzada.'
       ],
       traps: [
         '[TRAMPA: Notificaciones Electrónicas] La notificación electrónica se entiende rechazada a los DIEZ DÍAS NATURALES desde su puesta a disposición sin que se acceda a su contenido (art. 43.2 LPAC).',
@@ -8244,8 +8589,7 @@ ${contentSection}`;
     md += '## 💡 1. IDEA FUERZA, NATURALEZA JURÍDICA Y PRINCIPIOS RECTORES\n';
     md += '> 🏛️ **Marco Normativo Central:** ' + info.law + '\n\n';
     md += '* **Concepto Fundamental:** ' + info.def + '\n';
-    md += '* **Ámbito de Aplicación:** Vincula con fuerza de ley a todas las Administraciones Públicas (AGE, Comunidades Autónomas, Entidades Locales y Sector Público Institucional).\n';
-    md += '* **Principios Informadores de Examen:** Legalidad y tipicidad, seguridad jurídica, jerarquía normativa, eficacia administrativa, proporcionalidad y motivación de actos.\n\n';
+    md += '* **Ámbito de Aplicación:** Directamente aplicable y exigible conforme a su marco legal en el ámbito de ' + opp().name + '.\n\n';
 
     md += '## 📜 2. MARCO NORMATIVO Y PRECEPTOS DE CITA OBLIGATORIA EN EXAMEN\n';
     info.articles.forEach(art => {
@@ -8253,16 +8597,18 @@ ${contentSection}`;
     });
 
     md += '## 📋 3. ESTRUCTURA ANALÍTICA Y ELEMENTOS ESENCIALES\n';
-    md += '### A. Requisitos Subjetivos de Validez\n';
-    md += '* **Competencia Administrativa:** Irrenunciable (art. 8 LRJSP). Se ejerce por los órganos que la tienen atribuida como propia, salvo delegación o avocación debidamente publicadas.\n';
-    md += '* **Imparcialidad y Deber de Abstención:** Motivos tasados en el art. 23 LRJSP (interés personal, parentesco hasta 4.º grado de consanguinidad o 2.º de afinidad, amistad íntima o enemistad manifiesta).\n\n';
-
-    md += '### B. Requisitos Objetivos y Teleológicos\n';
-    md += '* **Licitud y Determinación:** El contenido de los actos ha de ser determinado y adecuado a los fines perseguidos por el ordenamiento jurídico.\n';
-    md += '* **Motivación Preceptiva (art. 35 LPAC):** Obligatoria en actos que limiten derechos, resuelvan recursos, se separen del criterio seguido en actuaciones precedentes o en procedimientos de urgencia.\n\n';
-
-    md += '### C. Requisitos Formales y Procedimentales\n';
-    md += '* **Fases Oficiales:** 1) Iniciación (de oficio o a solicitud de persona interesada) -> 2) Instrucción y Alegaciones -> 3) Finalización (resolución expresa, desistimiento o renuncia).\n\n';
+    if (info.elements && info.elements.length) {
+      info.elements.forEach(el => {
+        md += '### ' + el.title + '\n';
+        el.items.forEach(it => {
+          md += '* ' + it + '\n';
+        });
+        md += '\n';
+      });
+    } else {
+      md += '### Aspectos Nucleares del Tema\n';
+      md += '* ' + info.def + '\n\n';
+    }
 
     md += '## ⚖️ 4. CUADRO COMPARATIVO DE EXAMEN\n';
     const tbl = info.table;
@@ -8274,11 +8620,14 @@ ${contentSection}`;
     md += '\n';
 
     md += '## ⏱️ 5. CÓMPUTOS, PLAZOS CRÍTICOS Y MAYORÍAS\n';
-    md += '* [PLAZO: 10 días hábiles] Plazo general de subsanación de defectos y aportación de documentos (art. 68 LPAC).\n';
-    md += '* [PLAZO: 1 mes] Interposición de recursos de alzada y potestativo de reposición frente a actos expresos.\n';
-    md += '* [PLAZO: 3 meses] Plazo máximo general para resolver y notificar en procedimientos administrativos salvo previsión legal expresa.\n';
-    md += '* [MAYORÍA: Mayoría Simple] Regla general para la válida adopción de acuerdos en órganos colegiados administrativos.\n';
-    md += '* [MAYORÍA: Mayoría Absoluta] Exigida en leyes orgánicas, vetos parlamentarios y supuestos constitucionales cualificados.\n\n';
+    if (info.deadlines && info.deadlines.length) {
+      info.deadlines.forEach(dl => {
+        md += '* ' + dl + '\n';
+      });
+    } else {
+      md += '* Preceptos y plazos fijados en ' + info.law + '.\n';
+    }
+    md += '\n';
 
     md += '## 🔴 6. ALERTAS Y PREGUNTAS TRAMPA DEL TRIBUNAL CALIFICADOR\n';
     info.traps.forEach(tr => {
@@ -8293,6 +8642,65 @@ ${contentSection}`;
       });
       md += '\n';
     }
+
+    return md;
+  }
+
+  function generateInternalEsquemaPastel(t) {
+    if (!t) return '';
+    const info = getTopicLegalSubjectInfo(t);
+
+    let md = '# ⚡ ESQUEMA REPASO EXAMEN PASTEL (HOJA 1 DE 2)\n';
+    md += '> 📋 **HOJA 1 DE 2 · MARCO NORMATIVO, DOGMÁTICA Y CONCEPTOS CLAVE** | ' + t.title + '\n\n';
+
+    md += '## 🏛️ BLOQUE I: Fundamentos y Bases Normativas\n';
+    md += '### 1. Marco Jurídico y Principios Estructurales\n';
+    md += '* [LEY: ' + info.law.split('(')[0].trim() + '] Fundamento positivo obligatorio en examen oficial.\n';
+    md += '* [CONCEPTO: Definición] ' + info.def.slice(0, 150) + '...\n\n';
+
+    md += '### 2. Preceptos Normativos Clave de Examen\n';
+    info.articles.slice(0, 4).forEach(art => {
+      md += '* ' + art + '\n';
+    });
+    md += '\n';
+
+    if (info.elements && info.elements[0]) {
+      md += '### 3. ' + info.elements[0].title + '\n';
+      info.elements[0].items.slice(0, 3).forEach(it => {
+        md += '* ' + it + '\n';
+      });
+      md += '\n';
+    }
+
+    md += '---\n\n';
+
+    md += '# ⚡ ESQUEMA REPASO EXAMEN PASTEL (HOJA 2 DE 2)\n';
+    md += '> 📋 **HOJA 2 DE 2 · DESARROLLO ESPECÍFICO, PLAZOS Y CUADRO EXPRÉS DE CIERRE** | ' + t.title + '\n\n';
+
+    md += '## ⚙️ BLOQUE II: Desarrollo Sistemático y Dinámica de Examen\n';
+    if (info.elements && info.elements.length > 1) {
+      info.elements.slice(1).forEach(el => {
+        md += '### ' + el.title + '\n';
+        el.items.slice(0, 3).forEach(it => {
+          md += '* ' + it + '\n';
+        });
+        md += '\n';
+      });
+    }
+
+    md += '### ⏱️ Cuadro Exprés de Cierre: Cifras, Plazos y Quórums de Examen\n\n';
+    const tbl = info.table;
+    md += '| ' + tbl[0].join(' | ') + ' |\n';
+    md += '| ' + tbl[0].map(() => ':---').join(' | ') + ' |\n';
+    for (let r = 1; r < tbl.length; r++) {
+      md += '| ' + tbl[r].map(c => esc(c).replace(/\|/g, '/')).join(' | ') + ' |\n';
+    }
+    md += '\n';
+
+    md += '### 🔴 Alertas Finales del Tribunal de Oposiciones\n';
+    info.traps.forEach(tr => {
+      md += '> 🔴 ' + tr + '\n\n';
+    });
 
     return md;
   }
