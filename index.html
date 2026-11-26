@@ -4453,7 +4453,6 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
     const t = topic(topicId);
     if (!t) return '';
     const isSummary = type === 'summary';
-    const systemPrompt = isSummary ? (state.geminiSkills?.summary || '') : (state.geminiSkills?.scheme || '');
     const raw = String(t.text || '').trim();
     const info = getTopicLegalSubjectInfo(t);
     const textToInclude = raw || (`Materia oficial: ${info.law}
@@ -4461,39 +4460,54 @@ Concepto clave: ${info.def}
 Artículos de examen: ${info.articles.join(' | ')}`);
 
     if (isSummary) {
-      return `ORDEN PRINCIPAL PARA GEMINI:
-Actúa como un preparador experto de oposiciones. Transforma de inmediato el tema oficial que te adjunto en formato de APUNTES OPOSICIONES PASTEL, siguiendo rigurosamente todas las instrucciones y reglas visuales que te indico a continuación:
+      return `ORDEN PARA GEMINI (APUNTES COMPLETOS DE OPOSICIÓN):
+Actúa como preparador experto de oposiciones. Transforma de forma completa y estructurada el tema oficial que te adjunto abajo, aplicando las siguientes directrices exactas:
 
-${systemPrompt}
+1. CONSERVACIÓN ÍNTEGRA DEL TEMARIO:
+   - Mantén el 100% del contenido: todos los artículos, plazos, fechas, mayorías, órganos, excepciones y tablas. No omitas ni resumas datos críticos para examen.
+
+2. ESTRUCTURA Y CÓDIGO VISUAL EN TEXTO:
+   - Estructura con títulos (#, ##, ###), listas y tablas comparativas en Markdown.
+   - Resalta en negrita los elementos según su categoría:
+     * Leyes y artículos oficiales (ej: **art. 35 LPAC**)
+     * Principios jurídicos rectores
+     * Procedimientos y fases
+     * Órganos competentes y personas
+     * Plazos y supuestos que activan consecuencias
+     * Conceptos clave a destacar en test
+
+3. FORMATO DE ENTREGA:
+   - Entrega el resultado directamente en Markdown limpio y estructurado (con tablas completas) para que el cuaderno de Type-Opos le aplique la estética pastel y la descarga en PDF.
 
 =======================================================
-DOCUMENTO OFICIAL DEL TEMA A TRANSFORMAR:
+TEMARIO OFICIAL A MAQUETAR:
 Título: ${t.title}
 Oposición: ${opp().name}
 =======================================================
 
-${textToInclude}
-
-=======================================================
-INSTRUCCIÓN FINAL:
-Genera ahora el resultado completo aplicando al 100% las especificaciones anteriores (código semántico de 6 colores pastel: Verde para leyes/artículos, Lila para principios, Naranja para procesos, Azul para órganos/personas, Rosa para subprocesos/plazos detonantes y Amarillo para destacados; tablas claras y dibujillos de libreta en boceto). Conserva íntegro el 100% del temario sin omitir artículos ni plazos.`;
+${textToInclude}`;
     } else {
-      return `ORDEN PRINCIPAL PARA GEMINI:
-Actúa como un preparador experto de oposiciones. Genera un ESQUEMA ULTRACOMPACTO DE REPASO RÁPIDO PARA EXAMEN de MÁXIMO 2 PÁGINAS A4 a partir del tema que te adjunto, siguiendo rigurosamente las instrucciones y reglas que te indico a continuación:
+      return `ORDEN PARA GEMINI (ESQUEMA DE REPASO EXAMEN · MÁXIMO 2 PÁGINAS A4):
+Actúa como preparador experto de oposiciones. Genera un esquema ultracompacto de repaso rápido para examen a partir del tema que te adjunto abajo, con las siguientes directrices:
 
-${systemPrompt}
+1. LÍMITE ESTRICTO DE EXTENSIÓN:
+   - Debe ser ultracompacto para ocupar como máximo 2 páginas A4 en el cuaderno de repaso.
+   - Elimina paja narrativa, pero conserva todos los artículos, plazos, mayorías, órganos y excepciones clave para examen tipo test.
+
+2. TABLAS Y RESALTADOS:
+   - Organiza la materia en tablas comparativas y esquemas numerados.
+   - Resalta los plazos tasados, artículos fundamentales y excepciones frecuentes en preguntas trampa.
+
+3. FORMATO DE ENTREGA:
+   - Entrega el esquema en Markdown ordenado y listo para que Type-Opos lo maquete en el PDF de 2 páginas con anillas pastel.
 
 =======================================================
-DOCUMENTO OFICIAL DEL TEMA A CONDENSAR:
+TEMARIO OFICIAL A CONDENSAR:
 Título: ${t.title}
 Oposición: ${opp().name}
 =======================================================
 
-${textToInclude}
-
-=======================================================
-INSTRUCCIÓN FINAL:
-Genera ahora el esquema de repaso que quepa estrictamente en un MÁXIMO DE 2 PÁGINAS A4, preservando todos los plazos, artículos, mayorías, órganos y excepciones clave para examen tipo test, con los subrayados en 7 tonos pastel y tablas compactas.`;
+${textToInclude}`;
     }
   }
 
