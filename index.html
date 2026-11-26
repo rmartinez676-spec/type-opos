@@ -2749,6 +2749,9 @@
             <label class="checkline">
               <input type="checkbox" name="replace"> Reemplazar el texto anterior del tema en vez de ampliarlo.
             </label>
+            <label class="checkline">
+              <input type="checkbox" name="set_main" checked> ⭐ Establecer como documento principal de estudio y generar Resumen con este archivo.
+            </label>
           </div>
         </details>
 
@@ -3501,10 +3504,17 @@
     if (!t) return toast('Tema no encontrado.');
     const asset = (t.assets || []).find(a => a.id === assetId);
     const assetName = asset ? asset.name : 'este archivo';
-    if (!confirm(`¿Estás seguro de que quieres eliminar «${assetName}» de este tema?\n\nEsta acción quitará el archivo multimedia de tu cuaderno.`)) {
+    if (!confirm(`¿Estás seguro de que quieres eliminar «${assetName}» de este tema?\n\nEsta acción quitará el archivo de tu cuaderno.`)) {
       return;
     }
     t.assets = (t.assets || []).filter(a => a.id !== assetId);
+    if (t.mainPdfId === assetId) {
+      const remainingPdf = (t.assets || []).find(a => a.pdf || /\.pdf$/i.test(a.name));
+      t.mainPdfId = remainingPdf ? remainingPdf.id : '';
+    }
+    if (t.viewingPdfId === assetId) {
+      t.viewingPdfId = t.mainPdfId || '';
+    }
     t.updated = Date.now();
     try {
       await fileStore('delete', assetId);
@@ -3513,6 +3523,115 @@
     renderRoute(false);
     toast(`«${assetName}» eliminado del tema.`);
     petReact(true);
+  }
+
+  async function setTopicMainPdf(topicId, assetId, extractText = true) {
+    const t = topic(topicId);
+    if (!t) return toast('Tema no encontrado.');
+    const pdfs = (t.assets || []).filter(a => a.pdf || /\.pdf$/i.test(a.name));
+    const asset = pdfs.find(a => a.id === assetId);
+    if (!asset) return toast('Archivo no encontrado.');
+
+    t.mainPdfId = assetId;
+    t.viewingPdfId = assetId;
+
+    if (extractText) {
+      toast('Extrayendo texto de «' + asset.name + '» para actualizar tu Resumen y Esquemas...');
+      try {
+        const blob = await fileStore('get', assetId);
+        if (blob) {
+          let extracted = '';
+          try {
+            extracted = await extractPDF(blob);
+          } catch(e) {
+            extracted = await extractPdfRaw(await blob.arrayBuffer());
+          }
+          if (!extracted.trim()) {
+            extracted = await extractPdfRaw(await blob.arrayBuffer());
+          }
+          if (extracted && extracted.trim()) {
+            t.text = extracted.trim();
+            t.geminiSummary = ''; // Rebuild pastel summary from this new text
+            t.geminiScheme = '';  // Rebuild scheme from this new text
+            t.updated = Date.now();
+            save();
+            sourceTab = 'pdf';
+            renderRoute(false);
+            openPdfHost(assetId);
+            toast('⭐ «' + asset.name + '» es ahora el PDF principal. ¡Resumen y esquemas actualizados con su contenido!');
+            petReact(true);
+            return;
+          }
+        }
+      } catch(err) {
+        console.warn('Error extracting text from main PDF:', err);
+      }
+    }
+
+    t.updated = Date.now();
+    save();
+    sourceTab = 'pdf';
+    renderRoute(false);
+    openPdfHost(assetId);
+    toast('⭐ «' + asset.name + '» establecido como documento principal en pantalla.');
+    petReact(true);
+  }
+
+  function openManageTopicPdfsModal(topicId) {
+    const t = topic(topicId);
+    if (!t) return toast('Tema no encontrado.');
+    const pdfs = (t.assets || []).filter(a => a.pdf || /\.pdf$/i.test(a.name));
+    const mainId = t.mainPdfId || (pdfs[0]?.id || '');
+
+    modal(`Documentos PDF · ${esc(t.title)}`, `
+      <div class="stack" style="gap:14px">
+        <p class="small muted" style="margin:0">
+          Elige cuál es el <strong>documento principal</strong> de este tema. El documento principal se muestra en la pantalla de estudio de la izquierda y se utiliza automáticamente para generar tus <strong>Apuntes Oposiciones Pastel</strong> y tu <strong>Esquema de 2 Hojas</strong>:
+        </p>
+
+        ${!pdfs.length ? `
+          <div class="empty-state surface" style="padding:20px;border-radius:10px;text-align:center">
+            <p class="muted">No hay documentos PDF subidos a este tema aún.</p>
+            <button class="btn primary sm" data-act="import" data-id="${esc(t.id)}">📁 Subir PDF a este tema</button>
+          </div>
+        ` : `
+          <div class="stack" style="gap:10px">
+            ${pdfs.map(a => {
+              const isMain = a.id === mainId;
+              return `
+                <div style="background:#fff;border:1.5px solid ${isMain ? '#c084fc' : '#e5dfea'};border-radius:10px;padding:12px 14px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
+                  <div class="row between wrap" style="gap:8px;align-items:center">
+                    <div style="flex:1;min-width:200px">
+                      <div class="row" style="gap:6px;align-items:center">
+                        <span style="font-size:18px">📄</span>
+                        <strong style="color:var(--deep);font-size:13px">${esc(a.name)}</strong>
+                        ${isMain ? `<span class="badge" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;font-weight:700">⭐ Principal para Resumen</span>` : ''}
+                      </div>
+                      <div class="tiny muted" style="margin-top:3px">
+                        ${isMain ? 'Este documento nutre el Resumen y se abre por defecto al estudiar.' : 'Documento complementario o esquema.'}
+                      </div>
+                    </div>
+                    <div class="row wrap" style="gap:6px">
+                      ${!isMain ? `
+                        <button class="btn sm primary" onclick="setTopicMainPdf('${esc(t.id)}', '${esc(a.id)}', true);closeModal();">⭐ Hacer Principal y crear Resumen</button>
+                      ` : ''}
+                      <button class="btn sm soft" onclick="const tp=topic('${esc(t.id)}');if(tp)tp.viewingPdfId='${esc(a.id)}';openPdfHost('${esc(a.id)}');closeModal();">👁️ Ver en pantalla</button>
+                      <button class="btn sm soft" onclick="openMoveAssetModal('${esc(t.id)}', '${esc(a.id)}')">↔ Mover tema</button>
+                      <button class="btn sm soft danger" onclick="removeAssetFromTopic('${esc(t.id)}', '${esc(a.id)}');closeModal();" style="color:#c92a2a" title="Eliminar">${I('trash',12)} Quitar</button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `}
+
+        <div class="modal-actions" style="border-top:1px solid var(--line);padding-top:12px;margin-top:4px">
+          <button class="btn soft sm" data-act="import" data-id="${esc(t.id)}">📁 Subir otro PDF a este tema</button>
+          <button class="btn sm" onclick="closeModal()">Cerrar</button>
+        </div>
+      </div>
+    `, true);
   }
 
   function openMoveAssetModal(topicId, assetId) {
@@ -3570,10 +3689,23 @@
 
     // Remove from source topic
     fromT.assets = (fromT.assets || []).filter(a => a.id !== assetId);
+    if (fromT.mainPdfId === assetId) {
+      const remainingPdf = (fromT.assets || []).find(a => a.pdf || /\.pdf$/i.test(a.name));
+      fromT.mainPdfId = remainingPdf ? remainingPdf.id : '';
+    }
+    if (fromT.viewingPdfId === assetId) {
+      fromT.viewingPdfId = fromT.mainPdfId || '';
+    }
     fromT.updated = Date.now();
 
     // Add to target topic
     toT.assets = [...(toT.assets || []), asset];
+    if (asset.pdf || /\.pdf$/i.test(asset.name)) {
+      if (!toT.mainPdfId) {
+        toT.mainPdfId = asset.id;
+        toT.viewingPdfId = asset.id;
+      }
+    }
     toT.updated = Date.now();
 
     save();
@@ -3581,7 +3713,6 @@
     toast(`«${asset.name}» movido con éxito a Bloque ${toT.b + 1}: ${toT.title}`);
     petReact(true);
 
-    // Switch view to the target topic so user immediately sees their audio there
     go('reader', toT.id);
   }
 
@@ -3645,6 +3776,8 @@
     if (!t) return `<div class="page">${heading('Mis esquemas', 'Convierte tus apuntes en un repaso estructurado y visual.')}<div class="surface empty-state">${I('book', 30)}<h3>Empieza con un tema</h3><p>Importa tus apuntes para generar tu primer esquema.</p>${btn('Importar apuntes', 'import', 'upload', 'primary')}</div></div>`;
     opp().lastTopic = t.id;
     const pdfs = (t.assets || []).filter(a => a.pdf || /\.pdf$/i.test(a.name));
+    const mainPdf = pdfs.find(p => p.id === t.mainPdfId) || pdfs[0];
+    const viewingPdf = pdfs.find(p => p.id === t.viewingPdfId) || mainPdf;
     const isPdf = sourceTab === 'pdf' && pdfs.length;
     const empty = `<div class="empty-state">${I('file', 27)}<h3>Aún no hay apuntes en este tema</h3><p>Sube un documento, PDFs, audios o pega tus apuntes para activar el cuaderno.</p><button class="btn soft" data-act="import" data-id="${esc(t.id)}">${I('upload', 15)}Importar apuntes o audios</button></div>`;
 
@@ -3687,13 +3820,23 @@
             </div>
 
             ${pdfs.length ? `
-              <div class="row" style="padding:8px 16px;background:#faf8f5;border-bottom:1px solid var(--line)">
-                <button class="tab ${!isPdf ? 'selected' : ''}" data-act="source-text">Texto de apuntes</button>
-                <button class="tab ${isPdf ? 'selected' : ''}" data-act="source-pdf">PDF original (${pdfs.length})</button>
-                ${isPdf && pdfs.length > 1 ? `
-                  <select class="select" id="pdf-select" style="flex:1;max-width:220px;padding:2px 8px;font-size:11px">
-                    ${pdfs.map(a => `<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('')}
-                  </select>
+              <div class="row between wrap" style="padding:8px 16px;background:#faf8f5;border-bottom:1px solid var(--line);gap:8px">
+                <div class="row" style="gap:6px">
+                  <button class="tab ${!isPdf ? 'selected' : ''}" data-act="source-text">Texto de apuntes</button>
+                  <button class="tab ${isPdf ? 'selected' : ''}" data-act="source-pdf">PDF (${pdfs.length})</button>
+                </div>
+                ${isPdf ? `
+                  <div class="row wrap" style="gap:6px;flex:1;justify-content:flex-end;align-items:center">
+                    <span class="tiny muted">En pantalla:</span>
+                    <select class="select" id="pdf-select" style="max-width:240px;padding:3px 8px;font-size:11.5px;font-weight:600">
+                      ${pdfs.map(a => {
+                        const isMain = a.id === (t.mainPdfId || pdfs[0].id);
+                        const isViewing = a.id === (viewingPdf ? viewingPdf.id : pdfs[0].id);
+                        return `<option value="${esc(a.id)}" ${isViewing ? 'selected' : ''}>${isMain ? '⭐ [Principal] ' : ''}${esc(a.name)}</option>`;
+                      }).join('')}
+                    </select>
+                    <button class="btn sm soft" data-act="manage-topic-pdfs" title="Gestionar y elegir el PDF principal de este tema">📂 PDFs (${pdfs.length})</button>
+                  </div>
                 ` : ''}
               </div>
             ` : ''}
@@ -3703,7 +3846,7 @@
 
             <div class="document-body notebook-bg-${currentPaperBg}" id="source-body">
               ${isPdf ? `
-                <div class="pdf-host" data-asset="${esc(pdfs[0].id)}"><span class="loading"></span> Abriendo visor de PDF local...</div>
+                <div class="pdf-host" data-asset="${esc(viewingPdf ? viewingPdf.id : pdfs[0].id)}"><span class="loading"></span> Abriendo visor de PDF local...</div>
               ` : t.text ? t.text.split(/\n\s*\n|\n/).filter(Boolean).map(s => `<p>${highlight(s)}</p>`).join('') : empty}
             </div>
 
@@ -3787,6 +3930,13 @@
     if(!host)return;
     const request=uid();
     host.dataset.request=request;
+    const t = currentTopic();
+    if (t && asset) {
+      t.viewingPdfId = asset;
+    }
+    const pdfs = (t?.assets || []).filter(a => a.pdf || /\.pdf$/i.test(a.name));
+    const currAsset = pdfs.find(a => a.id === asset);
+    const isMain = t && (t.mainPdfId === asset || (!t.mainPdfId && pdfs[0]?.id === asset));
     try{
       const blob=await fileStore('get',asset);
       if(!blob)throw Error('No se encuentra el archivo en este dispositivo.');
@@ -3794,15 +3944,21 @@
       const url=URL.createObjectURL(new Blob([blob],{type:'application/pdf'}));
       issuedURLs.push(url);
       host.innerHTML=`
-        <div class="pdf-toolbar">
-          <div class="row small">
-            <strong>${I('file',15)} Documento Original (PDF)</strong>
-            <span class="badge-plazo" style="background:#f0eef9;color:#553396;border-color:#d9d1f0">Visor de estudio activo</span>
+        <div class="pdf-toolbar" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;background:#f8f6fb;border-bottom:1px solid #e5dfea;flex-wrap:wrap">
+          <div class="row wrap small" style="gap:6px;align-items:center">
+            <strong>${I('file',15)} ${esc(currAsset?.name || 'Documento PDF')}</strong>
+            ${isMain 
+              ? `<span class="badge" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;font-size:10px;font-weight:700">⭐ PDF Principal para Resumen</span>`
+              : `<button class="btn sm primary" data-act="set-main-pdf" data-asset="${esc(asset)}" title="Hacer que este sea el PDF principal para generar el Resumen y Repaso">⭐ Establecer como Principal</button>`
+            }
           </div>
-          <div class="row wrap" style="gap:6px">
-            <button class="btn sm soft" data-act="extract-curr-pdf" data-asset="${esc(asset)}" title="Extraer el texto de este PDF al tema">${I('sparkle',12)} Extraer texto al tema</button>
-            <a class="btn sm" href="${url}" target="_blank" rel="noopener" title="Abrir en pestaña completa">${I('external',12)} Pantalla completa</a>
-            <a class="btn sm soft" href="${url}" download="apuntes-${esc(asset)}.pdf" title="Descargar copia">${I('download',12)} Descargar</a>
+          <div class="row wrap" style="gap:5px;align-items:center">
+            <button class="btn sm soft" data-act="extract-curr-pdf" data-asset="${esc(asset)}" title="Extraer el texto de este PDF para actualizar tus Apuntes Pastel">${I('sparkle',12)} Actualizar Resumen con este PDF</button>
+            <button class="btn sm soft" data-act="manage-topic-pdfs" title="Ver y gestionar todos los PDFs de este tema">📂 PDFs (${pdfs.length})</button>
+            ${t ? `<button class="btn sm soft" onclick="openMoveAssetModal('${esc(t.id)}', '${esc(asset)}')" title="Mover este PDF a otro tema">↔ Mover</button>` : ''}
+            ${t ? `<button class="btn sm soft danger" onclick="removeAssetFromTopic('${esc(t.id)}', '${esc(asset)}')" title="Eliminar este archivo de este tema" style="color:#c92a2a">${I('trash',12)}</button>` : ''}
+            <a class="btn sm soft" href="${url}" target="_blank" rel="noopener" title="Abrir en pestaña completa">${I('external',12)} Pantalla completa</a>
+            <a class="btn sm soft" href="${url}" download="${esc(currAsset?.name || 'apuntes.pdf')}" title="Descargar copia">${I('download',12)}</a>
           </div>
         </div>
         <iframe src="${url}#view=FitH" type="application/pdf" title="Visor de PDF original" style="width:100%;height:100%;flex:1;border:none;min-height:560px;">
@@ -3818,6 +3974,7 @@
       host.innerHTML=`<div class="empty-state" style="padding:30px"><h3>No se pudo abrir el PDF</h3><p>${esc(e.message)}</p></div>`;
     }
   }
+
   function basesModal(){const o=opp();modal('Bases de mi oposición',`<p>Ancla la convocatoria oficial a este cuaderno. Podrás abrirla desde la cabecera de tu oposición.</p><form id="bases-form" class="stack"><label class="field"><span>Enlace a las bases</span><input type="url" name="url" value="${esc(o.baseURL||'')}" placeholder="https://www.boe.es/..."></label><label class="field"><span>O adjunta las bases en PDF</span><input type="file" name="file" accept=".pdf,application/pdf"><small>${o.basePdf?'Hay un PDF anclado. El archivo nuevo lo sustituirá.':'El PDF quedará disponible sin conexión.'}</small></label>${o.basePdf?'<label class="checkline"><input type="checkbox" name="remove">Quitar el PDF anclado</label>':''}<button class="btn primary">${I('pin',14)}Guardar bases</button></form>`)}
   async function openBases(){const o=opp();if(o.basePdf){modal('Bases oficiales',`<div class="pdf-host document-body" data-asset="${esc(o.basePdf)}"><span class="loading"></span></div><div class="modal-actions">${btn('Cambiar bases','bases','pin','sm')}</div>`,true);await openPdfHost(o.basePdf)}else if(safeURL(o.baseURL))window.open(safeURL(o.baseURL),'_blank','noopener,noreferrer');else basesModal()}
     function getGeminiApiKey() {
@@ -7339,6 +7496,10 @@
     `, true);
   }
   window.openEditPastelModal = openEditPastelModal;
+  window.setTopicMainPdf = setTopicMainPdf;
+  window.openManageTopicPdfsModal = openManageTopicPdfsModal;
+  window.removeAssetFromTopic = removeAssetFromTopic;
+  window.openMoveAssetModal = openMoveAssetModal;
   window.copyTopicSummary = copyTopicSummary;
   window.copyTopicScheme = copyTopicScheme;
   window.printTopicPastel = printTopicPastel;
@@ -7738,6 +7899,18 @@
         }
         break;
       }
+      case 'set-main-pdf': {
+        const t = currentTopic();
+        if (t && el.dataset.asset) {
+          await setTopicMainPdf(t.id, el.dataset.asset, true);
+        }
+        break;
+      }
+      case 'manage-topic-pdfs': {
+        const t = topic(id || currentTopic()?.id);
+        if (t) openManageTopicPdfsModal(t.id);
+        break;
+      }
       case 'edit-pastel-summary': openEditPastelModal(id || currentTopic()?.id, 'summary'); break;
       case 'edit-pastel-scheme': openEditPastelModal(id || currentTopic()?.id, 'scheme'); break;
       case 'copy-pastel-summary': copyTopicSummary(id || currentTopic()?.id); break;
@@ -7950,7 +8123,12 @@
       case 'case-select':chosenCase=+el.value;renderRoute(false);break;
       case 'flash-topic':flashTopic=el.value;flashCurrent=null;flashFlipped=false;renderRoute(false);break;
       case 'game-source':gameSource=el.value;break;
-      case 'pdf-select':openPdfHost(el.value);break;
+      case 'pdf-select': {
+        const t = currentTopic();
+        if (t) t.viewingPdfId = el.value;
+        openPdfHost(el.value);
+        break;
+      }
     }
   });
   document.addEventListener('submit',async e=>{
