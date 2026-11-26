@@ -3962,13 +3962,11 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
           </div>
         `, (opp().short || 'GACE A2') + ' / Bloque ' + ((t.b || 0) + 1))}
 
-        ${schemes ? `
-          <label class="field" style="margin-bottom:17px"><span>Tema seleccionado</span>
-            <select id="scheme-topic">
-              ${opp().topics.map(x => `<option value="${esc(x.id)}" ${x.id === t.id ? 'selected' : ''}>${esc(x.title)}${x.text ? '' : ' · sin apuntes'}</option>`).join('')}
-            </select>
-          </label>
-        ` : ''}
+        <label class="field" style="margin-bottom:17px"><span>Tema seleccionado en tu temario</span>
+          <select id="scheme-topic">
+            ${opp().topics.map(x => `<option value="${esc(x.id)}" ${x.id === t.id ? 'selected' : ''}>${esc(x.title)}${x.text ? '' : ' · sin apuntes'}</option>`).join('')}
+          </select>
+        </label>
 
         <div class="split-reader">
           <!-- COLUMNA IZQUIERDA: DOCUMENTO ORIGINAL / VISOR / AUDIOS -->
@@ -4455,13 +4453,28 @@ Genera esquemas ultracompactos de repaso rápido para examen en archivos PDF des
     const isSummary = type === 'summary';
     const raw = String(t.text || '').trim();
     const info = getTopicLegalSubjectInfo(t);
-    const textToInclude = raw || (`Materia oficial: ${info.law}
-Concepto clave: ${info.def}
-Artículos de examen: ${info.articles.join(' | ')}`);
+    const blockTitle = opp().blocks[t.b] || 'Temario Oficial';
+
+    let contentSection = '';
+    if (raw) {
+      contentSection = `=======================================================
+DOCUMENTO Y APUNTES OFICIALES APORTADOS POR EL OPOSITOR:
+${raw}`;
+    } else {
+      contentSection = `=======================================================
+MATERIA Y DIRECTRICES NORMATIVAS OFICIALES:
+Materia legal aplicable: ${info.law}
+Concepto nuclear a desarrollar: ${info.def}
+Artículos y preceptos clave de examen:
+${info.articles.join('\n')}
+
+INSTRUCCIÓN ESPECÍFICA:
+Como este tema no tiene aún apuntes redactados manualmente, desarrolla el temario oficial completo correspondiente al título exacto «${t.title}» según el programa oficial de ${opp().name}. No mezcles con materias de otros temas.`;
+    }
 
     if (isSummary) {
       return `ORDEN PARA GEMINI (APUNTES COMPLETOS DE OPOSICIÓN):
-Actúa como preparador experto de oposiciones. Transforma de forma completa y estructurada el tema oficial que te adjunto abajo, aplicando las siguientes directrices exactas:
+Actúa como preparador experto de oposiciones. Transforma de forma completa y estructurada el tema oficial que te indico abajo, aplicando las siguientes directrices exactas:
 
 1. CONSERVACIÓN ÍNTEGRA DEL TEMARIO:
    - Mantén el 100% del contenido: todos los artículos, plazos, fechas, mayorías, órganos, excepciones y tablas. No omitas ni resumas datos críticos para examen.
@@ -4469,7 +4482,7 @@ Actúa como preparador experto de oposiciones. Transforma de forma completa y es
 2. ESTRUCTURA Y CÓDIGO VISUAL EN TEXTO:
    - Estructura con títulos (#, ##, ###), listas y tablas comparativas en Markdown.
    - Resalta en negrita los elementos según su categoría:
-     * Leyes y artículos oficiales (ej: **art. 35 LPAC**)
+     * Leyes y artículos oficiales (ej: **art. 35 LPAC**, **art. 45 CE**, etc.)
      * Principios jurídicos rectores
      * Procedimientos y fases
      * Órganos competentes y personas
@@ -4480,15 +4493,16 @@ Actúa como preparador experto de oposiciones. Transforma de forma completa y es
    - Entrega el resultado directamente en Markdown limpio y estructurado (con tablas completas) para que el cuaderno de Type-Opos le aplique la estética pastel y la descarga en PDF.
 
 =======================================================
-TEMARIO OFICIAL A MAQUETAR:
-Título: ${t.title}
+TEMA OFICIAL SELECCIONADO:
+Título Oficial: ${t.title}
 Oposición: ${opp().name}
+Bloque Temático: ${blockTitle}
 =======================================================
 
-${textToInclude}`;
+${contentSection}`;
     } else {
       return `ORDEN PARA GEMINI (ESQUEMA DE REPASO EXAMEN · MÁXIMO 2 PÁGINAS A4):
-Actúa como preparador experto de oposiciones. Genera un esquema ultracompacto de repaso rápido para examen a partir del tema que te adjunto abajo, con las siguientes directrices:
+Actúa como preparador experto de oposiciones. Genera un esquema ultracompacto de repaso rápido para examen a partir del tema que te indico abajo, con las siguientes directrices:
 
 1. LÍMITE ESTRICTO DE EXTENSIÓN:
    - Debe ser ultracompacto para ocupar como máximo 2 páginas A4 en el cuaderno de repaso.
@@ -4502,12 +4516,13 @@ Actúa como preparador experto de oposiciones. Genera un esquema ultracompacto d
    - Entrega el esquema en Markdown ordenado y listo para que Type-Opos lo maquete en el PDF de 2 páginas con anillas pastel.
 
 =======================================================
-TEMARIO OFICIAL A CONDENSAR:
-Título: ${t.title}
+TEMA OFICIAL SELECCIONADO:
+Título Oficial: ${t.title}
 Oposición: ${opp().name}
+Bloque Temático: ${blockTitle}
 =======================================================
 
-${textToInclude}`;
+${contentSection}`;
     }
   }
 
@@ -4629,8 +4644,12 @@ ${textToInclude}`;
     const targetUrl = getGeminiTargetUrl(type);
     const isCustom = targetUrl !== 'https://gemini.google.com/app';
 
-    modal(`✨ Conectar con mi Gemini · ${esc(skillTitle)}`, `
+    modal(`✨ Conectar con mi Gemini · ${esc(t.title)}`, `
       <div class="stack" style="gap:16px">
+        <div style="background:#ede9fe;border:1.5px solid #c4b5fd;padding:8px 14px;border-radius:10px;display:flex;align-items:center;gap:8px">
+          <span style="font-size:16px">📌</span>
+          <span style="font-size:13px;color:#5b21b6;font-weight:700">Tema activo: ${esc(t.title)}</span>
+        </div>
         <!-- AVISO DE COMPATIBILIDAD TOTAL PARA AMIGAS -->
         <div class="surface" style="padding:14px 16px;border:1.5px solid #c4b5fd;border-radius:12px;background:#f5f3ff">
           <div class="row" style="gap:8px;align-items:center;color:#5b21b6">
@@ -7670,6 +7689,161 @@ ${textToInclude}`;
     const titleNorm = norm(t?.title || '');
     const blockNorm = norm(opp().blocks[t?.b || 0] || '');
 
+    // 1. POLÍTICA AMBIENTAL Y CAMBIO CLIMÁTICO
+    if (titleNorm.includes('ambient') || titleNorm.includes('medio ambiente') || titleNorm.includes('cambio climatico') || titleNorm.includes('ecolog') || titleNorm.includes('biodiversidad') || titleNorm.includes('contaminac')) {
+      return {
+        law: 'Ley 7/2021 de Cambio Climático y Transición Energética y Ley 42/2007 del Patrimonio Natural y de la Biodiversidad',
+        def: 'Regula las competencias públicas sobre protección ambiental, objetivos de reducción de emisiones de gases de efecto invernadero, conservación de espacios protegidos (Red Natura 2000) y transición ecológica hacia una economía descarbonizada.',
+        articles: [
+          '[LEY: Art. 45 CE] Derecho de todos a disfrutar de un medio ambiente adecuado para el desarrollo de la persona, así como el deber de conservarlo. Los poderes públicos velarán por la utilización racional de todos los recursos naturales.',
+          '[LEY: Art. 149.1.23.ª CE] Competencia exclusiva del Estado: Legislación básica sobre protección del medio ambiente, sin perjuicio de las facultades de las Comunidades Autónomas de establecer normas adicionales de protección.',
+          '[LEY: Art. 3 Ley 7/2021] Objetivos nacionales: Reducción para el año 2030 de al menos un 23% de las emisiones de gases de efecto invernadero respecto al año 1990 y neutralidad climática en 2050.',
+          '[LEY: Art. 30 Ley 42/2007] Espacios naturales protegidos: Parques, Reservas Naturales, Áreas Marinas Protegidas, Monumentos Naturales y Paisajes Protegidos.',
+          '[LEY: Ley 21/2013 de Evaluación Ambiental] Procedimientos de evaluación ambiental estratégica (planes y programas) y evaluación de impacto ambiental (proyectos públicos y privados).'
+        ],
+        table: [
+          ['Materia / Instrumento', 'Ámbito Competencial', 'Norma Aplicable', 'Finalidad Principal'],
+          ['Legislación Básica Ambiental', 'Estado (art. 149.1.23.ª CE)', 'Leyes estatales marco', 'Establecer mínimos obligatorios comunes en todo el territorio'],
+          ['Gestión y Normas Adicionales', 'Comunidades Autónomas', 'Leyes autonómicas de desarrollo', 'Gestión de espacios protegidos y niveles superiores de protección'],
+          ['Planes de Calidad del Aire', 'Entidades Locales (municipios)', 'Ley 34/2007 de Calidad del Aire', 'Zonas de Bajas Emisiones (ZBE) en municipios de más de 50.000 hab.'],
+          ['Evaluación de Impacto Ambiental', 'Órgano ambiental competente', 'Ley 21/2013', 'Prevención de efectos significativos de proyectos sobre el medio']
+        ],
+        traps: [
+          '[TRAMPA: Reparto Competencial] El Estado dicta la LEGISLACIÓN BÁSICA (art. 149.1.23.ª CE); las CCAA pueden dictar NORMAS ADICIONALES de protección y tienen la competencia ejecutiva/gestora.',
+          '[TRAMPA: Red Natura 2000] Integrada por Zonas Especiales de Conservación (ZEC) y Zonas de Especial Protección para las Aves (ZEPA).',
+          '[TRAMPA: Principio Quien Contamina Paga] Consagrado en el art. 191 TFUE y en la Ley 26/2007 de Responsabilidad Medioambiental (responsabilidad objetiva e ilimitada del operador).'
+        ]
+      };
+    }
+
+    // 2. UNIÓN EUROPEA Y TRATADOS
+    if (titleNorm.includes('union europea') || titleNorm.includes('tratados') || titleNorm.includes('comunitari') || titleNorm.includes('consejo europeo') || titleNorm.includes('parlamento europeo') || titleNorm.includes('comision europea') || titleNorm.includes('tjue')) {
+      return {
+        law: 'Tratado de la Unión Europea (TUE) y Tratado de Funcionamiento de la UE (TFUE)',
+        def: 'La Unión Europea es una organización supranacional fundada sobre los valores de dignidad humana, libertad, democracia, igualdad, Estado de Derecho y respeto de los derechos humanos (art. 2 TUE), dotada de personalidad jurídica propia.',
+        articles: [
+          '[LEY: Art. 5 TUE] Principios rectores del ejercicio competencial: Principio de atribución, principio de subsidiariedad y principio de proporcionalidad.',
+          '[LEY: Art. 288 TFUE] Fuentes del Derecho derivado: El Reglamento (alcance general, obligatorio y directamente aplicable); la Directiva (vincula en el fin, requiere transposición nacional); la Decisión (obligatoria para sus destinatarios).',
+          '[LEY: Art. 14 TUE] Parlamento Europeo: Elegido por sufragio universal directo cada 5 años por los ciudadanos de la Unión. Función colegisladora y de control presupuestario.',
+          '[LEY: Art. 17 TUE] Comisión Europea: Órgano ejecutivo colegiado independiente que ostenta en exclusiva la iniciativa legislativa de la Unión.',
+          '[LEY: Art. 19 TUE] Tribunal de Justicia de la UE: Garantiza el respeto del Derecho en la interpretación y aplicación de los Tratados. Cuestión prejudicial (art. 267 TFUE).'
+        ],
+        table: [
+          ['Institución UE', 'Sede Principal', 'Composición', 'Función Primaria'],
+          ['Consejo Europeo', 'Bruselas', 'Jefes de Estado/Gobierno + Presidente + Pres. Comisión', 'Define la orientación y prioridades políticas generales'],
+          ['Consejo de la UE (Ministros)', 'Bruselas', 'Un representante ministerial por Estado miembro', 'Colegislador y adopción del presupuesto junto al Parlamento'],
+          ['Comisión Europea', 'Bruselas', 'Colegio de Comisarios (1 por Estado miembro)', 'Iniciativa legislativa exclusiva y guardiana de los Tratados'],
+          ['Tribunal de Justicia (TJUE)', 'Luxemburgo', '1 Juez por Estado miembro + 11 Abogados Generales', 'Jurisdicción suprema comunitaria y cuestiones prejudiciales']
+        ],
+        traps: [
+          '[TRAMPA: Distinción Reglamento vs Directiva] El Reglamento es DIRECTAMENTE APLICABLE en los Estados sin necesidad de ley de transposición. La Directiva REQUIERE transposición en el plazo fijado.',
+          '[TRAMPA: Iniciativa Legislativa] El Parlamento Europeo NO tiene iniciativa legislativa directa; le corresponde en exclusiva a la Comisión Europea (salvo excepciones tasadas).'
+        ]
+      };
+    }
+
+    // 3. ADMINISTRACIÓN ELECTRÓNICA Y SERVICIOS DIGITALES
+    if (titleNorm.includes('administracion electronica') || titleNorm.includes('servicios digitales') || titleNorm.includes('interoperabilidad') || titleNorm.includes('modernizacion de la age')) {
+      return {
+        law: 'Ley 40/2015 (arts. 38 a 46), Esquema Nacional de Seguridad (RD 311/2022) y ENI (RD 4/2010)',
+        def: 'Regula las sedes electrónicas, canales de acceso a los servicios públicos, identificación y firma electrónica, el registro electrónico de apoderamientos y los estándares de seguridad e interoperabilidad de la Administración Pública.',
+        articles: [
+          '[LEY: Art. 38 Ley 40/2015] Sede electrónica: Dirección electrónica disponible para los ciudadanos a través de redes de telecomunicaciones cuya titularidad corresponde a una Administración Pública.',
+          '[LEY: Art. 41 Ley 40/2015] Actuación administrativa automatizada: Acto producido por un sistema de información adecuadamente programado sin intervención directa de una persona.',
+          '[LEY: Art. 42 Ley 40/2015] Sistemas de firma para la actuación automatizada: Sello electrónico de Administración u órgano y código seguro de verificación (CSV).',
+          '[LEY: Art. 14.2 LPAC] Sujetos obligados a relacionarse electrónicamente: Personas jurídicas, entidades sin personalidad, quienes ejerzan actividad profesional colegiada y empleados públicos.',
+          '[LEY: RD 311/2022] Esquema Nacional de Seguridad (ENS): Principios básicos (seguridad integral, gestión de riesgos, prevención, respuesta y recuperación) y categorías BÁSICA, MEDIA y ALTA.'
+        ],
+        table: [
+          ['Elemento Digital', 'Regulación', 'Requisitos de Validez', 'Función Principal'],
+          ['Sede Electrónica', 'Art. 38 Ley 40/2015', 'Certificado de sede, identificación titular y fecha/hora oficial', 'Canal oficial seguro para tramitaciones de los ciudadanos'],
+          ['Punto de Acceso General (PAG)', 'Art. 7 Ley 39/2015', 'Acceso unificado a notificaciones y trámites', 'Portal web único de entrada para servicios estatales (administracion.gob.es)'],
+          ['Código Seguro de Verificación (CSV)', 'Art. 42 Ley 40/2015', 'Garantía de integridad y cotejo con el original', 'Verificación de autenticidad de documentos impresos o digitales'],
+          ['Registro de Apoderamientos (REA)', 'Art. 6 Ley 39/2015', 'Poderes apud acta electrónicos por 5 años máx.', 'Acreditación válida de representación electrónica ante las AAPP']
+        ],
+        traps: [
+          '[TRAMPA: Obligados a la Vía Electrónica] Las personas físicas eligen libremente; las personas jurídicas y los profesionales colegiados están OBLIGADOS por ley (art. 14.2 LPAC).',
+          '[TRAMPA: Duración de Apoderamientos] El poder inscrito en el registro electrónico de apoderamientos tiene una validez máxima de 5 AÑOS, prorrogable.'
+        ]
+      };
+    }
+
+    // 4. TRANSPARENCIA Y GOBIERNO ABIERTO
+    if (titleNorm.includes('transparencia') || titleNorm.includes('gobierno abierto') || titleNorm.includes('buen gobierno') || titleNorm.includes('participacion ciudadana')) {
+      return {
+        law: 'Ley 19/2013 de Transparencia, Acceso a la Información Pública y Buen Gobierno',
+        def: 'Incrementa la transparencia de la actividad pública mediante obligaciones de publicidad activa, reconoce y garantiza el derecho de acceso a la información y establece los principios de buen gobierno de los altos cargos.',
+        articles: [
+          '[LEY: Art. 12 Ley 19/2013] Derecho de acceso: Todas las personas tienen derecho a acceder a la información pública sin necesidad de motivar su solicitud.',
+          '[LEY: Art. 14 Ley 19/2013] Límites al derecho de acceso: Seguridad nacional, defensa, relaciones exteriores, seguridad pública, prevención de delitos y secretos comerciales.',
+          '[LEY: Art. 20 Ley 19/2013] Plazo de resolución: La resolución en la que se conceda o deniegue el acceso se notificará en el plazo máximo de UN MES desde la recepción de la solicitud (ampliable por otro mes).',
+          '[LEY: Art. 24 Ley 19/2013] Reclamación potestativa: Ante el Consejo de Transparencia y Buen Gobierno (CTBG), con carácter potestativo y previo a la vía contencioso-administrativa.',
+          '[LEY: Art. 26 Ley 19/2013] Principios de buen gobierno: Integridad, imparcialidad, eficacia y dedicación al servicio público de los altos cargos.'
+        ],
+        table: [
+          ['Vía de Acceso / Órgano', 'Plazo Legal', 'Sentido del Silencio', 'Efecto Jurídico'],
+          ['Solicitud de Información', '1 mes (ampliable 1 mes más)', 'Desestimatorio (negativo)', 'Permite interponer reclamación o recurso'],
+          ['Reclamación ante el CTBG', '1 mes desde notificación o silencio', '3 meses para resolver', 'Sustituye a los recursos administrativos ordinarios'],
+          ['Publicidad Activa en Portal', 'Permanente y actualizada', 'Obligatorio de oficio', 'Información institucional, organizativa, jurídica y económica']
+        ],
+        traps: [
+          '[TRAMPA: Silencio en Acceso a Información] El silencio administrativo en las solicitudes de acceso a información pública es DESESTIMATORIO (art. 20.4 Ley 19/2013).',
+          '[TRAMPA: Reclamación CTBG] La reclamación ante el Consejo de Transparencia es POTESTATIVA y GRATUITA, previa a la vía judicial.'
+        ]
+      };
+    }
+
+    // 5. PROTECCIÓN DE DATOS PERSONALES
+    if (titleNorm.includes('proteccion de datos') || titleNorm.includes('rgpd') || titleNorm.includes('lopd') || titleNorm.includes('derechos digitales')) {
+      return {
+        law: 'Reglamento (UE) 2016/679 (RGPD) y Ley Orgánica 3/2018 (LOPDGDD)',
+        def: 'Garantiza el derecho fundamental a la protección de datos personales consagrado en el art. 18.4 CE y regula los derechos digitales de la ciudadanía.',
+        articles: [
+          '[LEY: Art. 5 RGPD] Principios: Licitud, lealtad, transparencia, limitación de la finalidad, minimización de datos, exactitud, limitación del plazo de conservación e integridad.',
+          '[LEY: Arts. 15 a 22 RGPD] Derechos ARSULIPO: Acceso, Rectificación, Supresión (olvido), Limitación del tratamiento, Portabilidad y Oposición.',
+          '[LEY: Art. 37 RGPD] Delegado de Protección de Datos (DPD): Obligatorio en autoridades y organismos públicos (salvo tribunales en ejercicio de función judicial).',
+          '[LEY: Art. 12 RGPD] Plazo de atención de derechos: El responsable responderá en el plazo máximo de UN MES desde la recepción de la solicitud.',
+          '[LEY: Art. 47 Ley Orgánica 3/2018] Autoridad de control estatal: La Agencia Española de Protección de Datos (AEPD), ente de derecho público independiente.'
+        ],
+        table: [
+          ['Figura / Derecho', 'Base Normativa', 'Plazo de Respuesta', 'Características Clave'],
+          ['Derecho de Supresión (Olvido)', 'Art. 17 RGPD', '1 mes desde solicitud', 'Eliminación cuando los datos ya no sean necesarios para los fines'],
+          ['Delegado de Protección de Datos', 'Art. 37 RGPD / 34 LOPD', 'Designación preceptiva', 'Cualificación profesional, independencia y enlace con la AEPD'],
+          ['Notificación de Brechas de Seguridad', 'Art. 33 RGPD', 'Máximo 72 horas ante la AEPD', 'Obligatorio si entraña riesgo para los derechos y libertades']
+        ],
+        traps: [
+          '[TRAMPA: Plazo Notificación de Brechas] Las violaciones de seguridad deben notificarse a la AEPD a más tardar en 72 HORAS tras tener constancia.',
+          '[TRAMPA: DPD en la Administración] La designación del Delegado de Protección de Datos es SIEMPRE OBLIGATORIA en todas las Administraciones Públicas.'
+        ]
+      };
+    }
+
+    // 6. POLÍTICAS DE IGUALDAD Y VIOLENCIA DE GÉNERO
+    if (titleNorm.includes('igualdad') || titleNorm.includes('genero') || titleNorm.includes('violencia de genero') || titleNorm.includes('dependencia')) {
+      return {
+        law: 'Ley Orgánica 3/2007 para la Igualdad Efectiva y Ley Orgánica 1/2004 contra la Violencia de Género',
+        def: 'Promueve la eliminación de la discriminación por razón de sexo y la tutela judicial de las mujeres víctimas de actos de violencia física y psicológica.',
+        articles: [
+          '[LEY: Art. 14 CE y Art. 3 LO 3/2007] Principio de igualdad de trato: Prohibición de toda discriminación directa e indirecta por razón de sexo, maternidad o paternidad.',
+          '[LEY: Art. 45 LO 3/2007] Planes de Igualdad: Obligatorios en empresas de 50 o más trabajadores y en todas las Administraciones Públicas.',
+          '[LEY: Art. 51 LO 3/2007] Criterios en el empleo público: Presencia equilibrada de mujeres y hombres en órganos colegiados y comités de selección (40%-60%).',
+          '[LEY: Art. 1 LO 1/2004] Violencia de género: Violencia ejercida sobre las mujeres por parte de quienes sean o hayan sido sus cónyuges o mantengan relaciones análogas de afectividad.',
+          '[LEY: Ley 39/2006 de Promoción de la Autonomía Personal y Atención a las Personas en Situación de Dependencia] Grados: Grado I (dependencia moderada), Grado II (severa) y Grado III (gran dependencia).'
+        ],
+        table: [
+          ['Instrumento / Medida', 'Ámbito de Aplicación', 'Umbral / Quórum', 'Objetivo'],
+          ['Plan de Igualdad en AAPP', 'AGE y Sector Público Institucional', 'Obligatorio y publicado', 'Eliminar brechas y garantizar corresponsabilidad'],
+          ['Presencia Equilibrada', 'Tribunales y órganos colegiados', 'Ningún sexo menos del 40% ni más del 60%', 'Representación paritaria en toma de decisiones'],
+          ['Juzgados de Violencia sobre la Mujer', 'Ámbito judicial penal y civil', 'Exclusivos en cada partido judicial', 'Instrucción y medidas cautelares integrales']
+        ],
+        traps: [
+          '[TRAMPA: Definición Legal de Violencia de Género] La Ley Orgánica 1/2004 exige expresamente que el agresor sea o haya sido CÓNYUGE o mantenga/haya mantenido RELACIÓN ANÁLOGA DE AFECTIVIDAD.',
+          '[TRAMPA: Principio de Presencia Equilibrada] Representación equilibrada significa que las personas de cada sexo no superen el 60% ni sean menos del 40%.'
+        ]
+      };
+    }
+
+    // 7. CONSTITUCIÓN Y PODERES DEL ESTADO
     if (titleNorm.includes('constituc') || titleNorm.includes('corona') || titleNorm.includes('cortes') || titleNorm.includes('gobierno') || titleNorm.includes('defensor') || titleNorm.includes('poder judicial')) {
       return {
         law: 'Constitución Española de 1978 (arts. 1 a 169)',
@@ -7696,6 +7870,7 @@ ${textToInclude}`;
       };
     }
 
+    // 8. SEGURIDAD SOCIAL
     if (titleNorm.includes('seguridad social') || titleNorm.includes('afiliac') || titleNorm.includes('cotizac') || titleNorm.includes('jubilac') || titleNorm.includes('incapacidad') || titleNorm.includes('tgss') || titleNorm.includes('inss')) {
       return {
         law: 'Real Decreto Legislativo 8/2015 (Texto Refundido de la Ley General de la Seguridad Social - LGSS)',
@@ -7722,7 +7897,8 @@ ${textToInclude}`;
       };
     }
 
-    if (titleNorm.includes('personal') || titleNorm.includes('trebep') || titleNorm.includes('funcionario') || titleNorm.includes('empleado publico') || titleNorm.includes('situaciones administrativas')) {
+    // 9. FUNCIÓN PÚBLICA Y PERSONAL (TREBEP)
+    if (titleNorm.includes('personal') || titleNorm.includes('trebep') || titleNorm.includes('funcionario') || titleNorm.includes('empleado publico') || titleNorm.includes('situaciones administrativas') || titleNorm.includes('incompatibilidades')) {
       return {
         law: 'Real Decreto Legislativo 5/2015 (TREBEP - Estatuto Básico del Empleado Público)',
         def: 'El TREBEP establece las bases del régimen estatutario de los funcionarios públicos incluidos en su ámbito de aplicación y las normas aplicables al personal laboral al servicio de las Administraciones Públicas.',
@@ -7748,6 +7924,7 @@ ${textToInclude}`;
       };
     }
 
+    // 10. CONTRATACIÓN PÚBLICA (LCSP)
     if (titleNorm.includes('contrat') || titleNorm.includes('lcsp') || titleNorm.includes('licitac') || titleNorm.includes('pliego')) {
       return {
         law: 'Ley 9/2017 de Contratos del Sector Público (LCSP)',
@@ -7774,7 +7951,8 @@ ${textToInclude}`;
       };
     }
 
-    if (titleNorm.includes('presupuest') || titleNorm.includes('lgp') || titleNorm.includes('gasto') || titleNorm.includes('credito') || titleNorm.includes('contabilidad')) {
+    // 11. GESTIÓN FINANCIERA Y PRESUPUESTARIA (LGP)
+    if (titleNorm.includes('presupuest') || titleNorm.includes('lgp') || titleNorm.includes('gasto') || titleNorm.includes('credito') || titleNorm.includes('contabilidad') || titleNorm.includes('fiscal') || titleNorm.includes('tributari')) {
       return {
         law: 'Ley 47/2003 General Presupuestaria (LGP) y Ley Orgánica 2/2012 de Estabilidad Presupuestaria',
         def: 'La Ley General Presupuestaria regula el régimen presupuestario, económico-financiero, de contabilidad y de control de la gestión del sector público estatal.',
