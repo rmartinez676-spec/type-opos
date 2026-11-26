@@ -3932,6 +3932,13 @@
         continue;
       }
 
+      if (/^---+$/.test(rawLine)) {
+        flushList();
+        flushTable();
+        html += '<div class="sheet-divider" style="margin:26px 0;padding:12px 18px;background:linear-gradient(90deg,#fdf2f8,#f5f3ff,#fdf2f8);border:1.5px dashed #c084fc;border-radius:10px;text-align:center;font-weight:700;color:#6b21a8;font-size:13px;break-after:page;page-break-after:always"><span style="margin-right:8px">✂️</span> CORTE DE HOJA 1 · INICIO DE HOJA 2 (MÁX. 2 HOJAS EN NUEVA PIZARRA) <span style="margin-left:8px">✂️</span></div>';
+        continue;
+      }
+
       if (rawLine.startsWith('### ')) {
         flushList();
         html += '<h4 style="margin:18px 0 8px 0;color:#553396;font-size:15px;font-weight:700">' + fmtLine(rawLine.slice(4)) + '</h4>';
@@ -6577,7 +6584,260 @@
     `;
   }
 
-    function generateFinalReviewHTML(t) {
+      function convertTablesToMarkdown(tables) {
+    if (!tables || !tables.length) return '';
+    let md = '';
+    for (const table of tables) {
+      md += '\n### ⚖️ ' + table.title + '\n\n';
+      md += '| ' + table.heads.join(' | ') + ' |\n';
+      md += '| ' + table.heads.map(() => ':---').join(' | ') + ' |\n';
+      for (const row of table.rows) {
+        md += '| ' + row.map(cell => String(cell).replace(/\|/g, '\\|').replace(/\n+/g, ' ')).join(' | ') + ' |\n';
+      }
+      md += '\n';
+    }
+    return md;
+  }
+
+  function parseTextIntoSections(raw, defaultTitle) {
+    const lines = raw.split(/\n+/).map(l => l.trim()).filter(Boolean);
+    const cleanT = (s) => s.replace(/^[-*•\s]+/, '').replace(/^(?:[I|V|X]+\.|\d+(?:\.\d+)*[.)\s]|TEMA\s+\d+|TÍTULO\s+[IVX\d]+|CAPÍTULO\s+[IVX\d]+|SECCIÓN\s+[IVX\d]+|EPÍGRAFE\s+\d+)\s*/i, '').replace(/[:\-–]+$/, '').trim();
+
+    const sections = [];
+    let curSec = null;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (i === 0 && /^tema\s+\d+/i.test(line)) continue;
+      const isHeading = /^(?:[I|V|X]+\.|\d+(?:\.\d+)*[.)\s]|TEMA\s+\d+|TÍTULO\s+[IVX\d]+|CAPÍTULO\s+[IVX\d]+|SECCIÓN\s+[IVX\d]+|EPÍGRAFE\s+\d+|[A-ZÁÉÍÓÚ\s]{4,}:?$)/i.test(line) && line.length < 95 && !/^(?:art[íi]culo|arts?|ley|real decreto|en ningún caso|según el)/i.test(line);
+      if (isHeading) {
+        if (curSec && curSec.lines.length) sections.push(curSec);
+        curSec = { title: cleanT(line) || line, lines: [] };
+      } else {
+        if (!curSec) curSec = { title: cleanT(defaultTitle) || 'Fundamentos y Concepto Clave', lines: [] };
+        curSec.lines.push(line);
+      }
+    }
+    if (curSec && curSec.lines.length) sections.push(curSec);
+
+    if (sections.length <= 1 && lines.length > 5) {
+      const chunkSize = Math.max(3, Math.ceil(lines.length / 4));
+      const chunkedSecs = [];
+      for (let i = 0; i < lines.length; i += chunkSize) {
+        const slice = lines.slice(i, i + chunkSize);
+        const head = slice[0].slice(0, 48).split(/[:.]/)[0].trim();
+        chunkedSecs.push({
+          title: cleanT(head) || ('Epígrafe ' + (chunkedSecs.length + 1)),
+          lines: slice
+        });
+      }
+      return chunkedSecs;
+    }
+    return sections;
+  }
+
+  function highlightJuridicalTerms(str) {
+    const rx = /\b(acto administrativo|actos definitivos|actos de trámite|potestad administrativa|nulidad de pleno derecho|anulabilidad|desviación de poder|convalidación|notificación|publicación|eficacia|validez|presunción de validez|silencio administrativo|competencia|recusación|abstención|órgano competente|interesado|derecho administrativo|procedimiento administrativo|recurso de alzada|recurso potestativo|recurso de reposición|vía administrativa|plazo improrrogable|días hábiles|días naturales|seguridad social|afiliación|cotización|alta|baja|incapacidad temporal|jubilación|viudedad|pensión|base de cotización|tipo de gravamen|infracción|sanción|empleado público|funcionario de carrera|personal laboral|trebep|constitución|cortes generales|gobierno|poder judicial|tribunal supremo|tribunal constitucional)\b/gi;
+    return str.replace(rx, m => '**' + m + '**');
+  }
+
+  function tagSchemeItem(it) {
+    let res = it;
+    if (/\b(?:días?|mes(?:es)?|años?|horas?|plazo)\b/i.test(it) && !/\[PLAZO/i.test(it)) {
+      const m = it.match(/(?:\d+|un|una|dos|tres|cuatro|cinco|diez|quince|veintidós|72)\s+(?:días?(?:\s+(?:hábiles|naturales))?|mes(?:es)?|años?|horas?)|plazo\s+(?:máximo|mínimo|general|improrrogable)/i);
+      if (m) res = res.replace(m[0], '[PLAZO: ' + m[0] + ']');
+    }
+    if (/\b(?:mayoría\s+(?:absoluta|simple|cualificada|de\s+\d+\/\d+|\d+\/\d+))\b/i.test(it) && !/\[MAYORÍA/i.test(it)) {
+      const m = it.match(/mayoría\s+(?:absoluta|simple|cualificada|de\s+\d+\/\d+|\d+\/\d+)/i);
+      if (m) res = res.replace(m[0], '[MAYORÍA: ' + m[0] + ']');
+    }
+    if (/\b(?:ojo|trampa|en ningún caso|no podrá|no se podrá|prohibid[oa]|salvo|excepto|imprescriptible|imposible|indefensión|anulabilidad)\b/i.test(it) && !/\[TRAMPA/i.test(it)) {
+      const m = it.match(/(?:en ningún caso|no podrá|no se podrá|prohibid[oa]|salvo\s+[^,;.]+|excepto\s+[^,;.]+|imprescriptible|imposible|indefensión)/i);
+      if (m) res = res.replace(m[0], '[TRAMPA: ' + m[0] + ']');
+    }
+    if (/\b(?:arts?\.?\s*\d+|art[íi]culos?\s*\d+|ley\s+orgánica|decreto-ley|lpac|lrjsp|trebep|lgss|lcsp)\b/i.test(it) && !/\[LEY/i.test(it)) {
+      const m = it.match(/(?:arts?\.?\s*\d+(?:\.\d+)?(?:\s*(?:al?|y|-)\s*\d+)?(?:\s+(?:de\s+la\s+|del\s+)?(?:CE|LPAC|LRJSP|TREBEP|LGSS|LCSP|LGP|LOTC|LOPJ))?|ley\s+orgánica\s+\d+\/\d+)/i);
+      if (m) res = res.replace(m[0], '[LEY: ' + m[0] + ']');
+    }
+    return res;
+  }
+
+  function generateInternalApuntesPastel(t) {
+    if (!t) return '';
+    const raw = String(t.text || '').trim();
+    if (!raw) return '';
+    const lines = raw.split(/\n+/).map(l => l.trim()).filter(Boolean);
+    const sections = parseTextIntoSections(raw, t.title);
+
+    // Extract Articles
+    const artMatches = [];
+    const artRegex = /(?:Arts?(?:[íi]culos?|\.)?\s*\d+(?:\s*(?:al?|y|-)\s*\d+)?(?:\s+(?:de\s+la\s+|del\s+)?(?:CE|LPAC|LRJSP|TREBEP|LCSP|LGP|LOTC|LOPJ|LGSS|Ley\s+[\d/]+|[A-Z]{3,}))?[^.;\n]{0,140})/gi;
+    const seenArt = new Set();
+    for (const l of lines) {
+      const matches = [...l.matchAll(artRegex)];
+      for (const m of matches) {
+        const art = m[0].trim();
+        const key = art.toLowerCase().slice(0, 24);
+        if (!seenArt.has(key)) {
+          seenArt.add(key);
+          artMatches.push(art);
+        }
+      }
+    }
+
+    // Traps and Deadlines
+    const traps = [];
+    for (const l of lines) {
+      if (/\b(?:días?|mes(?:es)?|años?|horas?)\b/i.test(l)) {
+        const m = l.match(/(?:\d+|un|una|dos|tres|cuatro|cinco|diez|quince|veintidós|72)\s+(?:días?(?:\s+(?:hábiles|naturales))?|mes(?:es)?|años?|horas?)/i);
+        if (m && traps.length < 5) {
+          traps.push('[PLAZO: ' + m[0] + '] Trámite de examen: ' + l.slice(0, 140));
+        }
+      }
+      if (/\b(?:en ningún caso|no podrá|no se podrá|prohibid[oa]|salvo|excepto|imprescriptible|imposible|indefensión|desviación)\b/i.test(l) && traps.length < 6) {
+        traps.push('[TRAMPA: Excepción / Prohibición] ' + l.slice(0, 150));
+      }
+    }
+
+    let md = '# 📝 APUNTES OPOSICIONES PASTEL · ' + t.title + '\n';
+    md += '> 📌 **Tema Oficial:** ' + t.title + ' | **Oposición:** ' + opp().name + ' | **Metodología:** Apuntes Pastel para Estudio en Papel\n\n';
+
+    md += '## 📑 1. ÍNDICE Y MAPA CONCEPTUAL DEL TEMA\n';
+    sections.forEach((s, idx) => {
+      md += '* **Epígrafe ' + (idx + 1) + ':** ' + s.title + '\n';
+    });
+    md += '\n';
+
+    md += '## 💡 2. DESARROLLO DE EPÍGRAFES Y CONCEPTOS CLAVE (SIN PAJA)\n';
+    sections.forEach((s, idx) => {
+      md += '### ' + (idx + 1) + '. ' + s.title + '\n';
+      const items = s.lines.length ? s.lines : ['Contenido analizado de ' + s.title];
+      items.forEach(l => {
+        md += '* ' + highlightJuridicalTerms(l) + '\n';
+      });
+      md += '\n';
+    });
+
+    if (artMatches.length) {
+      md += '## 📜 3. PRECEPTOS Y ARTÍCULOS DE CITA OBLIGATORIA EN TEST\n';
+      artMatches.slice(0, 10).forEach(art => {
+        md += '> **[LEY: Precepto de Examen]** ' + art + '\n\n';
+      });
+    }
+
+    // Cuadros Comparativos
+    const tables = getTopicTables(t);
+    if (tables && tables.length) {
+      md += '## ⚖️ 4. CUADROS COMPARATIVOS DE EXAMEN\n';
+      md += convertTablesToMarkdown(tables);
+    }
+
+    md += '## 🔴 5. PREGUNTAS TRAMPA DEL TRIBUNAL Y ALERTAS DE TEST\n';
+    if (traps.length) {
+      traps.forEach(tr => {
+        md += '> 🔴 ' + tr + '\n\n';
+      });
+    } else {
+      md += '> 🔴 **[TRAMPA: Cómputo de Plazos]** En vía administrativa los plazos fijados por días son siempre **hábiles** (salvo disposición legal en contra).\n\n';
+      md += '> 🟣 **[MAYORÍA: Quórums de Órganos Colegiados]** Acuerdos por mayoría simple salvo previsión legal expresa de mayoría absoluta o cualificada.\n\n';
+    }
+
+    return md;
+  }
+
+  function generateInternalEsquemaPastel(t) {
+    if (!t) return '';
+    const raw = String(t.text || '').trim();
+    if (!raw) return '';
+    const sections = parseTextIntoSections(raw, t.title);
+
+    const mid = Math.ceil(sections.length / 2);
+    const part1 = sections.slice(0, mid);
+    const part2 = sections.slice(mid);
+
+    let md = '# ⚡ ESQUEMA REPASO EXAMEN PASTEL (HOJA 1 DE 2)\n';
+    md += '> 📋 **HOJA 1 DE 2 · MARCO NORMATIVO, DOGMÁTICA Y CONCEPTOS CLAVE** | ' + t.title + '\n\n';
+    md += '## 🏛️ BLOQUE I: Fundamentos y Bases Normativas\n';
+    part1.forEach((s, idx) => {
+      md += '### ' + (idx + 1) + '. ' + s.title + '\n';
+      const items = s.lines.slice(0, 6);
+      items.forEach(l => {
+        md += '* ' + tagSchemeItem(l.slice(0, 160)) + '\n';
+      });
+      md += '\n';
+    });
+
+    md += '---\n\n';
+
+    md += '# ⚡ ESQUEMA REPASO EXAMEN PASTEL (HOJA 2 DE 2)\n';
+    md += '> 📋 **HOJA 2 DE 2 · PROCEDIMIENTO, GARANTÍAS Y CUADRO EXPRÉS DE CIERRE** | ' + t.title + '\n\n';
+    md += '## ⚙️ BLOQUE II: Procedimiento, Régimen Jurídico y Garantías\n';
+    part2.forEach((s, idx) => {
+      md += '### ' + (mid + idx + 1) + '. ' + s.title + '\n';
+      const items = s.lines.slice(0, 6);
+      items.forEach(l => {
+        md += '* ' + tagSchemeItem(l.slice(0, 160)) + '\n';
+      });
+      md += '\n';
+    });
+
+    // Cuadro Exprés de Cierre
+    const tables = getTopicTables(t);
+    if (tables && tables.length) {
+      md += '### ⏱️ Cuadro Exprés de Cierre: Cifras, Plazos y Quórums de Examen\n\n';
+      const firstTable = tables[0];
+      md += '| ' + firstTable.heads.join(' | ') + ' |\n';
+      md += '| ' + firstTable.heads.map(() => ':---').join(' | ') + ' |\n';
+      firstTable.rows.slice(0, 8).forEach(r => {
+        md += '| ' + r.map(cell => String(cell).replace(/\|/g, '\\|').replace(/\n+/g, ' ')).join(' | ') + ' |\n';
+      });
+      md += '\n';
+    } else {
+      md += '### ⏱️ Cuadro Exprés de Cierre: Cifras, Plazos y Quórums de Examen\n\n';
+      md += '| Concepto / Trámite | Plazo o Mayoría | Órgano Competente | Trampa de Test |\n';
+      md += '| :--- | :--- | :--- | :--- |\n';
+      md += '| Cómputo de plazos por días | Días hábiles | Órgano instructor | Excluidos sábados, domingos y festivos |\n';
+      md += '| Invalidez de actos | Imprescriptible | Órgano competente | Nulidad radical no convalidable |\n';
+      md += '| Régimen de recursos | [PLAZO: 1 mes] | Superior jerárquico | Recurso de alzada obligatorio antes de contencioso |\n\n';
+    }
+
+    return md;
+  }
+
+  function copyTopicSummary(id) {
+    const t = topic(id);
+    if (!t) return;
+    const content = t.geminiSummary || generateInternalApuntesPastel(t);
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(content).then(() => {
+        toast('📋 Apuntes Oposiciones Pastel copiados al portapapeles');
+      }).catch(() => {
+        modal('Apuntes Pastel', '<textarea style="width:100%;height:300px" readonly>' + esc(content) + '</textarea>');
+      });
+    } else {
+      modal('Apuntes Pastel', '<textarea style="width:100%;height:300px" readonly>' + esc(content) + '</textarea>');
+    }
+  }
+
+  function copyTopicScheme(id) {
+    const t = topic(id);
+    if (!t) return;
+    const content = t.geminiScheme || generateInternalEsquemaPastel(t);
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(content).then(() => {
+        toast('📋 Esquema Repaso Examen Pastel copiado al portapapeles');
+      }).catch(() => {
+        modal('Esquema Pastel', '<textarea style="width:100%;height:300px" readonly>' + esc(content) + '</textarea>');
+      });
+    } else {
+      modal('Esquema Pastel', '<textarea style="width:100%;height:300px" readonly>' + esc(content) + '</textarea>');
+    }
+  }
+
+  function printTopicPastel(id, type) {
+    window.print();
+  }
+
+  function generateFinalReviewHTML(t) {
     if (!t) return '';
     const raw = String(t.text || '').trim();
     if (!raw) {
@@ -6598,49 +6858,35 @@
       `;
     }
 
-    if (t.geminiScheme) {
-      return `
-        <div class="final-review-wrapper stack" style="gap:14px">
-          <div class="notice row between wrap" style="background:linear-gradient(135deg,#fdf2f8 0%,#f5f3ff 100%);border-color:#e9d5ff;padding:12px 16px;border-radius:12px;gap:8px">
-            <span style="display:flex;align-items:center;gap:6px">
-              <span style="font-size:18px">⚡</span>
-              <strong>Esquema Repaso Examen Pastel (Generado con Gemini AI · Máx. 2 Hojas):</strong>
-              <span class="tag" style="background:#f3e8ff;color:#7e22ce;border-color:#d8b4fe">Habilidad Gemini Activa</span>
-            </span>
-            <div class="row wrap" style="gap:6px">
-              <button class="btn sm soft" data-act="generate-gemini-scheme" data-id="${esc(t.id)}" title="Regenerar con Gemini AI">${I('sparkle',12)} Regenerar</button>
-              <button class="btn sm soft" data-act="paste-gemini-scheme" data-id="${esc(t.id)}" title="Pegar nuevo esquema">${I('pen',12)} Editar / Pegar</button>
-              <button class="btn sm" data-act="clear-gemini-scheme" data-id="${esc(t.id)}" title="Volver al esquema Novolex">↺ Local</button>
-            </div>
-          </div>
-          <div class="gemini-rendered-content surface" style="padding:22px;border:1.5px solid #d8b4fe;border-radius:14px;background:#fff">
-            ${renderGeminiMarkdown(t.geminiScheme)}
-          </div>
-        </div>
-      `;
-    }
+    const schemeMd = t.geminiScheme || generateInternalEsquemaPastel(t);
 
     return `
-      <div class="final-review-wrapper stack" style="gap:22px">
+      <div class="final-review-wrapper stack" style="gap:14px">
         <div class="notice row between wrap" style="background:linear-gradient(135deg,#fdf2f8 0%,#f5f3ff 100%);border-color:#e9d5ff;padding:12px 16px;border-radius:12px;gap:8px">
-          <span style="display:flex;align-items:center;gap:6px">
-            <span style="font-size:18px">⚡</span>
-            <strong>Esquema Repaso Examen Pastel · ${esc(t.title)}:</strong>
-            <span class="tag" style="background:#f3e8ff;color:#6b21a8">Máx. 2 Hojas</span>
+          <span style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:20px">⚡</span>
+            <div>
+              <strong style="color:#581c87;font-size:14px">Esquema Repaso Examen Pastel · ${esc(t.title)}</strong>
+              <div class="row" style="gap:6px;margin-top:2px">
+                <span class="tag" style="background:#f3e8ff;color:#6b21a8;border-color:#d8b4fe">Máx. 2 Hojas · Nueva Pizarra</span>
+                <span class="tag" style="background:#ecfdf5;color:#047857;border-color:#a7f3d0">Generación Automática Interna</span>
+              </div>
+            </div>
           </span>
           <div class="row wrap" style="gap:6px">
-            <button class="btn sm primary" data-act="generate-gemini-scheme" data-id="${esc(t.id)}">${I('sparkle',12)} Generar con Habilidad Gemini</button>
-            <button class="btn sm soft" data-act="paste-gemini-scheme" data-id="${esc(t.id)}">📥 Pegar de Gemini</button>
-            <button class="btn sm soft" data-act="gemini-skills" title="Configurar Habilidades">${I('settings',12)} Prompt</button>
+            <button class="btn sm soft" onclick="copyTopicScheme('${esc(t.id)}')">📋 Copiar Esquema</button>
+            <button class="btn sm soft" onclick="printTopicPastel('${esc(t.id)}', 'scheme')">🖨️ Imprimir 2 Hojas</button>
+            <button class="btn sm soft" data-act="paste-gemini-scheme" data-id="${esc(t.id)}" title="Pegar esquema personalizado">${I('pen',12)} Pegar de Gemini</button>
+            <button class="btn sm" data-act="regenerate-pastel-scheme" data-id="${esc(t.id)}" title="Regenerar esquema interno">↺ Regenerar</button>
           </div>
         </div>
-        ${generateSchemeHTML(t)}
-        <div style="border-top:2px dashed var(--line);padding-top:18px">
-          ${generateCuadrosHTML(t)}
+        <div class="gemini-rendered-content surface" id="pastel-scheme-view-${esc(t.id)}" style="padding:24px 28px;border:1.5px solid #d8b4fe;border-radius:14px;background:#fff;line-height:1.65">
+          ${renderGeminiMarkdown(schemeMd)}
         </div>
       </div>
     `;
   }
+
 
   function generateBracketTreeHTML(t) {
     return generateSchemeHTML(t);
@@ -6754,126 +7000,45 @@
     if (!raw) {
       return `
         <div class="summary-container stack" style="gap:14px">
-          <div class="notice row between" style="background:#fdf7e7;border-color:#f5e5ba;padding:14px 18px;border-radius:10px">
-            <div>
-              <strong>📖 Sin apuntes cargados para este tema</strong>
-              <p style="margin:4px 0 0 0;font-size:13px;color:#6b5830">Importa apuntes en PDF/Word o pega tus notas para generar los Apuntes Oposiciones Pastel.</p>
-            </div>
-            <div class="row" style="gap:8px">
-              <button class="btn sm primary" data-act="import" data-id="${esc(t.id)}">Importar apuntes</button>
+          <div class="surface" style="padding:28px 20px;border-radius:12px;border:1.5px dashed var(--line);text-align:center;background:#fff">
+            <div style="font-size:36px;margin-bottom:10px">📝</div>
+            <h3 style="font-size:17px;margin:0 0 8px 0;color:var(--deep)">Sin apuntes cargados en este tema</h3>
+            <p class="muted small" style="max-width:480px;margin:0 auto 16px auto">
+              Para generar automáticamente los <strong>Apuntes Oposiciones Pastel</strong> y los cuadros comparativos de <strong>${esc(t.title)}</strong>, importa tus apuntes en PDF o Word, añade un audio o pega tus notas.
+            </p>
+            <div class="row wrap" style="justify-content:center;gap:8px">
+              <button class="btn primary sm" data-act="import" data-id="${esc(t.id)}">📁 Importar apuntes o audios</button>
+              <button class="btn soft sm" onclick="editNotes('${esc(t.id)}')">✏️ Pegar texto del tema</button>
             </div>
           </div>
         </div>
       `;
     }
 
-    if (t.geminiSummary) {
-      return `
-        <div class="summary-container stack" style="gap:14px">
-          <div class="notice row between wrap" style="background:linear-gradient(135deg,#fdf2f8 0%,#f5f3ff 100%);border-color:#e9d5ff;padding:12px 16px;border-radius:12px;gap:8px">
-            <span style="display:flex;align-items:center;gap:6px">
-              <span style="font-size:18px">✨</span>
-              <strong>Apuntes Oposiciones Pastel (Generados con Gemini AI):</strong>
-              <span class="tag" style="background:#f3e8ff;color:#7e22ce;border-color:#d8b4fe">Habilidad Gemini Activa</span>
-            </span>
-            <div class="row wrap" style="gap:6px">
-              <button class="btn sm soft" data-act="generate-gemini-summary" data-id="${esc(t.id)}" title="Regenerar con Gemini AI">${I('sparkle',12)} Regenerar</button>
-              <button class="btn sm soft" data-act="paste-gemini-summary" data-id="${esc(t.id)}" title="Pegar nuevo texto">${I('pen',12)} Editar / Pegar</button>
-              <button class="btn sm" data-act="clear-gemini-summary" data-id="${esc(t.id)}" title="Volver al análisis local">↺ Local</button>
-            </div>
-          </div>
-          <div class="gemini-rendered-content surface" style="padding:22px;border:1px solid #e9d5ff;border-radius:14px;background:#fff">
-            ${renderGeminiMarkdown(t.geminiSummary)}
-          </div>
-        </div>
-      `;
-    }
-
-    const sumLines = summarize(raw);
-    const ideasFuerza = sumLines.length >= 3 ? sumLines.slice(0, 5) : [
-      ...sentences(raw).filter(s => s.length > 25 && s.length < 180).slice(0, 4)
-    ];
-
-    const defs = glossary(raw);
-    const keyArticles = [];
-    const artMatches = raw.match(/(?:Art(?:ículo|\.)?\s*\d+(?:\.\d+)?(?:\s+(?:de la\s+)?(?:CE|LPAC|LRJSP|TREBEP|LCSP|LGP|Ley\s+[\d/]+))?[^.\n;]{10,120})/gi) || [];
-    const seenArt = new Set();
-    for (const m of artMatches) {
-      const clean = m.trim().replace(/^[-*•\s]+/, '');
-      const head = clean.split(/[:\-\—]/)[0].trim();
-      if (!seenArt.has(head.toLowerCase()) && head.length < 40) {
-        seenArt.add(head.toLowerCase());
-        keyArticles.push({
-          term: head,
-          def: clean.slice(head.length).replace(/^[:\-\—\s]+/, '').trim() || clean
-        });
-        if (keyArticles.length >= 5) break;
-      }
-    }
-    const combinedDefs = defs.length ? defs.slice(0, 5) : keyArticles;
-
-    const deadlines = (raw.match(keyRX) || []).map(x => x.trim());
-    const uniqueDeadlines = Array.from(new Set(deadlines.map(d => d.toLowerCase()))).slice(0, 5);
-    const trapQuestions = [];
-    if (uniqueDeadlines.length) {
-      trapQuestions.push(`<strong>Plazos críticos detectados:</strong> ${uniqueDeadlines.map(d => `<span class="badge-plazo" style="background:#fee2e2;color:#991b1b;margin:2px 4px">${esc(d)}</span>`).join(' ')}`);
-    }
-    const exceptions = raw.match(/([^.\n;]+(?:no cabe|salvo|a excepción de|prohibid|exclusivament|preceptiv)[^.\n;]+)/gi) || [];
-    for (const ex of exceptions.slice(0, 3)) {
-      const cleanEx = ex.trim().replace(/^[-*•\s]+/, '');
-      if (cleanEx.length > 20 && cleanEx.length < 200) {
-        trapQuestions.push(`<strong>Regla / Excepción clave:</strong> ${highlight(cleanEx)}`);
-      }
-    }
-    if (!trapQuestions.length) {
-      trapQuestions.push('<strong>Atención al cómputo:</strong> Verificar si el plazo se fija en días hábiles (excluidos sábados, domingos y festivos) o naturales.');
-      trapQuestions.push('<strong>Incompetencia u omisión de procedimiento:</strong> Causa nulidad de pleno derecho si es manifiesta.');
-    }
+    const mdContent = t.geminiSummary || generateInternalApuntesPastel(t);
 
     return `
       <div class="summary-container stack" style="gap:14px">
         <div class="notice row between wrap" style="background:linear-gradient(135deg,#fdf2f8 0%,#f5f3ff 100%);border-color:#e9d5ff;padding:12px 16px;border-radius:12px;gap:8px">
-          <span style="display:flex;align-items:center;gap:6px">
-            <span style="font-size:18px">📝</span>
-            <strong>Apuntes Oposiciones Pastel · ${esc(t.title)}:</strong>
-            <span class="tag" style="background:#fdf4ff;color:#a21caf">Estilo Pastel</span>
+          <span style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:20px">📝</span>
+            <div>
+              <strong style="color:#581c87;font-size:14px">Apuntes Oposiciones Pastel · ${esc(t.title)}</strong>
+              <div class="row" style="gap:6px;margin-top:2px">
+                <span class="tag" style="background:#f3e8ff;color:#7e22ce;border-color:#d8b4fe">Estudio en Papel</span>
+                <span class="tag" style="background:#ecfdf5;color:#047857;border-color:#a7f3d0">Generación Automática Interna</span>
+              </div>
+            </div>
           </span>
           <div class="row wrap" style="gap:6px">
-            <button class="btn sm primary" data-act="generate-gemini-summary" data-id="${esc(t.id)}">${I('sparkle',12)} Generar con Habilidad Gemini</button>
-            <button class="btn sm soft" data-act="paste-gemini-summary" data-id="${esc(t.id)}">📥 Pegar de Gemini</button>
-            <button class="btn sm soft" data-act="gemini-skills" title="Configurar Habilidades">${I('settings',12)} Prompt</button>
+            <button class="btn sm soft" onclick="copyTopicSummary('${esc(t.id)}')">📋 Copiar Apuntes</button>
+            <button class="btn sm soft" onclick="printTopicPastel('${esc(t.id)}', 'summary')">🖨️ Imprimir</button>
+            <button class="btn sm soft" data-act="paste-gemini-summary" data-id="${esc(t.id)}" title="Pegar texto personalizado">${I('pen',12)} Pegar de Gemini</button>
+            <button class="btn sm" data-act="regenerate-pastel-summary" data-id="${esc(t.id)}" title="Regenerar apuntes internos">↺ Regenerar</button>
           </div>
         </div>
-
-        <div class="surface" style="padding:16px;border:1px solid var(--line);border-radius:12px;">
-          <h4 style="margin:0 0 10px 0;color:var(--deep)">1. Ideas Fuerza de Examen Extraídas</h4>
-          <ul style="margin:0 0 16px 0;padding-left:20px;font-size:13px;line-height:1.7;color:#3b3534">
-            ${ideasFuerza.length ? ideasFuerza.map(s => `<li>${highlight(s)}</li>`).join('') : `<li>Lectura y conceptos extraídos del temario para ${esc(t.title)}.</li>`}
-          </ul>
-
-          <h4 style="margin:16px 0 10px 0;color:var(--deep)">2. Artículos y Conceptos Clave de Cita Obligatoria</h4>
-          <div class="stack" style="gap:8px">
-            ${combinedDefs.length ? combinedDefs.map(d => `
-              <div style="background:#faf8f5;padding:9px 12px;border-radius:8px;border-left:3px solid #75618e;">
-                <strong style="color:#514064">${esc(d.term)}:</strong>
-                <span style="font-size:13px">${highlight(d.def)}</span>
-              </div>
-            `).join('') : `
-              <div style="background:#faf8f5;padding:9px 12px;border-radius:8px;border-left:3px solid #75618e;">
-                <span style="font-size:13px">Revisa los artículos normativos citados en los apuntes del tema.</span>
-              </div>
-            `}
-          </div>
-
-          <h4 style="margin:18px 0 10px 0;color:#8c3c3c">3. Plazos, Excepciones y Trampas del Tribunal</h4>
-          <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.7;color:#443d39">
-            ${trapQuestions.map(q => `<li>${q}</li>`).join('')}
-          </ul>
-        </div>
-
-        <!-- TABLAS Y CUADROS COMPARATIVOS PASTEL -->
-        <div style="margin-top:16px">
-          ${generateCuadrosHTML(t)}
+        <div class="gemini-rendered-content surface" id="pastel-summary-view-${esc(t.id)}" style="padding:24px 28px;border:1px solid #e9d5ff;border-radius:14px;background:#fff;line-height:1.65">
+          ${renderGeminiMarkdown(mdContent)}
         </div>
       </div>
     `;
@@ -7061,8 +7226,26 @@
   async function performAction(action,el){
     const id=el.dataset.id||'';
     switch(action){
-      case 'generate-gemini-summary': generateTopicWithGemini(id || currentTopic()?.id, 'summary'); break;
-      case 'generate-gemini-scheme': generateTopicWithGemini(id || currentTopic()?.id, 'scheme'); break;
+      case 'generate-gemini-summary': case 'regenerate-pastel-summary': {
+        const t = topic(id || currentTopic()?.id);
+        if (t) {
+          t.geminiSummary = '';
+          save();
+          renderRoute(false);
+          toast('✨ Apuntes Oposiciones Pastel actualizados.');
+        }
+        break;
+      }
+      case 'generate-gemini-scheme': case 'regenerate-pastel-scheme': {
+        const t = topic(id || currentTopic()?.id);
+        if (t) {
+          t.geminiScheme = '';
+          save();
+          renderRoute(false);
+          toast('⚡ Esquema Repaso Examen Pastel actualizado.');
+        }
+        break;
+      }
       case 'paste-gemini-summary': openPasteGeminiModal(id || currentTopic()?.id, 'summary'); break;
       case 'paste-gemini-scheme': openPasteGeminiModal(id || currentTopic()?.id, 'scheme'); break;
       case 'copy-gemini-prompt': copyGeminiPrompt(id || currentTopic()?.id, el.dataset.kind || 'summary'); break;
