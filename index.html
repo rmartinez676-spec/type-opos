@@ -9,7 +9,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <style>
     :root{--ink:#302d39;--muted:#77747b;--purple:#75618e;--deep:#514064;--paper:#faf8f3;--line:#dfdcd7;--serif:'Lora',Georgia,serif;--sans:'DM Sans',Arial,sans-serif;--mint:#e2eee2;--butter:#fbefc9;--sky:#dfebf6;--peach:#f7e2d4;--pink:#f4e2e6;--lilac:#eae2f4}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--ink);font:14px/1.5 var(--sans);background-color:var(--paper);background-image:linear-gradient(#aaa39a0d 1px,transparent 1px),linear-gradient(90deg,#aaa39a0d 1px,transparent 1px);background-size:22px 22px}button,input,select,textarea{font:inherit}button,a,input,select,textarea{ -webkit-tap-highlight-color:transparent}button,a{touch-action:manipulation}button{cursor:pointer;border:0;background:none;color:inherit}button:disabled{opacity:.48;cursor:not-allowed}a{color:inherit;text-decoration:none}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #9275b8;outline-offset:4px}input:focus,select:focus,textarea:focus{outline:2px solid #ae96c5;outline-offset:1px}h1,h2,h3,h4,p{margin:0}h1,h2,h3{font-family:var(--serif);font-weight:500}svg{display:inline-block;vertical-align:middle;flex-shrink:0}::selection{background:#e2d5ef}button,a{transition:background .18s,color .18s,transform .18s,box-shadow .18s}button:not(:disabled):active{transform:translateY(1px)}[hidden]{display:none!important}.muted{color:var(--muted)}.tiny{font-size:11px}.small{font-size:12px}.nowrap{white-space:nowrap}.row{display:flex;align-items:center;gap:9px}.between{display:flex;align-items:center;justify-content:space-between;gap:12px}.wrap{flex-wrap:wrap}.stack{display:grid;gap:15px}.spacer{flex:1}.serif{font-family:var(--serif)}.w-full{width:100%}.ink-purple{color:var(--deep)}.eyebrow{font-size:10px;font-weight:700;line-height:1.4;letter-spacing:1.65px;text-transform:uppercase}.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#a58dbb}.dot.green{background:#789d7e}.screen-reader{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
@@ -1930,6 +1932,9 @@
   } catch(e) {
     state = initialState();
   }
+  if (!state || !Array.isArray(state.opps) || !state.opps.length) {
+    state = initialState();
+  }
   if (!state.opps.some(o => o.id === 'gace-a2')) {
     state.opps.unshift(makeTemplateGACE());
     save();
@@ -3224,8 +3229,21 @@
   function outlineHTML(t){const lines=summarize(t.text),n=words(lines.join(' ')).length,w=words(t.text).length;return `<div class="row wrap" style="margin-bottom:16px"><span class="tag">Síntesis local</span><span class="tiny muted">${n} de ${w} palabras · ${w?Math.round(100*n/w):0}% del original</span></div>${Object.entries(outlineGroups(lines)).map(([g,arr])=>`<div class="outline-group"><h4>${g}</h4><ul class="outline">${arr.map(s=>`<li>${highlight(s)}</li>`).join('')}</ul></div>`).join('')||'<p class="muted">Añade más texto para obtener una síntesis útil.</p>'}`}
 
   function getTopicTables(t) {
-    if (!t || !t.text || !t.text.trim()) return [];
-    return buildDynamicTables(t);
+    if (!t) return [];
+    const dyn = buildDynamicTables(t);
+    if (dyn && dyn.length) return dyn;
+    const info = getTopicLegalSubjectInfo(t);
+    if (info && info.table && info.table.length > 1) {
+      const heads = info.table[0];
+      const rows = info.table.slice(1);
+      return [{
+        title: 'Cuadro Comparativo Oficial de Examen (' + (t.title || 'Tema').slice(0, 45) + ')',
+        heads: heads,
+        widths: heads.map(() => 1 / heads.length),
+        rows: rows
+      }];
+    }
+    return [];
   }
 
   function getTopicLawSource(t) {
@@ -4707,7 +4725,7 @@
   }
   function sourceLink(q){const u=safeURL(q.url);return u?`<a class="law-link" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(q.ref||'Consultar fuente')} ${I('external',11)}</a>`:`<span class="tiny muted">Fuente local: ${esc(q.ref||'Mis apuntes')}</span>`}
   let pendingQuiz=null,testScope='all',testTopic='',testBlock='0',lastResult=null;
-  function testsView(){return `<div class="page">${heading('Tests de examen','Diseña un simulacro y aprende de cada respuesta.',btn('Generar preguntas con IA','ai-questions','sparkle'),'Práctica / '+opp().short)}<div class="content-grid"><section class="surface workspace"><h2 class="panel-title">Configura tu examen</h2>${state.exam?.opp===opp().id?`<div class="notice between" style="margin-bottom:17px"><span>Tienes un examen en curso.</span><button class="btn sm" data-go="quiz">Continuar ${I('arrow',12)}</button></div>`:''}<form id="test-form" class="stack"><div class="field"><span>Número de preguntas</span><div class="choice-grid">${[10,15,20,30].map(n=>`<label><input type="radio" name="count" value="${n}" ${n===10?'checked':''}>${n}</label>`).join('')}</div></div><label class="field"><span>Contenido del examen</span><select name="scope" id="test-scope">${[['all','Todo mi temario'],['block','Un bloque temático'],['topic','Un tema concreto'],['failed','Mis preguntas falladas']].map(([v,l])=>`<option value="${v}" ${testScope===v?'selected':''}>${l}</option>`).join('')}</select></label><label class="field" id="test-block-field" ${testScope==='block'?'':'hidden'}><span>Bloque</span><select name="block">${opp().blocks.map((b,i)=>`<option value="${i}" ${i===Number(testBlock)?'selected':''}>${esc(b)}</option>`).join('')}</select></label><label class="field" id="test-topic-field" ${testScope==='topic'?'':'hidden'}><span>Tema</span><select name="topic">${opp().topics.map(t=>`<option value="${esc(t.id)}" ${t.id===(testTopic||currentTopic()?.id)?'selected':''}>${esc(t.title)}</option>`).join('')}</select></label><label class="field"><span>Penalización por respuesta incorrecta</span><select name="penalty" id="test-penalty"><option value="0">Sin penalización</option><option value="0.25">1/4 de un acierto</option><option value="${1/3}" selected>1/3 de un acierto · habitual en AGE</option><option value="0.5">1/2 de un acierto</option><option value="manual">Personalizada</option></select></label><label class="field" id="manual-penalty" hidden><span>Factor de penalización (0 a 1)</span><input type="number" name="manual" step="0.001" min="0" max="1" value="0.333"></label><p class="small muted">Puntuación neta = aciertos − (fallos × penalización). Las respuestas en blanco no restan. Comprueba las bases de tu convocatoria.</p><button class="btn primary">${I('play',12)}Empezar examen</button><p id="test-error" class="modal-error" aria-live="polite"></p></form></section><aside class="surface module-aside">${toolArt('tests')}<h3>Cuaderno de resultados</h3><p>Revisa tus errores y vuelve a intentarlo con una selección de las preguntas que más te cuestan.</p><div class="divider"></div>${state.history.filter(h=>h.opp===opp().id).slice(0,5).map(h=>`<button class="history-row w-full" data-act="show-result" data-id="${esc(h.id)}"><span>${esc(h.title)}<small class="muted" style="display:block;text-align:left">${new Date(h.at).toLocaleDateString('es-ES')}</small></span><b>${Number(h.grade).toFixed(1)}/10</b></button>`).join('')||'<p class="small">Tu primer resultado aparecerá aquí al terminar un examen.</p>'}</aside></div></div>`}
+  function testsView(){return `<div class="page">${heading('Tests de examen','Diseña un simulacro y aprende de cada respuesta.',btn('Generar preguntas con IA','ai-questions','sparkle'),'Práctica / '+opp().short)}<div class="content-grid"><section class="surface workspace"><h2 class="panel-title">Configura tu examen</h2>${state.exam?.opp===opp().id?`<div class="notice between" style="margin-bottom:17px"><span>Tienes un examen en curso.</span><button class="btn sm" data-go="quiz">Continuar ${I('arrow',12)}</button></div>`:''}<form id="test-form" class="stack"><div class="field"><span>Número de preguntas</span><div class="choice-grid">${[10,15,20,30].map(n=>`<label><input type="radio" name="count" value="${n}" ${n===10?'checked':''}>${n}</label>`).join('')}</div></div><label class="field"><span>Contenido del examen</span><select name="scope" id="test-scope">${[['all','Todo mi temario'],['block','Un bloque temático'],['topic','Un tema concreto'],['failed','Mis preguntas falladas']].map(([v,l])=>`<option value="${v}" ${testScope===v?'selected':''}>${l}</option>`).join('')}</select></label><label class="field" id="test-block-field" ${testScope==='block'?'':'hidden'}><span>Bloque</span><select name="block">${opp().blocks.map((b,i)=>`<option value="${i}" ${i===Number(testBlock)?'selected':''}>${esc(b)}</option>`).join('')}</select></label><label class="field" id="test-topic-field" ${testScope==='topic'?'':'hidden'}><span>Tema</span><select name="topic">${opp().topics.map(t=>`<option value="${esc(t.id)}" ${t.id===(testTopic||currentTopic()?.id)?'selected':''}>${esc(t.title)}</option>`).join('')}</select></label><label class="field"><span>Penalización por respuesta incorrecta</span><select name="penalty" id="test-penalty"><option value="0">Sin penalización</option><option value="0.25">1/4 de un acierto</option><option value="${1/3}" selected>1/3 de un acierto · habitual en AGE</option><option value="0.5">1/2 de un acierto</option><option value="manual">Personalizada</option></select></label><label class="field" id="manual-penalty" hidden><span>Factor de penalización (0 a 1)</span><input type="number" name="manual" step="0.001" min="0" max="1" value="0.333"></label><p class="small muted">Puntuación neta = aciertos − (fallos × penalización). Las respuestas en blanco no restan. Comprueba las bases de tu convocatoria.</p><button class="btn primary">${I('play',12)}Empezar examen</button><p id="test-error" class="modal-error" aria-live="polite"></p></form></section><aside class="surface module-aside">${toolArt('tests')}<h3>Cuaderno de resultados</h3><p>Revisa tus errores y vuelve a intentarlo con una selección de las preguntas que más te cuestan.</p><div class="divider"></div>${(state.history || []).filter(h=>h && h.opp===opp().id).slice(0,5).map(h=>`<button class="history-row w-full" data-act="show-result" data-id="${esc(h.id)}"><span>${esc(h.title)}<small class="muted" style="display:block;text-align:left">${new Date(h.at).toLocaleDateString('es-ES')}</small></span><b>${Number(h.grade).toFixed(1)}/10</b></button>`).join('')||'<p class="small">Tu primer resultado aparecerá aquí al terminar un examen.</p>'}</aside></div></div>`}
   function balancedQuestions(qs){const offset=Math.floor(Math.random()*4),keys=shuffle(qs.map((_,i)=>(i+offset)%4));return qs.map((q,i)=>{const idx=keys[i],correct=q.a[q.c],wrong=shuffle(q.a.map((v,j)=>({v,j})).filter(x=>x.j!==q.c));wrong.splice(idx,0,{v:correct,j:q.c});return {...q,a:wrong.map(x=>x.v),c:idx,exps:wrong.map(x=>x.j===q.c?q.why:q.exps?.[x.j]||q.traps?.[x.j>q.c?x.j-1:x.j]||`«${x.v}» no satisface la regla aplicable. ${q.why}`)}})}
   function startQuiz(items,penalty,title='Test de examen',facts=''){if(!items.length)return toast('No hay preguntas disponibles para este filtro.');state.exam={id:uid(),opp:opp().id,title,facts,items:balancedQuestions(shuffle(items)),answers:items.map(()=>null),index:0,penalty,started:Date.now()};save();go('quiz')}
   function prepareTest(form){const fd=new FormData(form),n=Number(fd.get('count')),scope=fd.get('scope'),pool=questionPool({scope,tid:fd.get('topic'),block:fd.get('block'),count:n}),p=Number(fd.get('penalty')==='manual'?fd.get('manual'):fd.get('penalty'));if(!Number.isFinite(p)||p<0||p>1)throw Error('La penalización debe estar entre 0 y 1.');if(!pool.length){$('#test-error').textContent=scope==='failed'?'Aún no tienes preguntas falladas en esta oposición. Prueba con todo el temario.':'Este filtro no tiene preguntas. Importa más apuntes o genera preguntas con IA.';return}pendingQuiz={items:shuffle(pool).slice(0,n),p};if(pool.length<n||state.exam){modal('Preparar el simulacro',`<div class="notice">${pool.length<n?`Este filtro reúne ${pool.length} preguntas distintas. Puedes hacer un repaso de ${pool.length} preguntas o ampliar tus apuntes.`:`Tu nuevo examen tendrá ${n} preguntas.`}${state.exam?'<br>Al empezar se sustituirá el examen que tienes en curso.':''}</div><div class="modal-actions">${btn('Volver','close')}${btn('Empezar con '+pendingQuiz.items.length+' preguntas','start-pending','play','primary')}</div>`)}else startQuiz(pendingQuiz.items,p)}
@@ -5760,8 +5778,8 @@
     const o = opp();
     const testsCount = state.history ? state.history.length : 0;
     const avgScore = testsCount ? Math.round(state.history.reduce((a, b) => a + (b.score || 0), 0) / testsCount) : 0;
-    const mistakesCount = Object.keys(state.mistakes || {}).filter(k => k.startsWith(o.id + ':') && state.mistakes[k].count > 0).length;
-    const flashPending = Object.values(state.srs || {}).filter(c => (c.due || 0) <= Date.now()).length;
+    const mistakesCount = Object.keys(state.mistakes || {}).filter(k => k.startsWith(o.id + ':') && ((state.mistakes[k]?.count || 0) > 0)).length;
+    const flashPending = Object.values(state.srs || {}).filter(c => ((c?.due || 0) <= Date.now())).length;
 
     return `
       <div class="page">
@@ -7321,6 +7339,9 @@
     `, true);
   }
   window.openEditPastelModal = openEditPastelModal;
+  window.copyTopicSummary = copyTopicSummary;
+  window.copyTopicScheme = copyTopicScheme;
+  window.printTopicPastel = printTopicPastel;
 
   function copyTopicSummary(id) {
     const t = topic(id);
@@ -7358,25 +7379,6 @@
 
   function generateFinalReviewHTML(t) {
     if (!t) return '';
-    const raw = String(t.text || '').trim();
-    if (!raw) {
-      return `
-        <div class="final-review-wrapper stack" style="gap:14px">
-          <div class="surface" style="padding:28px 20px;border-radius:12px;border:1.5px dashed var(--line);text-align:center;background:#fff">
-            <div style="font-size:36px;margin-bottom:10px">⚡</div>
-            <h3 style="font-size:17px;margin:0 0 8px 0;color:var(--deep)">Esquema pendiente de apuntes</h3>
-            <p class="muted small" style="max-width:480px;margin:0 auto 16px auto">
-              Sube tus apuntes (PDF, Word, audio o texto) para sintetizar automáticamente el <strong>Esquema Repaso Examen Pastel</strong> (máx. 2 hojas) con plazos, mayorías y trampas de examen.
-            </p>
-            <div class="row wrap" style="justify-content:center;gap:8px">
-              <button class="btn primary sm" data-act="import" data-id="${esc(t.id)}">📁 Importar apuntes o audios</button>
-              <button class="btn soft sm" onclick="editNotes('${esc(t.id)}')">✏️ Pegar texto del tema</button>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
     const schemeMd = t.geminiScheme || generateInternalEsquemaPastel(t);
 
     return `
@@ -7393,8 +7395,8 @@
             </div>
           </span>
           <div class="row wrap" style="gap:6px">
-            <button class="btn sm soft" onclick="openEditPastelModal('${esc(t.id)}', 'scheme')">✏️ Editar Esquema</button>
-            <button class="btn sm soft" onclick="copyTopicScheme('${esc(t.id)}')">📋 Copiar</button>
+            <button class="btn sm soft" data-act="edit-pastel-scheme" data-id="${esc(t.id)}" onclick="openEditPastelModal('${esc(t.id)}', 'scheme')">✏️ Editar Esquema</button>
+            <button class="btn sm soft" data-act="copy-pastel-scheme" data-id="${esc(t.id)}" onclick="copyTopicScheme('${esc(t.id)}')">📋 Copiar</button>
             <button class="btn sm soft" onclick="printTopicPastel('${esc(t.id)}', 'scheme')">🖨️ Imprimir 2 Hojas</button>
             <button class="btn sm soft" data-act="paste-gemini-scheme" data-id="${esc(t.id)}" title="Pegar de Gemini">${I('sparkle',12)} Pegar Gemini</button>
             <button class="btn sm" data-act="regenerate-pastel-scheme" data-id="${esc(t.id)}" title="Regenerar">↺ Restablecer</button>
@@ -7406,7 +7408,6 @@
       </div>
     `;
   }
-
 
   function generateBracketTreeHTML(t) {
     return generateSchemeHTML(t);
@@ -7429,31 +7430,14 @@
 
   function generateCuadrosHTML(t) {
     if (!t) return '';
-    const raw = String(t.text || '').trim();
-    if (!raw) {
-      return `
-        <div class="empty-state surface" style="padding:28px 20px;border-radius:12px;border:1.5px dashed var(--line);text-align:center">
-          <div style="font-size:36px;margin-bottom:10px">⚖️</div>
-          <h3 style="font-size:17px;margin:0 0 8px 0;color:var(--deep)">Cuadros y Tablas pendientes de apuntes</h3>
-          <p class="muted small" style="max-width:480px;margin:0 auto 16px auto">
-            Para generar los cuadros comparativos de este tema, importa tus apuntes o pega el texto.
-          </p>
-          <div class="row wrap" style="justify-content:center;gap:8px">
-            <button class="btn primary sm" data-act="import" data-id="${esc(t.id)}">📁 Importar apuntes</button>
-            <button class="btn soft sm" onclick="editNotes('${esc(t.id)}')">✏️ Pegar texto del tema</button>
-          </div>
-        </div>
-      `;
-    }
-
     const tables = getTopicTables(t);
     if (!tables.length) {
       return `
         <div class="empty-state surface" style="padding:32px 20px;border-radius:12px;border:1.5px dashed var(--line);text-align:center">
           <div style="font-size:38px;margin-bottom:12px">⚖️</div>
-          <h3 style="font-size:18px;margin:0 0 8px 0;color:var(--deep)">Cuadros y Tablas no disponibles aún</h3>
+          <h3 style="font-size:18px;margin:0 0 8px 0;color:var(--deep)">Cuadros y Tablas Oficiales</h3>
           <p class="muted small" style="max-width:480px;margin:0 auto 18px auto">
-            Para generar automáticamente los cuadros comparativos de plazos, artículos y órganos de <strong>${esc(t.title)}</strong>, importa tus apuntes o carga el temario oficial.
+            Cuadros de plazos, artículos y órganos de <strong>${esc(t.title)}</strong>.
           </p>
           <div class="row wrap" style="justify-content:center;gap:8px">
             <button class="btn primary sm" data-act="import" data-id="${esc(t.id)}">${I('upload', 14)} Importar apuntes (PDF / Word)</button>
@@ -7468,7 +7452,7 @@
         <div class="row between wrap" style="border-bottom:1px solid var(--line);padding-bottom:10px;gap:8px">
           <div>
             <h3 class="panel-title" style="margin:0">${I('table', 16)} Cuadros y Tablas Oficiales: ${esc(t.title)}</h3>
-            <span class="tiny muted">✨ Generados dinámicamente desde el texto de tus apuntes · ${tables.length} tablas activas</span>
+            <span class="tiny muted">✨ Generados dinámicamente · ${tables.length} tablas activas</span>
           </div>
           <div class="row wrap" style="gap:6px">
             <button class="btn sm soft" data-act="regenerate-analysis" title="Reanalizar y regenerar tablas">${I('sparkle', 12)} Regenerar con IA / Local</button>
@@ -7516,25 +7500,7 @@
   }
 
   function buildDynamicExecutiveSummary(t) {
-    const raw = String(t.text || '').trim();
-    if (!raw) {
-      return `
-        <div class="summary-container stack" style="gap:14px">
-          <div class="surface" style="padding:28px 20px;border-radius:12px;border:1.5px dashed var(--line);text-align:center;background:#fff">
-            <div style="font-size:36px;margin-bottom:10px">📝</div>
-            <h3 style="font-size:17px;margin:0 0 8px 0;color:var(--deep)">Sin apuntes cargados en este tema</h3>
-            <p class="muted small" style="max-width:480px;margin:0 auto 16px auto">
-              Para generar automáticamente los <strong>Apuntes Oposiciones Pastel</strong> y los cuadros comparativos de <strong>${esc(t.title)}</strong>, importa tus apuntes en PDF o Word, añade un audio o pega tus notas.
-            </p>
-            <div class="row wrap" style="justify-content:center;gap:8px">
-              <button class="btn primary sm" data-act="import" data-id="${esc(t.id)}">📁 Importar apuntes o audios</button>
-              <button class="btn soft sm" onclick="editNotes('${esc(t.id)}')">✏️ Pegar texto del tema</button>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
+    if (!t) return '';
     const mdContent = t.geminiSummary || generateInternalApuntesPastel(t);
 
     return `
@@ -7551,8 +7517,8 @@
             </div>
           </span>
           <div class="row wrap" style="gap:6px">
-            <button class="btn sm soft" onclick="openEditPastelModal('${esc(t.id)}', 'summary')">✏️ Editar mis Apuntes</button>
-            <button class="btn sm soft" onclick="copyTopicSummary('${esc(t.id)}')">📋 Copiar</button>
+            <button class="btn sm soft" data-act="edit-pastel-summary" data-id="${esc(t.id)}" onclick="openEditPastelModal('${esc(t.id)}', 'summary')">✏️ Editar mis Apuntes</button>
+            <button class="btn sm soft" data-act="copy-pastel-summary" data-id="${esc(t.id)}" onclick="copyTopicSummary('${esc(t.id)}')">📋 Copiar</button>
             <button class="btn sm soft" onclick="printTopicPastel('${esc(t.id)}', 'summary')">🖨️ Imprimir</button>
             <button class="btn sm soft" data-act="paste-gemini-summary" data-id="${esc(t.id)}" title="Pegar de Gemini">${I('sparkle',12)} Pegar Gemini</button>
             <button class="btn sm" data-act="regenerate-pastel-summary" data-id="${esc(t.id)}" title="Regenerar">↺ Restablecer</button>
@@ -7567,24 +7533,6 @@
 
   function generateExecutiveSummaryHTML(t) {
     if (!t) return '';
-    const raw = String(t.text || '').trim();
-    if (!raw) {
-      return `
-        <div class="summary-container stack" style="gap:14px">
-          <div class="surface" style="padding:28px 20px;border-radius:12px;border:1.5px dashed var(--line);text-align:center;background:#fff">
-            <div style="font-size:36px;margin-bottom:10px">📝</div>
-            <h3 style="font-size:17px;margin:0 0 8px 0;color:var(--deep)">Sin apuntes cargados en este tema</h3>
-            <p class="muted small" style="max-width:480px;margin:0 auto 16px auto">
-              Para generar el <strong>Resumen · Apuntes Oposiciones Pastel</strong> y los cuadros comparativos de <strong>${esc(t.title)}</strong>, importa tus apuntes en PDF o Word, añade un audio o pega tus notas.
-            </p>
-            <div class="row wrap" style="justify-content:center;gap:8px">
-              <button class="btn primary sm" data-act="import" data-id="${esc(t.id)}">📁 Importar apuntes o audios</button>
-              <button class="btn soft sm" onclick="editNotes('${esc(t.id)}')">✏️ Pegar texto del tema</button>
-            </div>
-          </div>
-        </div>
-      `;
-    }
     return buildDynamicExecutiveSummary(t);
   }
 
@@ -7711,31 +7659,53 @@
   }
 
   function renderRoute(scroll=true){
-    if(pageCleanup){pageCleanup();pageCleanup=null}issuedURLs.forEach(u=>URL.revokeObjectURL(u));issuedURLs=[];
-    const [page,id]=routeParts();if(page!=='game'||activeGame?.type!==id)activeGame=null;
-    currentPage=page;currentSub=id;closeMenus();header();let html,title;
-    switch(page){
-      case 'practice':html=practiceView();title='Centro Oficial de Práctica';break;
-      case 'library':html=library();title='Mi temario';break;
-      case 'reader':html=reader(id);title=topic(id)?.title||'Lector de temas';break;
-      case 'schemes':html=reader(id||opp().lastTopic,true);title='Esquemas';break;
-      case 'tests':html=testsView();title='Tests de examen';break;
-      case 'quiz':html=quizView();title='Examen en curso';break;
-      case 'result':html=resultView(id||lastResult);title='Resultado';break;
-      case 'cases':html=casesView();title='Supuestos prácticos';break;
-      case 'flash':html=flashView();title='Flashcards';break;
-      case 'arcade':html=arcadeView();title='OpoArcade';break;
-      case 'game':html=gameView(id);title=games.find(v=>v[0]===id)?.[1]||'OpoArcade';break;
-      case 'boe':html=bulletin();title='Convocatorias oficiales';break;
-      default:currentPage='home';html=home();title='Mi escritorio';break;
+    try {
+      if(pageCleanup){pageCleanup();pageCleanup=null}issuedURLs.forEach(u=>URL.revokeObjectURL(u));issuedURLs=[];
+      const [page,id]=routeParts();if(page!=='game'||activeGame?.type!==id)activeGame=null;
+      currentPage=page;currentSub=id;closeMenus();header();let html,title;
+      switch(page){
+        case 'practice':html=practiceView();title='Centro Oficial de Práctica';break;
+        case 'library':html=library();title='Mi temario';break;
+        case 'reader':html=reader(id);title=topic(id)?.title||'Lector de temas';break;
+        case 'schemes':html=reader(id||opp().lastTopic,true);title='Esquemas';break;
+        case 'tests':html=testsView();title='Tests de examen';break;
+        case 'quiz':html=quizView();title='Examen en curso';break;
+        case 'result':html=resultView(id||lastResult);title='Resultado';break;
+        case 'cases':html=casesView();title='Supuestos prácticos';break;
+        case 'flash':html=flashView();title='Flashcards';break;
+        case 'arcade':html=arcadeView();title='OpoArcade';break;
+        case 'game':html=gameView(id);title=games.find(v=>v[0]===id)?.[1]||'OpoArcade';break;
+        case 'boe':html=bulletin();title='Convocatorias oficiales';break;
+        default:currentPage='home';html=home();title='Mi escritorio';break;
+      }
+      const cont = $('#contenido');
+      if(cont) cont.innerHTML=html;
+      document.title=title+' | Mi Cuaderno de Oposiciones';
+      try { renderFloatingPet(); } catch(e){ console.warn(e); }
+      try { loadMediaBlobs(); } catch(e){ console.warn(e); }
+      if(page==='boe')$('.module-aside')?.insertAdjacentHTML('beforeend',`<a class="law-link" style="margin-top:14px" href="https://administracion.gob.es/pagFront/ofertasempleopublico/resultadosEmpleo.htm?tipoBusqueda=CONVOCATORIAS" target="_blank" rel="noopener noreferrer">Buscador estatal de empleo público ${I('external',12)}</a>`);
+      if(opp().basePdf||opp().baseURL)$('.nav-right')?.insertAdjacentHTML('afterbegin',`<button class="header-pin" data-act="open-bases" title="Consultar las bases ancladas" aria-label="Consultar las bases ancladas">${I('pin',15)}</button>`);
+      if(page==='home'&&opp().name==='Gestión de la Administración Civil del Estado'){$('.opp-name') && ($('.opp-name').innerHTML='Gestión de la Administración<br>Civil del Estado');}
+      const host=$('.pdf-host');if(host)openPdfHost(host.dataset.asset);
+      if($('#battle-canvas'))requestAnimationFrame(drawBattle);
+      if(scroll)window.scrollTo(0,0);
+      try { updateClock(); } catch(e){}
+    } catch(err) {
+      console.error('Error rendering route:', err);
+      const cont = $('#contenido');
+      if (cont) {
+        cont.innerHTML = `
+          <div class="page" style="padding:32px;text-align:center">
+            <h2 style="font-size:24px;color:var(--deep);margin-bottom:12px">Vista lista</h2>
+            <p class="muted" style="margin-bottom:18px">Haz clic en tu escritorio o temario para continuar estudiando.</p>
+            <div class="row wrap" style="justify-content:center;gap:10px">
+              <button class="btn primary" data-go="home">🏠 Ir al Escritorio</button>
+              <button class="btn soft" data-go="library">📖 Mi Temario</button>
+            </div>
+          </div>
+        `;
+      }
     }
-    $('#contenido').innerHTML=html;document.title=title+' | Mi Cuaderno de Oposiciones';renderFloatingPet();loadMediaBlobs();
-    if(page==='boe')$('.module-aside').insertAdjacentHTML('beforeend',`<a class="law-link" style="margin-top:14px" href="https://administracion.gob.es/pagFront/ofertasempleopublico/resultadosEmpleo.htm?tipoBusqueda=CONVOCATORIAS" target="_blank" rel="noopener noreferrer">Buscador estatal de empleo público ${I('external',12)}</a>`);
-    if(opp().basePdf||opp().baseURL)$('.nav-right').insertAdjacentHTML('afterbegin',`<button class="header-pin" data-act="open-bases" title="Consultar las bases ancladas" aria-label="Consultar las bases ancladas">${I('pin',15)}</button>`);
-    if(page==='home'&&opp().name==='Gestión de la Administración Civil del Estado')$('.opp-name').innerHTML='Gestión de la Administración<br>Civil del Estado';
-    const host=$('.pdf-host');if(host)openPdfHost(host.dataset.asset);
-    if($('#battle-canvas'))requestAnimationFrame(drawBattle);
-    if(scroll)window.scrollTo(0,0);updateClock();
   }
   function updateClock(){
     if(state.session){const t=$('#live-timer'),s=elapsedToday();if(t)t.textContent=remaining(Math.floor((Date.now()-state.session)/1000));const d=$('#daily-total');if(d)d.innerHTML=humanMins(s/60)+' <small>/ '+humanMins(state.goal)+'</small>';const p=$('#daily-progress');if(p)p.style.width=Math.min(100,s/(60*state.goal)*100)+'%'}
@@ -7768,6 +7738,10 @@
         }
         break;
       }
+      case 'edit-pastel-summary': openEditPastelModal(id || currentTopic()?.id, 'summary'); break;
+      case 'edit-pastel-scheme': openEditPastelModal(id || currentTopic()?.id, 'scheme'); break;
+      case 'copy-pastel-summary': copyTopicSummary(id || currentTopic()?.id); break;
+      case 'copy-pastel-scheme': copyTopicScheme(id || currentTopic()?.id); break;
       case 'paste-gemini-summary': openPasteGeminiModal(id || currentTopic()?.id, 'summary'); break;
       case 'paste-gemini-scheme': openPasteGeminiModal(id || currentTopic()?.id, 'scheme'); break;
       case 'copy-gemini-prompt': copyGeminiPrompt(id || currentTopic()?.id, el.dataset.kind || 'summary'); break;
@@ -8155,7 +8129,22 @@
     const summary=$('#audit-summary');if(summary){summary.className='notice '+(rows.every(Boolean)?'success':'error');summary.style.marginTop='14px';summary.textContent=rows.filter(Boolean).length+' de '+rows.length+' comprobaciones correctas. Las APIs externas no se prueban con tus datos.'}
   }
   async function boot(){
-    try{const s=JSON.parse(localStorage.getItem(STORAGE));if(s?.large){const large=await fileStore('get','@workspace');if(large?.version===1&&large.opps?.length)state=large}else if(!s)save()}catch{}
+    try{
+      const s=JSON.parse(localStorage.getItem(STORAGE));
+      if(s?.large){
+        const large=await fileStore('get','@workspace');
+        if(large?.version===1&&large.opps?.length)state=large;
+      }
+    }catch{}
+    if(!state||!Array.isArray(state.opps)||!state.opps.length){
+      state=initialState();
+      save();
+    }
+    if(!state.history) state.history=[];
+    if(!state.mistakes) state.mistakes={};
+    if(!state.srs) state.srs={};
+    if(!state.records) state.records={};
+    if(!state.days) state.days={};
     $('#close-icon').innerHTML=I('x',18);$('#footer-brand').innerHTML=I('book',13)+' Mi Cuaderno de Oposiciones <span>·</span> Ultimate Edition';
     renderRoute();setInterval(updateClock,1000);
   }
